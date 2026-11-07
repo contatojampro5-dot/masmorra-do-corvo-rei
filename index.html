@@ -481,6 +481,11 @@ button:focus-visible,[data-act]:focus-visible{outline:2px solid var(--gold);outl
 #cut .clic .stamp{position:absolute;right:14px;top:66px;width:72px;height:72px;border:4px solid #b2241a;border-radius:50%;display:grid;place-items:center;font:800 50px var(--f-num);color:#b2241a;opacity:0;transform:scale(3) rotate(-25deg)}
 #cut .clic.stamped .stamp{animation:stampA .35s cubic-bezier(.3,1.6,.5,1) forwards}
 #cut .clic.gone{opacity:0;transition:opacity .4s}
+.cenah{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;width:100%}
+.cenahb{display:flex;flex-direction:column;align-items:center;gap:2px;width:112px;padding:8px 6px;background:#14100c;border:1px solid var(--line);border-radius:8px;font-family:var(--f-sc);font-size:13px;color:var(--muted)}
+.cenahb .spr{width:56px}
+.cenahb:hover{border-color:#8a6a35}
+.cenahb.on{border-color:var(--gold);color:#fff3d6;box-shadow:0 0 16px #e0a23a44}
 #cut .clic .rank b.old{font:800 34px/56px var(--f-num);color:#b2241a;text-decoration:line-through 3px}
 #cut .clic.gold .rank{top:30px}#cut .clic.gold .rank b.old{font-size:24px;line-height:30px;width:auto;height:auto;border:0}
 #cut .clic.gold .stamp{top:84px;right:22px;width:84px;height:84px;font-size:58px;border-color:#c9962a;color:#c9962a;box-shadow:0 0 0 2px #fff4c066 inset;text-shadow:0 0 12px #ffd86a}
@@ -1498,7 +1503,7 @@ function titleHTML(){
   const items=[`<button class="t-item primary" data-act="new">Nova jornada</button>`,
     cont?`<button class="t-item" data-act="cont">Continuar<small>${CHARS[sv.char]?CHARS[sv.char].n:'Jornada salva'} · Ato ${sv.act||1}</small></button>`:'',
     `<button class="t-item" data-act="howto">Como jogar</button>`,
-    `<button class="t-item" data-act="abertura">Ver a abertura</button>`,
+    `<button class="t-item" data-act="cenas">Cenas</button>`,
     `<button class="t-item dim" data-act="dev">${UI.dev?'Modo DEV ligado':'Modo DEV'}</button>`].filter(Boolean);
   return`<div class="page title">
    <div class="t-window">${sprHTML('crowking',{flip:1})}</div>
@@ -2018,6 +2023,18 @@ const ACT={
   cont:()=>{G=loadSave();if(G){UI.lock=false;render();resumeCombat()}},
   menu:()=>{G=null;UI.choose=false;render()},
   abertura:()=>openAbertura(true),
+  cenas:()=>{const h=UI.cenaHero||'cav',m=$('#modal');
+    m.innerHTML=`<div class="mbox" style="max-width:760px"><h2 class="h2">Cenas</h2><p class="sub">Escolha o herói e a cena que quer assistir.</p>
+     <div class="cenah">${Object.entries(CHARS).map(([k,c])=>`<button class="cenahb ${k===h?'on':''}" data-act="cenah" data-ch="${k}" aria-pressed="${k===h}">${sprHTML(c.spr)}<span>${c.n}</span></button>`).join('')}</div>
+     <div class="panel" style="width:100%">
+      <button class="choice" data-act="cenaplay" data-k="video"><b>Abertura</b><span>O vídeo de abertura do jogo.</span></button>
+      <button class="choice" data-act="cenaplay" data-k="intro"><b>A Taverna: Classe D</b><span>O herói recebe a licença de aventureiro e jura provar que não é D.</span></button>
+      <button class="choice" data-act="cenaplay" data-k="ending"><b>O Retorno: Classe S</b><span>Depois de derrotar o Corvo Rei, a coroa no balcão. Contém o final do jogo.</span></button>
+     </div><div class="mfoot"><button class="btn small" data-act="mclose">Fechar</button></div></div>`;m.hidden=false;m.scrollTop=0},
+  cenah:el=>{UI.cenaHero=el.dataset.ch;ACT.cenas()},
+  cenaplay:el=>{const k=el.dataset.k;closeModal();if(k==='video'){openAbertura(true);return}
+    const prev=G;G={char:UI.cenaHero||'cav',pers:null,act:1,seed:1,stats:{floors:30,bosses:3},weapon:{lv:k==='ending'?3:0,path:'a'}};heroPers();
+    playIntro(()=>{G=prev;render()},k)},
   howto:()=>{const m=$('#modal');m.innerHTML=`<div class="mbox" style="max-width:720px"><h2 class="h2">Como jogar</h2><div class="panel" style="width:100%">${HOWTO}</div><div class="mfoot"><button class="btn small" data-act="mclose">Fechar</button></div></div>`;m.hidden=false;m.scrollTop=0},
   go:el=>{if(UI.moving)return;if(G.screen!=='map'&&!(UI.dev&&UI.freeMap))return;const r=+el.dataset.r,c=+el.dataset.c;const n=r===ROWS?G.map.boss:G.map.rows[r][c];if(G.screen==='map')moveToken(n,()=>enterNode(r,c));else enterNode(r,c)},
   endturn:()=>endTurn(),

@@ -26,3 +26,4 @@ Arraste a carta até o inimigo (ou clique na carta e depois no alvo). **E** ence
 - **v1.1** — falas com legenda e balão; personalidades sorteadas para o herói e para os inimigos que falam.
 - **v1.2** — cutscene da Taverna (classificação D) antes da masmorra, com câmera, cortes e falas por temperamento.
 - **v1.3** — cutscene final: a coroa no balcão e a Classe S.
+- **v1.4** — botão **Cenas** no menu: assistir à abertura, à Taverna (Classe D) e ao Retorno (Classe S) com qualquer herói.
