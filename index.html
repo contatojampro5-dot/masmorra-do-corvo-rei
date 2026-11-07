@@ -450,6 +450,40 @@ button:focus-visible,[data-act]:focus-visible{outline:2px solid var(--gold);outl
 @keyframes bubA{0%{opacity:0;transform:translate(-50%,-80%) scale(.7)}10%{opacity:1;transform:translate(-50%,-100%) scale(1)}85%{opacity:1}100%{opacity:0}}
 .pers{font-family:var(--f-sc);font-size:14px;margin-left:-8px}
 @media (prefers-reduced-motion:reduce){.cap,.bub{animation:none!important}}
+/* ---------- cutscene ---------- */
+#cut{position:fixed;inset:0;z-index:520;background:#000;display:grid;place-items:center;overflow:hidden;transition:opacity .7s}
+#cut.out{opacity:0}
+#cut canvas{width:min(100vw,177.78vh);height:auto;max-height:100vh;aspect-ratio:16/9;image-rendering:pixelated}
+#cut .cbar{position:absolute;left:0;right:0;height:11vh;background:#000;z-index:2}
+#cut .cbar.t{top:0}#cut .cbar.b{bottom:0}
+#cut .cskip{position:absolute;z-index:6;right:max(16px,env(safe-area-inset-right,0px));top:calc(2.5vh + env(safe-area-inset-top,0px));background:none;border:1px solid #ffffff40;border-radius:4px;color:#d8ccb0;font-family:var(--f-sc);font-size:15px;padding:5px 12px}
+#cut .cskip:hover,#cut .cskip:focus-visible{border-color:var(--gold);color:#fff}
+#cut .csub{position:absolute;z-index:5;left:16px;right:16px;bottom:calc(11vh + 14px);text-align:center;font-size:clamp(16px,2.3vw,24px);line-height:1.35;color:#f6eedb;text-shadow:0 2px 0 #000,0 0 12px #000;opacity:0;transition:opacity .25s;pointer-events:none}
+#cut .csub.on{opacity:1}
+#cut .csub b{display:block;font-family:var(--f-sc);font-weight:400;font-size:.72em;letter-spacing:.12em;color:var(--gold)}
+#cut .csub span{font-style:italic}
+#cut .cloc{position:absolute;z-index:4;left:max(24px,env(safe-area-inset-left,0px));top:calc(11vh + 18px);font-family:var(--f-disp);font-size:clamp(22px,3.4vw,40px);color:#f0d68a;text-shadow:0 3px 0 #000;opacity:0;transform:translateY(6px);transition:opacity .8s,transform .8s}
+#cut .cloc small{display:block;font:500 12px var(--f-num);letter-spacing:.3em;text-transform:uppercase;color:#cdbf9f}
+#cut .cloc.on{opacity:1;transform:none}
+#cut .ctitle{position:absolute;z-index:5;inset:0;display:grid;place-content:center;text-align:center;font-family:var(--f-disp);font-size:clamp(44px,8vw,96px);color:var(--gold);text-shadow:0 4px 0 #000,0 0 40px #000;opacity:0;transition:opacity 1s}
+#cut .ctitle small{font:500 14px var(--f-num);letter-spacing:.4em;text-transform:uppercase;color:#d8ccb0}
+#cut .ctitle.on{opacity:1}
+#cut .cfade{position:absolute;inset:0;z-index:3;background:#000;opacity:0;transition:opacity .7s;pointer-events:none}
+#cut .cfade.in{opacity:1;transition:opacity .01s}
+#cut .clic{position:absolute;z-index:4;inset:0;display:grid;place-items:center;background:#0008}
+#cut .clic .lp{position:relative;width:min(440px,86vw);background:linear-gradient(170deg,#eee3c6,#d8c79f);color:#2b2219;border:3px solid #6b5535;border-radius:6px;padding:20px 24px;box-shadow:0 20px 50px #000c;transform:rotate(-2deg);animation:licIn .6s cubic-bezier(.2,.8,.2,1)}
+#cut .clic small{font-family:var(--f-sc);font-size:13px;color:#6b5535}
+#cut .clic h3{margin:2px 0 12px;font-family:var(--f-disp);font-weight:400;font-size:32px;color:#4a2a10}
+#cut .clic dl{display:grid;grid-template-columns:auto 1fr;gap:4px 14px;margin:0;font-size:17px}
+#cut .clic dt{font-family:var(--f-sc);color:#6b5535}#cut .clic dd{margin:0}
+#cut .clic .rank{position:absolute;right:20px;top:54px;text-align:center;font-family:var(--f-sc);font-size:12px;color:#6b5535}
+#cut .clic .rank b{display:block;width:56px;height:56px;border:2px dashed #8a7a60;border-radius:50%;font:400 0/56px var(--f-disp);color:transparent}
+#cut .clic .stamp{position:absolute;right:14px;top:66px;width:72px;height:72px;border:4px solid #b2241a;border-radius:50%;display:grid;place-items:center;font:800 50px var(--f-num);color:#b2241a;opacity:0;transform:scale(3) rotate(-25deg)}
+#cut .clic.stamped .stamp{animation:stampA .35s cubic-bezier(.3,1.6,.5,1) forwards}
+#cut .clic.gone{opacity:0;transition:opacity .4s}
+@keyframes licIn{0%{opacity:0;transform:translateY(40px) rotate(-8deg)}100%{opacity:1;transform:rotate(-2deg)}}
+@keyframes stampA{0%{opacity:0;transform:scale(3) rotate(-25deg)}60%{opacity:1}100%{opacity:.92;transform:scale(1) rotate(-14deg)}}
+@media (prefers-reduced-motion:reduce){#cut .clic.stamped .stamp{opacity:.92;transform:rotate(-14deg)}}
 @media (max-width:600px){.cap{font-size:15px;padding:5px 10px}.bub{font-size:12px;max-width:140px}}
 @media (prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;transition:none!important}}
 </style>
@@ -1976,7 +2010,7 @@ function devCmd(cmd){
 const ACT={
   new:()=>{G=null;UI.choose=true;render()},
   back:()=>{UI.choose=false;render()},
-  start:el=>{const s=$('#seed');const v=s&&parseInt(s.value,10);clearSave();UI.choose=false;newRun(isNaN(v)?0:v,el.dataset.ch)},
+  start:el=>{const s=$('#seed');const v=s&&parseInt(s.value,10);clearSave();UI.choose=false;newRun(isNaN(v)?0:v,el.dataset.ch);heroPers();save();playIntro(()=>banner(ACTS[G.act].n))},
   cont:()=>{G=loadSave();if(G){UI.lock=false;render();resumeCombat()}},
   menu:()=>{G=null;UI.choose=false;render()},
   abertura:()=>openAbertura(true),
@@ -3000,6 +3034,37 @@ function forjaHef(){DARK=.86;vgrad(0,H,'#120806','#1c0a06');
 SCENES.forjaHef=forjaHef;
 
 
+/* cenários da cutscene de abertura */
+function taverna(){DARK=.72;vgrad(0,H,'#1a0e08','#24140a');
+  for(let x=0;x<W;x+=12){P(x,0,11,FL,shade('#4a2c18',.8+R()*.3));P(x+11,0,1,FL,'#1a0c06');for(let y=10+Math.floor(R()*30);y<FL;y+=40+Math.floor(R()*20))P(x+3,y,1,1,'#2a160a')}
+  P(0,20,W,6,'#2a170c');P(0,20,W,1,'#5a3a20');for(const bx of [60,160,262]){P(bx,0,7,FL,'#2e1a0e');P(bx,0,1,FL,'#5a3a20')}
+  P(8,62,30,80,'#0c1430');for(let k=0;k<12;k++)P(10+R()*26,64+R()*30,1,1,'#c8d0f0');P(8,60,30,2,'#5a3a20');P(6,60,2,82,'#3a2010');P(38,60,2,82,'#3a2010');light(23,110,34,'rgba(120,150,230,.7)',.45);
+  P(70,48,44,32,'#5a3a20');P(72,50,40,28,'#7a5a34');for(let k=0;k<6;k++){const qx=74+(k%3)*13,qy=52+Math.floor(k/3)*13;P(qx,qy,10,10,'#e8dcc0');P(qx+1,qy+3,8,1,'#8a7a60');P(qx+1,qy+5,6,1,'#8a7a60');P(qx+1,qy+7,7,1,'#8a7a60');P(qx+4,qy,2,1,'#c03028')}
+  for(const sy of [42,62]){P(178,sy,90,3,'#3a2210');for(let bx=182;bx<264;bx+=6){const c=['#3a8a3a','#8a2a3a','#c08a2a','#3a5a9a','#7a3a8a'][Math.floor(R()*5)];const hh=6+Math.floor(R()*4);P(bx,sy-hh,4,hh,c);P(bx+1,sy-hh-2,2,2,c);P(bx,sy-hh+1,1,hh-2,'rgba(255,255,255,.35)')}}
+  for(const bx of [200,244])light(bx,54,24,'rgba(255,200,120,.6)',.3);
+  const fx=298;P(fx-22,62,44,80,'#3a3a40');for(let y=62;y<142;y+=6)for(let x=fx-22+((y/6)%2)*4;x<fx+22;x+=8)P(x,y,7,5,'#4a4a52');P(fx-14,100,28,42,'#0a0604');P(fx-26,58,52,6,'#5a3a20');flame(fx,FL-2,1.4,true);light(fx,FL-14,110,'rgba(255,140,50,.95)',1.2);for(let k=0;k<10;k++)P(fx+R()*14-7,FL-30-R()*30,1,1,'#ffb040');
+  lantern(130,30,'rgba(255,180,90,.9)',.85);lantern(214,24,'rgba(255,180,90,.9)',.75);lantern(50,34,'rgba(255,180,90,.9)',.6);
+  P(0,FL,W,H-FL,'#2a1a0e');for(let x=0;x<W;x+=16)P(x,FL,1,H-FL,'#1a0e06');P(0,FL,W,1,'#5a3a20');for(let y=FL+8;y<H;y+=8)P(0,y,W,1,'#20140a');
+  const tx=86;P(tx-18,FL-14,36,3,'#6a4424');P(tx-18,FL-14,36,1,'#8a6034');P(tx-15,FL-11,3,11,'#4a2c14');P(tx+12,FL-11,3,11,'#4a2c14');P(tx-9,FL-19,4,5,'#c0c0b0');P(tx+5,FL-18,4,4,'#c09040');P(tx-1,FL-21,2,4,'#e8e0c8');P(tx-1,FL-23,2,2,'#ffd06a');light(tx,FL-20,26,'rgba(255,190,100,.8)',.5);
+  for(const bx of [140,152]){P(bx-6,FL-16,12,16,'#5a3418');P(bx-6,FL-16,12,1,'#7a4a24');P(bx-6,FL-12,12,1,'#2a2a30');P(bx-6,FL-5,12,1,'#2a2a30')}
+  P(140,4,40,12,'#5a3a20');P(142,6,36,8,'#7a5430');for(let k=0;k<5;k++)P(146+k*6,9,4,2,'#3a2010');
+}
+function entrada(){DARK=.8;vgrad(0,H,'#050818','#141a30');
+  for(let k=0;k<70;k++)P(R()*W,R()*80,1,1,R()<.3?'#ffffff':'#8a90b0');
+  P(52,20,16,16,'#e8e4d0');P(50,22,20,12,'#e8e4d0');P(57,24,3,3,'#c8c4b0');light(60,28,80,'rgba(190,200,255,.8)',.7);
+  for(let L=0;L<2;L++)for(let x=-10;x<W+10;x+=8+R()*8){const th=30+R()*40+(L?0:22),col=L?'#0a0f1c':'#0e1424';poly([[x-9,FL-6],[x,FL-6-th],[x+9,FL-6]],col)}
+  poly([[96,FL],[104,52],[124,30],[160,20],[200,26],[222,48],[232,FL]],'#22222e');for(let k=0;k<40;k++){const x=104+R()*120,y=30+R()*100;lo.fillStyle=R()<.5?'#2a2a38':'#1a1a24';lo.beginPath();lo.ellipse(x,y,3+R()*6,2+R()*3,0,0,7);lo.fill()}
+  const gx=164;P(gx-26,FL-66,52,66,'#34343f');for(let y=FL-66;y<FL;y+=7)for(let x=gx-26+((y/7)%2)*5;x<gx+26;x+=10)P(x,y,9,6,'#3e3e4a');
+  for(let j=0;j<46;j++){const t=j/46,hw=Math.round(15*Math.sqrt(Math.min(1,(j+1)/12)));P(gx-hw,FL-46+j,hw*2,1,'#020204')}
+  skull(gx-2,FL-62,'#d8d0b8');P(gx-1,FL-60,1,1,'#ff3a2a');P(gx+1,FL-60,1,1,'#ff3a2a');glow(gx,FL-60,5,'rgba(255,60,40,.8)',.8);
+  for(let k=0;k<6;k++)P(gx-1,FL-40+k*6,2,1,'#3a1a10');
+  torch2(gx-34,FL-40,1);torch2(gx+34,FL-40,1);
+  P(0,FL,W,H-FL,'#12121c');poly([[gx-14,FL],[gx+14,FL],[gx+70,H],[gx-110,H]],'#2a2420');for(let k=0;k<30;k++)P(gx-90+R()*170,FL+4+R()*34,2+R()*3,1,'#3a3028');
+  for(const [x,y] of [[30,FL-4],[290,FL-2],[70,FL+10]])P(x,y,6,3,'#4a4a56');
+  fireflies(30,'#d8ff8a',50,140);for(let k=0;k<3;k++)glow(60+k*110,FL+8,70,'rgba(140,150,190,.08)');
+}
+Object.assign(SCENES,{taverna,entrada});
+
 let NOCHAR=true;
 const canBlur=(()=>{try{const t=document.createElement('canvas').getContext('2d');t.filter='blur(2px)';return t.filter==='blur(2px)'}catch(e){return false}})();
 const SCN_CACHE={};
@@ -3166,6 +3231,78 @@ const PCACHE={};
 function portrait(k){if(PCACHE[k])return PCACHE[k];if(!MAO.PORT[k])return null;const g=MAO.PORT[k](),cv=document.createElement('canvas');cv.width=64;cv.height=64;const x=cv.getContext('2d');MAO.drawM(x,g,0,0,1);return PCACHE[k]=cv.toDataURL()}
 return{grid,portrait,scene:SCN.renderScene,weaponIcon:ARM.weaponIcon,WTREE:ARM.WTREE};
 })();
+
+/* =========================================================
+   Cutscene de abertura: a Taverna e a classificação D
+   ========================================================= */
+const CFL=142;
+SPR.w_marta=recol('merchant',{m:'p',M:'P'});
+const CUT={on:false,skip:false,raf:0};
+const CUT_LINES={
+ corajoso:{react:'D?! Eu enfrentei lobos sozinho no caminho até aqui!',vow:'Pois guardem essa letra. Eu vou descer até o fundo e trazer a coroa do Corvo Rei.',gate:'Classe D. Vamos ver quanto dura essa letra.'},
+ sarcastico:{react:'D. De "deslumbrante", imagino.',vow:'Ótimo. Eu desço, pego a coroa do Corvo Rei, e vocês reimprimem isso com um A bem grande.',gate:'Lar doce lar. Cheira a mofo e a morte.'},
+ nervoso:{react:'D? Isso é... isso é ruim? Isso parece ruim.',vow:'Eu vou provar! Vou descer lá e... e voltar. Com a coroa. Provavelmente.',gate:'Respira. Entra. Não olha pra trás. Tá. Tá bom.'},
+ sombrio:{react:'Uma letra. Vocês medem a morte com letras.',vow:'A masmorra vai dizer quem eu sou. E o Corvo Rei vai ouvir primeiro.',gate:'Escuridão. Finalmente um lugar honesto.'},
+};
+function actorCanvas(key,tint){const g=VIS.grid(key,key===CHARS[G.char].spr?heroWK(key):'0'),n=g.length,c=document.createElement('canvas');c.width=n;c.height=n;const x=c.getContext('2d');
+  for(let y=0;y<n;y++)for(let i=0;i<n;i++){const v=g[y][i];if(v){x.fillStyle=v;x.fillRect(i,y,1,1)}}
+  if(tint){x.globalCompositeOperation='source-atop';x.fillStyle=tint;x.fillRect(0,0,n,n)}return c}
+const ease=t=>t<.5?2*t*t:1-Math.pow(-2*t+2,2)/2;
+function cutSleep(ms){return new Promise(r=>{const t0=performance.now(),f=()=>{if(CUT.skip||performance.now()-t0>=ms)r();else requestAnimationFrame(f)};f()})}
+function tween(obj,to,ms,fn=ease){const from={};for(const k in to)from[k]=obj[k];const t0=performance.now();CUT.tw.push({obj,from,to,t0,ms,fn});return cutSleep(ms)}
+async function playIntro(done){
+  if(CUT.on)return;CUT.on=true;CUT.skip=false;CUT.tw=[];
+  const box=document.createElement('div');box.id='cut';box.innerHTML=`<canvas width="1280" height="720"></canvas><div class="cbar t"></div><div class="cbar b"></div><div class="cloc"></div><div class="csub"><b></b><span></span></div><div class="clic" hidden></div><div class="ctitle"></div><div class="cfade"></div><button class="cskip" type="button">Pular ›</button>`;document.body.appendChild(box);
+  const cv=box.querySelector('canvas'),x=cv.getContext('2d');x.imageSmoothingEnabled=false;
+  const end=()=>{if(!CUT.on)return;CUT.on=false;CUT.skip=true;cancelAnimationFrame(CUT.raf);box.classList.add('out');document.removeEventListener('keydown',key,true);setTimeout(()=>{box.remove();done&&done()},700)};
+  const key=e=>{if(e.key==='Escape'||e.key===' '){e.preventDefault();e.stopImmediatePropagation();CUT.skip=true;end()}};
+  box.querySelector('.cskip').onclick=()=>{CUT.skip=true;end()};document.addEventListener('keydown',key,true);
+  const load=n=>new Promise(r=>{const i=new Image();i.onload=()=>r(i);i.onerror=()=>r(null);i.src=VIS.scene(n)});
+  const BG={taverna:await load('taverna'),entrada:await load('entrada')};
+  const hk=CHARS[G.char].spr,pers=CUT_LINES[G.pers]||CUT_LINES.corajoso,hname=CHARS[G.char].n;
+  const warm='rgba(60,25,5,.22)',cold='rgba(10,20,60,.35)';
+  const A={hero:{img:actorCanvas(hk,warm),x:22,y:CFL,flip:false,walk:0,alpha:1,hop:0,s:1},
+    marta:{img:actorCanvas('w_marta',warm),x:238,y:CFL,flip:true,s:1},
+    kael:{img:actorCanvas('w_kael',warm),x:72,y:CFL,flip:false,s:1,laugh:0},
+    bruna:{img:actorCanvas('w_bruna',warm),x:104,y:CFL,flip:true,s:1,laugh:0}};
+  const S={scene:'taverna',cam:{x:160,y:90,z:1},cast:['kael','bruna','marta','hero'],counter:true};
+  const draw=t=>{
+    const now=performance.now();CUT.tw=CUT.tw.filter(w=>{const k=Math.min(1,(now-w.t0)/w.ms),e=w.fn(k);for(const p in w.to)w.obj[p]=w.from[p]+(w.to[p]-w.from[p])*e;return k<1});
+    const c=S.cam,z=Math.max(1,c.z),hw=160/z,hh=90/z,cx=Math.min(320-hw,Math.max(hw,c.x)),cy=Math.min(180-hh,Math.max(hh,c.y)),k=4*z;
+    x.setTransform(1,0,0,1,0,0);x.fillStyle='#000';x.fillRect(0,0,1280,720);x.setTransform(k,0,0,k,640-cx*k,360-cy*k);
+    const bg=BG[S.scene];if(bg)x.drawImage(bg,0,0,320,180);
+    for(const n of S.cast){const a=A[n];if(!a||a.alpha<=0)continue;const bob=a.walk?-Math.abs(Math.sin(now/90))*2:a.laugh?-Math.abs(Math.sin(now/70))*1.5:(Math.sin(now/500+a.x)>.6?-.5:0);
+      x.save();x.globalAlpha=a.alpha??1;x.translate(Math.round(a.x),a.y+bob-(a.hop||0));if(a.flip)x.scale(-1,1);x.fillStyle='rgba(0,0,0,.45)';x.beginPath();x.ellipse(0,0,10,2,0,0,7);x.fill();x.drawImage(a.img,-16,-32,32,32);x.restore()}
+    if(S.counter&&S.scene==='taverna'){x.fillStyle='#4a2a14';x.fillRect(206,CFL-13,62,13);x.fillStyle='#7a4a24';x.fillRect(204,CFL-15,66,3);x.fillStyle='#2a160a';for(let i=210;i<266;i+=10)x.fillRect(i,CFL-12,1,12);x.fillStyle='#c09040';x.fillRect(214,CFL-19,4,4);x.fillStyle='#e8dcc0';x.fillRect(222,CFL-17,8,2)}
+    CUT.raf=requestAnimationFrame(draw)};
+  CUT.raf=requestAnimationFrame(draw);
+  const sub=box.querySelector('.csub'),loc=box.querySelector('.cloc'),fade=box.querySelector('.cfade');
+  const say=async(who,text,ms)=>{if(CUT.skip)return;sub.querySelector('b').textContent=who;sub.querySelector('span').textContent='“'+text+'”';sub.classList.add('on');await cutSleep(ms||Math.max(2200,text.length*55));sub.classList.remove('on');await cutSleep(220)};
+  const cut=(cam,patch={})=>{Object.assign(S.cam,cam);Object.assign(S,patch)};
+  try{
+    fade.classList.add('in');await cutSleep(60);fade.classList.remove('in');
+    loc.innerHTML='<small>Vila de Pedra Funda</small>Taverna do Javali Torto';loc.classList.add('on');
+    cut({x:60,y:90,z:1.25});A.hero.walk=1;tween(A.hero,{x:150},4200,t=>t);await tween(S.cam,{x:210,y:96,z:1.15},4200);A.hero.walk=0;loc.classList.remove('on');
+    cut({x:88,y:CFL-22,z:2.6});A.kael.laugh=1;await say('Kael, o Mercenário','Olha só. Mais um que acha que vai voltar.');A.kael.laugh=0;
+    cut({x:150,y:CFL-24,z:2.2});A.hero.walk=1;tween(A.hero,{x:186},1500,t=>t);await cutSleep(1500);A.hero.walk=0;
+    cut({x:240,y:CFL-26,z:3});tween(S.cam,{z:3.3},3000);await say('Marta, a Escrivã da Guilda',`Nome? ${hname}. Hm. Vamos ver o que a guilda acha de você.`);
+    const lic=box.querySelector('.clic');lic.innerHTML=`<div class="lp"><small>Guilda dos Aventureiros de Pedra Funda</small><h3>Licença de Aventureiro</h3><dl><dt>Nome</dt><dd>${hname}</dd><dt>Temperamento</dt><dd>${heroPers().n}</dd><dt>Andares concluídos</dt><dd>0</dd></dl><div class="rank"><span>Classe</span><b>D</b></div><div class="stamp">D</div></div>`;
+    lic.hidden=false;await cutSleep(1200);lic.classList.add('stamped');await cutSleep(1700);
+    await say('Marta, a Escrivã da Guilda','Classificação: D. Próximo!',1900);lic.classList.add('gone');await cutSleep(400);lic.hidden=true;
+    cut({x:184,y:CFL-20,z:3.4});A.hero.hop=0;tween(A.hero,{hop:5},150).then(()=>tween(A.hero,{hop:0},200));await say(hname,pers.react);
+    cut({x:96,y:CFL-26,z:2.1});A.kael.laugh=1;A.bruna.laugh=1;await say('Bruna, a Ferreira','Classe D! Ha! Classe D desce até o terceiro andar e volta sem as botas!');A.kael.laugh=0;A.bruna.laugh=0;
+    cut({x:186,y:CFL-20,z:2.6});tween(S.cam,{z:3.6,y:CFL-22},4200,t=>t);await say(hname,pers.vow,4200);
+    cut({x:240,y:CFL-26,z:3});await say('Marta, a Escrivã da Guilda','Se voltar vivo, eu troco a letra. Boa sorte, D.');
+    fade.classList.add('in');await cutSleep(700);
+    S.scene='entrada';S.counter=false;S.cast=['hero'];A.hero.img=actorCanvas(hk,cold);A.hero.x=26;A.hero.flip=false;cut({x:160,y:90,z:1});fade.classList.remove('in');
+    loc.innerHTML='<small>Fora da vila, à meia-noite</small>A Entrada da Masmorra';loc.classList.add('on');
+    A.hero.walk=1;tween(A.hero,{x:120},4400,t=>t);await tween(S.cam,{x:150,y:100,z:1.5},4400);A.hero.walk=0;loc.classList.remove('on');
+    cut({x:124,y:CFL-22,z:3.4});await say(hname,pers.gate);
+    cut({x:160,y:110,z:1.7});A.hero.walk=1;tween(A.hero,{x:164},2600,t=>t);tween(A.hero,{alpha:0},2600,t=>t*t);await tween(S.cam,{z:2.4,y:CFL-30},2800);
+    const tt=box.querySelector('.ctitle');tt.innerHTML='<small>Ato 1</small>A Masmorra';tt.classList.add('on');await cutSleep(2400);
+  }catch(e){}
+  end();
+}
 
 /* ---------- abertura em vídeo ---------- */
 function openAbertura(play){
