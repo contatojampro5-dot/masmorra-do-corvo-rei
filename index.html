@@ -3265,9 +3265,20 @@ const CUT_LINES={
  nervoso:{back:'Eu trouxe! Eu trouxe mesmo! Alguém me belisca.',fin:'S? S de... sobrevivi?',react:'D? Isso é... isso é ruim? Isso parece ruim.',vow:'Eu vou provar! Vou descer lá e... e voltar. Com a coroa. Provavelmente.',gate:'Respira. Entra. Não olha pra trás. Tá. Tá bom.'},
  sombrio:{back:'A torre está em silêncio agora.',fin:'Uma letra. Mas essa eu guardo.',react:'Uma letra. Vocês medem a morte com letras.',vow:'A masmorra vai dizer quem eu sou. E o Corvo Rei vai ouvir primeiro.',gate:'Escuridão. Finalmente um lugar honesto.'},
 };
-function actorCanvas(key,tint){const g=VIS.grid(key,key===CHARS[G.char].spr?heroWK(key):'0'),n=g.length,c=document.createElement('canvas');c.width=n;c.height=n;const x=c.getContext('2d');
+function gridCanvas(g,tint){const n=g.length,c=document.createElement('canvas');c.width=n;c.height=n;const x=c.getContext('2d');
   for(let y=0;y<n;y++)for(let i=0;i<n;i++){const v=g[y][i];if(v){x.fillStyle=v;x.fillRect(i,y,1,1)}}
   if(tint){x.globalCompositeOperation='source-atop';x.fillStyle=tint;x.fillRect(0,0,n,n)}return c}
+/* quadros de caminhada: separa as pernas e move cada uma (passo largo, cruzando com o pé de trás levantado) */
+function walkGrids(g){const n=g.length,top=Math.round(n*.74);let sx=0,cnt=0;
+  for(let y=top;y<n;y++)for(let i=0;i<n;i++)if(g[y][i]){sx+=i;cnt++}
+  const cx=cnt?sx/cnt:n/2;
+  const make=(back,front,liftBack,liftFront,bob)=>{const o=[...Array(n)].map(()=>Array(n).fill(null));
+    for(let y=0;y<top;y++)for(let i=0;i<n;i++){const v=g[y][i];if(v){const yy=y+bob;if(yy>=0&&yy<n)o[yy][i]=v}}
+    for(let y=top;y<n;y++)for(let i=0;i<n;i++){const v=g[y][i];if(!v)continue;const isFront=i>=cx,dx=isFront?front:back,dy=isFront?liftFront:liftBack;const t=(y-top)/(n-top),xx=i+Math.round(dx*t),yy=y-(dy&&t>.45?dy:0);if(xx>=0&&xx<n&&yy>=0&&yy<n&&!o[yy][xx])o[yy][xx]=v}
+    for(let i=0;i<n;i++){let y=top-1+bob;if(y>=0&&y<n&&!o[y][i]&&o[y-1]&&o[y-1][i]&&g[top][i])o[y][i]=g[top][i]}
+    return o};
+  return[make(-3,3,0,0,1),make(-1,1,1,0,0),make(3,-2,2,0,0),make(1,-1,0,1,0)]}
+function actorCanvas(key,tint){const g=VIS.grid(key,key===CHARS[G.char].spr?heroWK(key):'0'),c=gridCanvas(g,tint);c.frames=walkGrids(g).map(w=>gridCanvas(w,tint));return c}
 const ease=t=>t<.5?2*t*t:1-Math.pow(-2*t+2,2)/2;
 function cutSleep(ms){return new Promise(r=>{const t0=performance.now(),f=()=>{if(CUT.skip||performance.now()-t0>=ms)r();else requestAnimationFrame(f)};f()})}
 function tween(obj,to,ms,fn=ease){const from={};for(const k in to)from[k]=obj[k];const t0=performance.now();CUT.tw.push({obj,from,to,t0,ms,fn});return cutSleep(ms)}
@@ -3292,8 +3303,8 @@ async function playIntro(done,which='intro'){
     const c=S.cam,z=Math.max(1,c.z),hw=160/z,hh=90/z,cx=Math.min(320-hw,Math.max(hw,c.x)),cy=Math.min(180-hh,Math.max(hh,c.y)),k=4*z;
     x.setTransform(1,0,0,1,0,0);x.fillStyle='#000';x.fillRect(0,0,1280,720);x.setTransform(k,0,0,k,640-cx*k,360-cy*k);
     const bg=BG[S.scene];if(bg)x.drawImage(bg,0,0,320,180);
-    for(const n of S.cast){const a=A[n];if(!a||a.alpha<=0)continue;const bob=a.walk?-Math.abs(Math.sin(now/90))*2:a.laugh?-Math.abs(Math.sin(now/70))*1.5:(Math.sin(now/500+a.x)>.6?-.5:0);
-      x.save();x.globalAlpha=a.alpha??1;x.translate(Math.round(a.x),a.y+bob-(a.hop||0));if(a.flip)x.scale(-1,1);x.fillStyle='rgba(0,0,0,.45)';x.beginPath();x.ellipse(0,0,10,2,0,0,7);x.fill();x.drawImage(a.img,-16,-32,32,32);x.restore()}
+    for(const n of S.cast){const a=A[n];if(!a||a.alpha<=0)continue;const step=Math.floor(now/120)%4,bob=a.walk?0:a.laugh?-Math.abs(Math.sin(now/70))*1.5:(Math.sin(now/500+a.x)>.6?-.5:0);
+      x.save();x.globalAlpha=a.alpha??1;x.translate(Math.round(a.x),a.y+bob-(a.hop||0));if(a.flip)x.scale(-1,1);x.fillStyle='rgba(0,0,0,.45)';x.beginPath();x.ellipse(0,0,10,2,0,0,7);x.fill();x.drawImage(a.walk&&a.img.frames?a.img.frames[step]:a.img,-16,-32,32,32);x.restore()}
     if(S.counter&&S.scene==='taverna'){x.fillStyle='#4a2a14';x.fillRect(206,CFL-13,62,13);x.fillStyle='#7a4a24';x.fillRect(204,CFL-15,66,3);x.fillStyle='#2a160a';for(let i=210;i<266;i+=10)x.fillRect(i,CFL-12,1,12);x.fillStyle='#c09040';x.fillRect(214,CFL-19,4,4);x.fillStyle='#e8dcc0';x.fillRect(222,CFL-17,8,2)}
     if(S.crown){const q=S.crown;x.save();x.translate(q.x,q.y);x.fillStyle='#e8b23a';x.fillRect(-5,-2,10,3);for(const d of [-5,-1,3])x.fillRect(d,-5,2,3);x.fillStyle='#fff0a0';x.fillRect(-5,-2,10,1);x.fillStyle='#e02a3a';x.fillRect(-1,-1,2,1);x.fillStyle='#3ad0ff';x.fillRect(-4,-1,1,1);x.fillRect(3,-1,1,1);x.restore()}
     CUT.raf=requestAnimationFrame(draw)};
