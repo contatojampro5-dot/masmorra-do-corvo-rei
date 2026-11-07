@@ -439,6 +439,18 @@ button:focus-visible,[data-act]:focus-visible{outline:2px solid var(--gold);outl
 .forgeopt span{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}.forgeopt b{font-family:var(--f-sc);font-weight:400;font-size:19px}.forgeopt small{font-family:var(--f-sc);color:#ffb35a;font-size:13px}.forgeopt i{font-size:14px;color:var(--muted)}
 .forgeopt em{font-style:normal;display:flex;align-items:center;gap:5px;font:800 18px var(--f-num);color:#ffc68a}
 @media (max-width:600px){.portrait{width:84px;height:84px}.hefsay b{font-size:22px}.hefsay p{font-size:16px}.forgecur .wbig{width:96px;height:96px}}
+/* ---------- legendas e balões ---------- */
+.cap{position:fixed;left:50%;transform:translateX(-50%);max-width:min(760px,calc(100vw - 32px));background:#0a0806e6;border:1px solid #5a452766;border-radius:4px;padding:6px 14px;font-size:18px;line-height:1.3;text-align:center;color:#f3ead2;text-shadow:0 1px 0 #000;animation:capA 2.9s ease forwards;pointer-events:none}
+.cap b{font-family:var(--f-sc);font-weight:400;margin-right:6px}
+.cap span{font-style:italic}
+@keyframes capA{0%{opacity:0;transform:translate(-50%,6px)}8%,85%{opacity:1;transform:translate(-50%,0)}100%{opacity:0}}
+.bub{position:fixed;transform:translate(-50%,-100%);max-width:180px;background:#f3ead2;color:#1a1410;border-radius:8px;padding:4px 9px;font:700 13px/1.25 var(--f-body);text-align:center;box-shadow:0 3px 8px #000a;animation:bubA 2.6s ease forwards;pointer-events:none;white-space:normal}
+.bub::after{content:"";position:absolute;left:50%;bottom:-6px;margin-left:-6px;border:6px solid transparent;border-bottom:0;border-top-color:#f3ead2}
+.bub.me{background:#fff6dc}
+@keyframes bubA{0%{opacity:0;transform:translate(-50%,-80%) scale(.7)}10%{opacity:1;transform:translate(-50%,-100%) scale(1)}85%{opacity:1}100%{opacity:0}}
+.pers{font-family:var(--f-sc);font-size:14px;margin-left:-8px}
+@media (prefers-reduced-motion:reduce){.cap,.bub{animation:none!important}}
+@media (max-width:600px){.cap{font-size:15px;padding:5px 10px}.bub{font-size:12px;max-width:140px}}
 @media (prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;transition:none!important}}
 </style>
 
@@ -1107,6 +1119,7 @@ function startCombat(ids,kind){
   FXQ.length=0;
   anim('p','mv-enter');c.enemies.forEach((e,i)=>anim(e.uid,'mv-enter',i*90));
   render();c.started=true;
+  talkStart(kind);
   if(kind==='boss')cinematic(ENEMIES[ids[0]].n,'Chefe · '+ACTS[G.act].n);else banner(kind==='elite'?'Elite!':'Combate');
 }
 function startPlayerTurn(){
@@ -1180,6 +1193,7 @@ function dealDamage(t,d,i=0,pierce=false){
   t.hp=Math.max(0,t.hp-un);
   fx(t.uid,un>0?'-'+un:'Bloqueado',un>0?'dmg':'blk',i);
   G.stats.dmg+=un;
+  if(un>0&&t.hp>0)talkFoe(t,'hurt',.22,{delay:300});
   if(un>0&&t.hp>0&&t.st.enfurecer)apply(t,'forca',t.st.enfurecer);
   if(t.hp<=0)onEnemyDeath(t);
   return un;
@@ -1203,6 +1217,7 @@ function enemyHit(e,base,i){
   if(un>0&&p.st.servos){servoDie(false);un=0;fx('p','Servo protegeu','st',i)}
   if(UI.god&&UI.dev)un=0;
   G.hp=Math.max(0,G.hp-un);
+  if(un>0){talkHero('hurt',.3,{delay:300});checkLow()}
   if(un>0||blk>0)fx('p',un>0?'-'+un:'Bloqueado',un>0?'dmg':'blk',i);
   if(un>0&&p.st.armadura&&!p.st.armViva)dec(p,'armadura');
   if(un>0&&e.st.vampiro)healE(e,un);
@@ -1218,6 +1233,7 @@ function servosAttack(){
 }
 function onEnemyDeath(e){
   if(e.dead)return;e.dead=1;G.stats.kills++;
+  if(foePers(e))talkFoe(e,'die',.75,{prio:2,delay:200});else if(alive().length)talkHero('kill',.4,{delay:450});
   G.kills=G.kills||[];G.kills.push(e.id);if(G.kills.length>8)G.kills.shift();
   if(e.st.remontar){e.revive=1}
   if(hasRelic('dente'))heal(3);
@@ -1258,6 +1274,7 @@ function playCard(uid,tUid){
   }
   FXB=0;
   c.cardsTurn=(c.cardsTurn||0)+1;
+  if(d.t==='atk'&&alive().length)talkHero('atk',.28,{delay:250});
   if(d.t==='atk'){c.atkTotal++;c.atkTurn=(c.atkTurn||0)+1;if(P().st.ritmo)addBlock(P().st.ritmo);if(hasRelic('tambor')&&c.atkTotal%3===0)gainEnergy(1)}
   if(d.t==='skl')alive().forEach(e=>{if(e.st.raiva)apply(e,'forca',e.st.raiva)});
   if(d.t!=='pwr'){if(d.ex)c.exhaust.push(card);else c.discard.push(card)}
@@ -1270,11 +1287,12 @@ function checkEnd(){
     if(hasPow('fenix')&&!G.fenixUsed){G.fenixUsed=1;G.hp=Math.floor(G.maxHp/2);fx('p','Renascido!','heal');anim('p','mv-summon');render();return false}
     c.over=true;UI.lock=true;setTimeout(()=>{UI.lock=false;G.screen='end';G.won=false;clearSave();render()},1000);return true;
   }
-  if(!alive().length&&!c.enemies.some(e=>e.revive)){c.over=true;UI.lock=true;anim('p','mv-victory',500);render();setTimeout(()=>{UI.lock=false;winCombat()},1300);return true}
+  if(!alive().length&&!c.enemies.some(e=>e.revive)){c.over=true;UI.lock=true;anim('p','mv-victory',500);talkHero('win',.85,{prio:2,delay:650});render();setTimeout(()=>{UI.lock=false;winCombat()},1300);return true}
   return false;
 }
 function doMove(e,mv){
   if(mv.d){
+    talkFoe(e,'atk',.3);
     if(mv.pj){anim(e.uid,'mv-cast');proj(e.uid,'p',mv.pj);FXB=270}else{anim(e.uid,'mv-lunge');FXB=150}
     for(let i=0;i<(mv.h||1);i++)enemyHit(e,mv.d,i);
   }else if(mv.i==='debuff'){anim(e.uid,'mv-cast');proj(e.uid,'p',mv.pj||'hex');FXB=270}
@@ -1413,7 +1431,7 @@ const gemHTML=k=>`<span class="gem" data-tip="<b>${POWERS[k].n}</b>${POWERS[k].d
 const DIA='<span class="dia"></span>';
 function topHTML(){
   const fl=G.pos?(G.pos.r===ROWS?'Chefe':'Andar '+(G.pos.r+1)):'Entrada';
-  return`<span class="hero">${CHARS[G.char].n}</span>
+  return`<span class="hero" data-tip="<b>Temperamento: ${heroPers().n}</b>Sorteado no começo da jornada. Muda o jeito de falar do herói.">${CHARS[G.char].n}</span><span class="pers" style="color:${heroPers().c}">${heroPers().n}</span>
    <span class="stat" data-tip="<b>Vida</b>Se chegar a zero, a jornada acaba.">${SVG.heart}${G.hp}/${G.maxHp}</span>
    <span class="stat" data-tip="<b>Ouro</b>Use nas lojas."><span class="coin"></span>${G.gold}</span>
    <span class="stat" data-tip="<b>Diamantes</b>Ganhos ao derrotar chefes. Compram poderes especiais no Santuário e no Mercador.">${DIA}${G.diamonds}</span>
@@ -1770,6 +1788,88 @@ function runFx(f){
 function flushFx(){FXQ.splice(0).forEach(f=>setTimeout(()=>runFx(f),f.delay))}
 function banner(t,small){const d=document.createElement('div');d.className='banner';if(small)d.style.fontSize='34px';d.textContent=t;$('#fxlayer').appendChild(d);setTimeout(()=>d.remove(),1150)}
 function cinematic(name,sub){const d=document.createElement('div');d.className='cine';d.innerHTML=`<div class="cn"></div><div class="cs"></div>`;d.querySelector('.cn').textContent=name;d.querySelector('.cs').textContent=sub;$('#fxlayer').appendChild(d);setTimeout(()=>d.remove(),2900)}
+/* ---------- falas com legenda: personalidades sorteadas ---------- */
+const HERO_PERS={
+ corajoso:{n:'Corajoso',c:'#f0c46a',
+  start:['Venham. Um de cada vez ou todos juntos.','Hoje ninguém passa por mim.','Pela luz que ainda resta!','Já enfrentei coisa pior que vocês.'],
+  atk:['Toma!','Esse foi pela vila!','Mais um passo e acabou.','Firme!'],
+  hurt:['Isso é tudo?','Já levei pior.','Arranhão.','Não vou recuar.'],
+  low:['Ainda estou de pé!','Não vou cair aqui.','Só mais um pouco...'],
+  kill:['Um a menos.','Descanse.','Próximo!'],
+  win:['A descida continua.','Vitória. Sigamos.','Mais fundo, então.']},
+ sarcastico:{n:'Sarcástico',c:'#8ad0ff',
+  start:['Ótimo. Mais amigos.','Deixa eu adivinhar: vocês moram aqui.','Que recepção calorosa.','Alguém aqui sabe conversar?'],
+  atk:['Isso doeu? Que pena.','Surpresa!','Aposto que não esperava essa.','De nada.'],
+  hurt:['Ai. Que grosseria.','Tá, essa eu mereci.','Minha armadura agradece.','Com licença, isso doeu.'],
+  low:['Tudo sob controle. Mentira.','Alguém tem uma poção sobrando?','Excelente momento pra uma pausa.'],
+  kill:['Tchauzinho.','Foi um prazer. Não foi.','Próximo da fila.'],
+  win:['Fácil. Quase.','Nem suei. Suei muito.','Mais alguém? Não? Ótimo.']},
+ nervoso:{n:'Nervoso',c:'#b8e07a',
+  start:['Ah não, ah não, ah não...','Eles são muitos. Ou eu que sou pouco?','Tá tudo bem. Tá tudo bem!','Por que tudo aqui tem dente?'],
+  atk:['Desculpa! Quer dizer, toma!','Funcionou? Funcionou!','Sai, sai, sai!','Fica longe!'],
+  hurt:['AI! Isso foi de verdade!','Por que eu desci aqui?','Mãe...','Não, não, não!'],
+  low:['Eu vou morrer numa caverna.','Preciso de ar. E de um curativo.','Não olha pra mim assim!'],
+  kill:['Ele caiu? Ele caiu!','Foi sem querer! Não foi.','Ufa.'],
+  win:['Eu sobrevivi?!','Preciso sentar um minuto.','Nunca mais. Até o próximo andar.']},
+ sombrio:{n:'Sombrio',c:'#c8a0ff',
+  start:['A escuridão manda lembranças.','Vocês já estão mortos. Só não sabem.','Mais almas para a conta.','Eu conheço esse silêncio.'],
+  atk:['Sinta o frio.','Isso é só o começo.','Silêncio.','Caia.'],
+  hurt:['A dor é velha conhecida.','Sangue não me assusta.','Continue. Eu espero.'],
+  low:['Ainda não é a minha hora.','A morte terá que esperar.','Eu já estive mais perto.'],
+  kill:['Mais um para a terra.','Durma.','A sombra te leva.'],
+  win:['O silêncio voltou.','Nada sobrou.','Descemos mais.']},
+};
+const FOE_PERS={
+ arrogante:{n:'Arrogante',
+  start:['Um verme na minha toca? Que divertido.','Você não sabe com quem está lidando.','Ajoelhe e talvez eu seja rápido.'],
+  atk:['Patético.','Sinta o seu lugar.','É isso que você tem?'],
+  hurt:['Como ousa?!','Isso não foi nada!','Sorte. Pura sorte.'],
+  die:['Impossível...','Isso... não acaba assim.','Eu era... o melhor...']},
+ covarde:{n:'Covarde',
+  start:['Eu não queria briga! Mas já que veio...','Fica longe! Eu mordo!','Chamem os outros!'],
+  atk:['Toma e não volta!','Pega ele! Ah, sou só eu.','Foi o outro!'],
+  hurt:['Para! Eu me rendo! Mentira!','Ai ai ai!','Não na cara!'],
+  die:['Eu sabia que devia ter fugido...','Avisa minha mãe...','Socorro...']},
+ furioso:{n:'Furioso',
+  start:['CARNE FRESCA!','Vou quebrar cada osso seu!','SANGUE!'],
+  atk:['MORRA!','ESMAGAR!','RAAAH!'],
+  hurt:['Isso só me deixa com mais raiva!','VOCÊ VAI PAGAR!','GRRR!'],
+  die:['Ainda... com raiva...','Não... acabou...','Raaah...']},
+ debochado:{n:'Debochado',
+  start:['Olha só, mais um herói. Eu coleciono vocês.','Vai chorar antes ou depois?','Que armadura bonita. Vou ficar com ela.'],
+  atk:['Hehehe!','Essa doeu, né?','Opa! Escorregou?'],
+  hurt:['Hah! Fez cócegas.','Ui, que medo.','Só isso?'],
+  die:['Tá... essa foi boa...','Hehe... eu volto...','Ninguém vai rir de mim...']},
+};
+const TALKERS=['goblin','kobold','orc','mimico','carrasco','reigoblin','golem','cultista','cavaleiro','bruxa','lich','rainha','diabrete','minotauro','olho','dragao','reicorvo'];
+const BOSS_START={reigoblin:'Tudo que brilha aqui é meu. Inclusive você.',golem:'INTRUSO DETECTADO. PROTOCOLO: ESMAGAR.',lich:'Eu já fui como você. Depois fiquei sábio.',rainha:'Minhas filhas estão com fome.',reicorvo:'Você desceu tudo isso só para morrer aos meus pés?'};
+const pickL=a=>a[Math.floor(Math.random()*a.length)];
+function heroPers(){if(!G.pers||!HERO_PERS[G.pers])G.pers=pickL(Object.keys(HERO_PERS));return HERO_PERS[G.pers]}
+function foePers(e){if(!TALKERS.includes(e.id))return null;if(!e.pers)e.pers=pickL(Object.keys(FOE_PERS));return FOE_PERS[e.pers]}
+const TALK={busy:0,low:null};
+function say(uid,text,{prio=0,delay=0}={}){
+  const now=performance.now()+delay;if(prio<2&&now<TALK.busy)return;TALK.busy=now+(prio>=2?2200:1700);
+  setTimeout(()=>{
+    if(!G||G.screen!=='combat'&&prio<3)return;
+    const isP=uid==='p',e=!isP&&G.combat&&G.combat.enemies.find(x=>x.uid===uid);
+    const name=isP?CHARS[G.char].n:e?ENEMIES[e.id].n:'',col=isP?heroPers().c:'#ff9a7a';
+    const L=$('#fxlayer');L.querySelectorAll('.cap').forEach(x=>x.remove());
+    const cap=document.createElement('div');cap.className='cap';cap.innerHTML=`<b style="color:${col}"></b><span></span>`;cap.querySelector('b').textContent=name+':';cap.querySelector('span').textContent='“'+text+'”';
+    const f=$('#field');if(f){const r=f.getBoundingClientRect();cap.style.top=(r.bottom-52)+'px'}L.appendChild(cap);setTimeout(()=>cap.remove(),2900);
+    const fig=document.querySelector(`[data-uid="${uid}"] .fig`);
+    if(fig){L.querySelectorAll(`.bub[data-u="${uid}"]`).forEach(x=>x.remove());const r=fig.getBoundingClientRect(),b=document.createElement('div');b.className='bub'+(isP?' me':'');b.dataset.u=uid;b.textContent=text.length>38?text.slice(0,36)+'…':text;b.style.left=(r.left+r.width/2)+'px';b.style.top=(r.top-6)+'px';L.appendChild(b);setTimeout(()=>b.remove(),2600)}
+  },delay);
+}
+function talkHero(ev,ch=1,o={}){if(!G||!G.combat||Math.random()>ch)return;const P0=heroPers();say('p',pickL(P0[ev]),o)}
+function talkFoe(e,ev,ch=1,o={}){if(!e||Math.random()>ch)return;const F=foePers(e);if(!F)return;say(e.uid,pickL(F[ev]),o)}
+function talkStart(kind){
+  const c=G.combat,ts=c.enemies.filter(e=>foePers(e)),boss=c.enemies.find(e=>ENEMIES[e.id].boss);TALK.busy=0;TALK.low=null;
+  const d0=kind==='boss'?2900:1100;
+  if(boss&&BOSS_START[boss.id]){foePers(boss);say(boss.uid,BOSS_START[boss.id],{prio:3,delay:d0})}
+  else if(ts.length)talkFoe(pickL(ts),'start',1,{prio:3,delay:d0});
+  talkHero('start',ts.length||boss?1:.6,{prio:3,delay:d0+(ts.length||boss?2300:0)});
+}
+function checkLow(){if(!G.combat||TALK.low===G.combat.cid)return;if(G.hp>0&&G.hp<G.maxHp*.3){TALK.low=G.combat.cid;talkHero('low',1,{prio:2,delay:450})}}
 function toast(t){const d=document.createElement('div');d.className='toast';d.textContent=t;$('#fxlayer').appendChild(d);setTimeout(()=>d.remove(),1600)}
 
 /* ---------- modal de cartas ---------- */

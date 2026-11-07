@@ -14,9 +14,11 @@ Roguelike de cartas em pixel art. Escolha um herói, desça andar por andar pela
 - **Servos do Necromante:** as últimas criaturas que ele derrotou voltam para lutar por ele.
 - **18 ambientes com luz**, um para cada tipo de inimigo.
 - Abertura em vídeo (`abertura.mp4`).
+- **Falas com legenda:** o herói ganha um temperamento sorteado (Corajoso, Sarcástico, Nervoso ou Sombrio) e os inimigos que pensam falam com o deles (Arrogante, Covarde, Furioso ou Debochado). Bichos não falam.
 
 ## Controles
 Arraste a carta até o inimigo (ou clique na carta e depois no alvo). **E** encerra o turno, **1 a 0** escolhem cartas, **F2** abre o painel DEV.
 
 ## Versões
 - **v1.0** — primeira versão no GitHub: visual 32×32 desenhado à mão, Forja de Hefesto, armas evolutivas, ambientes por inimigo, guerreiros e abertura em vídeo.
+- **v1.1** — falas com legenda e balão; personalidades sorteadas para o herói e para os inimigos que falam.
