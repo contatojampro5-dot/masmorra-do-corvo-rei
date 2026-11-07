@@ -481,6 +481,10 @@ button:focus-visible,[data-act]:focus-visible{outline:2px solid var(--gold);outl
 #cut .clic .stamp{position:absolute;right:14px;top:66px;width:72px;height:72px;border:4px solid #b2241a;border-radius:50%;display:grid;place-items:center;font:800 50px var(--f-num);color:#b2241a;opacity:0;transform:scale(3) rotate(-25deg)}
 #cut .clic.stamped .stamp{animation:stampA .35s cubic-bezier(.3,1.6,.5,1) forwards}
 #cut .clic.gone{opacity:0;transition:opacity .4s}
+#cut .clic .rank b.old{font:800 34px/56px var(--f-num);color:#b2241a;text-decoration:line-through 3px}
+#cut .clic.gold .rank{top:30px}#cut .clic.gold .rank b.old{font-size:24px;line-height:30px;width:auto;height:auto;border:0}
+#cut .clic.gold .stamp{top:84px;right:22px;width:84px;height:84px;font-size:58px;border-color:#c9962a;color:#c9962a;box-shadow:0 0 0 2px #fff4c066 inset;text-shadow:0 0 12px #ffd86a}
+#cut .clic.gold.stamped .lp{box-shadow:0 20px 50px #000c,0 0 60px #ffcf5a88}
 @keyframes licIn{0%{opacity:0;transform:translateY(40px) rotate(-8deg)}100%{opacity:1;transform:rotate(-2deg)}}
 @keyframes stampA{0%{opacity:0;transform:scale(3) rotate(-25deg)}60%{opacity:1}100%{opacity:.92;transform:scale(1) rotate(-14deg)}}
 @media (prefers-reduced-motion:reduce){#cut .clic.stamped .stamp{opacity:.92;transform:rotate(-14deg)}}
@@ -1390,7 +1394,7 @@ function winCombat(){
   if(hasRelic('brasao'))heal(6);
   G.combat=null;
   {const fr=kind==='boss'?2:kind==='elite'?1:0;if(fr)G.frags=(G.frags||0)+fr}
-  if(kind==='boss'){G.stats.bosses++;G.diamonds+=3;if(G.act>=3){G.screen='end';G.won=true;clearSave();render();return}}
+  if(kind==='boss'){G.stats.bosses++;G.diamonds+=3;if(G.act>=3){G.screen='end';G.won=true;clearSave();render();playIntro(null,'ending');return}}
   G.reward=makeReward(kind);G.screen='reward';
   if(G.war&&G.war.mode==='fight'&&G.war.phase==='after'&&kind!=='boss')G.screen='warrior';
   render();
@@ -3239,10 +3243,10 @@ const CFL=142;
 SPR.w_marta=recol('merchant',{m:'p',M:'P'});
 const CUT={on:false,skip:false,raf:0};
 const CUT_LINES={
- corajoso:{react:'D?! Eu enfrentei lobos sozinho no caminho até aqui!',vow:'Pois guardem essa letra. Eu vou descer até o fundo e trazer a coroa do Corvo Rei.',gate:'Classe D. Vamos ver quanto dura essa letra.'},
- sarcastico:{react:'D. De "deslumbrante", imagino.',vow:'Ótimo. Eu desço, pego a coroa do Corvo Rei, e vocês reimprimem isso com um A bem grande.',gate:'Lar doce lar. Cheira a mofo e a morte.'},
- nervoso:{react:'D? Isso é... isso é ruim? Isso parece ruim.',vow:'Eu vou provar! Vou descer lá e... e voltar. Com a coroa. Provavelmente.',gate:'Respira. Entra. Não olha pra trás. Tá. Tá bom.'},
- sombrio:{react:'Uma letra. Vocês medem a morte com letras.',vow:'A masmorra vai dizer quem eu sou. E o Corvo Rei vai ouvir primeiro.',gate:'Escuridão. Finalmente um lugar honesto.'},
+ corajoso:{back:'Eu disse que ia trazer.',fin:'Agora sim. Qual é a próxima masmorra?',react:'D?! Eu enfrentei lobos sozinho no caminho até aqui!',vow:'Pois guardem essa letra. Eu vou descer até o fundo e trazer a coroa do Corvo Rei.',gate:'Classe D. Vamos ver quanto dura essa letra.'},
+ sarcastico:{back:'Pode conferir. Ainda tem pena grudada.',fin:'Eu falei que ia ser um A. Errei pra cima.',react:'D. De "deslumbrante", imagino.',vow:'Ótimo. Eu desço, pego a coroa do Corvo Rei, e vocês reimprimem isso com um A bem grande.',gate:'Lar doce lar. Cheira a mofo e a morte.'},
+ nervoso:{back:'Eu trouxe! Eu trouxe mesmo! Alguém me belisca.',fin:'S? S de... sobrevivi?',react:'D? Isso é... isso é ruim? Isso parece ruim.',vow:'Eu vou provar! Vou descer lá e... e voltar. Com a coroa. Provavelmente.',gate:'Respira. Entra. Não olha pra trás. Tá. Tá bom.'},
+ sombrio:{back:'A torre está em silêncio agora.',fin:'Uma letra. Mas essa eu guardo.',react:'Uma letra. Vocês medem a morte com letras.',vow:'A masmorra vai dizer quem eu sou. E o Corvo Rei vai ouvir primeiro.',gate:'Escuridão. Finalmente um lugar honesto.'},
 };
 function actorCanvas(key,tint){const g=VIS.grid(key,key===CHARS[G.char].spr?heroWK(key):'0'),n=g.length,c=document.createElement('canvas');c.width=n;c.height=n;const x=c.getContext('2d');
   for(let y=0;y<n;y++)for(let i=0;i<n;i++){const v=g[y][i];if(v){x.fillStyle=v;x.fillRect(i,y,1,1)}}
@@ -3250,7 +3254,7 @@ function actorCanvas(key,tint){const g=VIS.grid(key,key===CHARS[G.char].spr?hero
 const ease=t=>t<.5?2*t*t:1-Math.pow(-2*t+2,2)/2;
 function cutSleep(ms){return new Promise(r=>{const t0=performance.now(),f=()=>{if(CUT.skip||performance.now()-t0>=ms)r();else requestAnimationFrame(f)};f()})}
 function tween(obj,to,ms,fn=ease){const from={};for(const k in to)from[k]=obj[k];const t0=performance.now();CUT.tw.push({obj,from,to,t0,ms,fn});return cutSleep(ms)}
-async function playIntro(done){
+async function playIntro(done,which='intro'){
   if(CUT.on)return;CUT.on=true;CUT.skip=false;CUT.tw=[];
   const box=document.createElement('div');box.id='cut';box.innerHTML=`<canvas width="1280" height="720"></canvas><div class="cbar t"></div><div class="cbar b"></div><div class="cloc"></div><div class="csub"><b></b><span></span></div><div class="clic" hidden></div><div class="ctitle"></div><div class="cfade"></div><button class="cskip" type="button">Pular ›</button>`;document.body.appendChild(box);
   const cv=box.querySelector('canvas'),x=cv.getContext('2d');x.imageSmoothingEnabled=false;
@@ -3265,7 +3269,7 @@ async function playIntro(done){
     marta:{img:actorCanvas('w_marta',warm),x:238,y:CFL,flip:true,s:1},
     kael:{img:actorCanvas('w_kael',warm),x:72,y:CFL,flip:false,s:1,laugh:0},
     bruna:{img:actorCanvas('w_bruna',warm),x:104,y:CFL,flip:true,s:1,laugh:0}};
-  const S={scene:'taverna',cam:{x:160,y:90,z:1},cast:['kael','bruna','marta','hero'],counter:true};
+  const S={scene:'taverna',cam:{x:160,y:90,z:1},cast:['kael','bruna','marta','hero'],counter:true,crown:null};
   const draw=t=>{
     const now=performance.now();CUT.tw=CUT.tw.filter(w=>{const k=Math.min(1,(now-w.t0)/w.ms),e=w.fn(k);for(const p in w.to)w.obj[p]=w.from[p]+(w.to[p]-w.from[p])*e;return k<1});
     const c=S.cam,z=Math.max(1,c.z),hw=160/z,hh=90/z,cx=Math.min(320-hw,Math.max(hw,c.x)),cy=Math.min(180-hh,Math.max(hh,c.y)),k=4*z;
@@ -3274,11 +3278,31 @@ async function playIntro(done){
     for(const n of S.cast){const a=A[n];if(!a||a.alpha<=0)continue;const bob=a.walk?-Math.abs(Math.sin(now/90))*2:a.laugh?-Math.abs(Math.sin(now/70))*1.5:(Math.sin(now/500+a.x)>.6?-.5:0);
       x.save();x.globalAlpha=a.alpha??1;x.translate(Math.round(a.x),a.y+bob-(a.hop||0));if(a.flip)x.scale(-1,1);x.fillStyle='rgba(0,0,0,.45)';x.beginPath();x.ellipse(0,0,10,2,0,0,7);x.fill();x.drawImage(a.img,-16,-32,32,32);x.restore()}
     if(S.counter&&S.scene==='taverna'){x.fillStyle='#4a2a14';x.fillRect(206,CFL-13,62,13);x.fillStyle='#7a4a24';x.fillRect(204,CFL-15,66,3);x.fillStyle='#2a160a';for(let i=210;i<266;i+=10)x.fillRect(i,CFL-12,1,12);x.fillStyle='#c09040';x.fillRect(214,CFL-19,4,4);x.fillStyle='#e8dcc0';x.fillRect(222,CFL-17,8,2)}
+    if(S.crown){const q=S.crown;x.save();x.translate(q.x,q.y);x.fillStyle='#e8b23a';x.fillRect(-5,-2,10,3);for(const d of [-5,-1,3])x.fillRect(d,-5,2,3);x.fillStyle='#fff0a0';x.fillRect(-5,-2,10,1);x.fillStyle='#e02a3a';x.fillRect(-1,-1,2,1);x.fillStyle='#3ad0ff';x.fillRect(-4,-1,1,1);x.fillRect(3,-1,1,1);x.restore()}
     CUT.raf=requestAnimationFrame(draw)};
   CUT.raf=requestAnimationFrame(draw);
   const sub=box.querySelector('.csub'),loc=box.querySelector('.cloc'),fade=box.querySelector('.cfade');
   const say=async(who,text,ms)=>{if(CUT.skip)return;sub.querySelector('b').textContent=who;sub.querySelector('span').textContent='“'+text+'”';sub.classList.add('on');await cutSleep(ms||Math.max(2200,text.length*55));sub.classList.remove('on');await cutSleep(220)};
   const cut=(cam,patch={})=>{Object.assign(S.cam,cam);Object.assign(S,patch)};
+  if(which==='ending'){try{
+    const st=G.stats||{};fade.classList.add('in');await cutSleep(60);fade.classList.remove('in');
+    loc.innerHTML='<small>Vila de Pedra Funda, três dias depois</small>Taverna do Javali Torto';loc.classList.add('on');
+    cut({x:60,y:90,z:1.25});A.hero.walk=1;tween(A.hero,{x:130},5200,t=>t);await tween(S.cam,{x:170,y:96,z:1.15},5200);A.hero.walk=0;loc.classList.remove('on');
+    cut({x:88,y:CFL-22,z:2.6});await say('Kael, o Mercenário','Olha quem voltou... Ué. Ele voltou?');
+    cut({x:160,y:CFL-24,z:2.2});A.hero.walk=1;tween(A.hero,{x:186},1800,t=>t);await cutSleep(1800);A.hero.walk=0;
+    cut({x:214,y:CFL-24,z:3.2});S.crown={x:192,y:CFL-26};await tween(S.crown,{x:226,y:CFL-15},700,t=>t*t);
+    await say('Marta, a Escrivã da Guilda','Isso é... a coroa do Corvo Rei?!');
+    cut({x:184,y:CFL-20,z:3.4});await say(hname,pers.back);
+    cut({x:96,y:CFL-26,z:2.1});await cutSleep(900);await say('Bruna, a Ferreira','...Retiro o que eu disse sobre as botas.');
+    cut({x:240,y:CFL-26,z:3});tween(S.cam,{z:3.3},3200);await say('Marta, a Escrivã da Guilda',`Andares: ${st.floors||0}. Chefes: ${st.bosses||3}. A guilda só tem uma letra pra isso.`);
+    const lic=box.querySelector('.clic');lic.classList.add('gold');lic.innerHTML=`<div class="lp"><small>Guilda dos Aventureiros de Pedra Funda</small><h3>Licença de Aventureiro</h3><dl><dt>Nome</dt><dd>${hname}</dd><dt>Temperamento</dt><dd>${heroPers().n}</dd><dt>Andares concluídos</dt><dd>${st.floors||0}</dd><dt>Feito</dt><dd>Derrotou o Corvo Rei</dd></dl><div class="rank"><span>Classe</span><b class="old">D</b></div><div class="stamp">S</div></div>`;
+    lic.hidden=false;await cutSleep(1300);lic.classList.add('stamped');await cutSleep(1900);
+    await say('Marta, a Escrivã da Guilda','Classificação: S. A primeira desta guilda.',2600);lic.classList.add('gone');await cutSleep(400);lic.hidden=true;
+    cut({x:186,y:CFL-20,z:3.4});A.hero.hop=0;tween(A.hero,{hop:5},150).then(()=>tween(A.hero,{hop:0},200));await say(hname,pers.fin);
+    cut({x:140,y:CFL-30,z:1.6});A.kael.laugh=1;A.bruna.laugh=1;await say('Kael, o Mercenário','Uma rodada pro Classe S! Hoje quem paga sou eu!',2800);
+    tween(S.cam,{x:160,y:90,z:1},3000);await cutSleep(1600);fade.classList.add('in');fade.style.transition='opacity 1.4s';await cutSleep(1500);
+    const tt=box.querySelector('.ctitle');tt.innerHTML='<small>Obrigado por jogar</small>Fim';tt.classList.add('on');await cutSleep(3200);
+  }catch(e){}end();return}
   try{
     fade.classList.add('in');await cutSleep(60);fade.classList.remove('in');
     loc.innerHTML='<small>Vila de Pedra Funda</small>Taverna do Javali Torto';loc.classList.add('on');
