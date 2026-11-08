@@ -29,3 +29,4 @@ Arraste a carta até o inimigo (ou clique na carta e depois no alvo). **E** ence
 - **v1.4** — botão **Cenas** no menu: assistir à abertura, à Taverna (Classe D) e ao Retorno (Classe S) com qualquer herói.
 - **v1.5** — personagens andam com passos de verdade nas cenas (pernas abrem, cruzam e o pé de trás levanta).
 - **v1.6** — novas cenas: entrada dos 5 chefes, troca para o Ato 2 e o Ato 3, primeiro encontro com o Hefesto e os guerreiros em cena. Todas também no menu Cenas.
+- **v1.7** — novas cenas: queda dos 5 chefes (o Corvo Rei vira pó e penas), a volta do herói carregado à taverna quando tomba, o Mercador e a Lenda do Corvo Rei (Aldric, o Rei Justo).

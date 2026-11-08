@@ -1110,12 +1110,15 @@ function enterNode(r,c){
   const n=r===ROWS?G.map.boss:G.map.rows[r][c];
   G.pos={r,c};G.path.push({r,c});n.done=1;G.stats.floors++;
   const A=ACTS[G.act];
+  if(G.act===2&&r>=4&&r<ROWS&&!G.metLore&&n.type!=='chefe'){G.metLore=1;enterNode2(r,c,n,A);save();playIntro(null,'lore');return}
+  enterNode2(r,c,n,A)}
+function enterNode2(r,c,n,A){
   switch(n.type){
     case'luta':{const pool=r<(G.act===1?3:2)?A.easy:A.hard;let e;do{e=pick(pool)}while(pool.length>1&&e.join()===G.lastEnc);G.lastEnc=e.join();startCombat(e,'normal');break}
     case'elite':{let e;do{e=pick(A.elite)}while(A.elite.length>1&&e.join()===G.lastEnc);G.lastEnc=e.join();startCombat(e,'elite');break}
     case'chefe':startCombat([n.bid],'boss',true);playIntro(()=>cinematic(ENEMIES[n.bid].n,'Chefe · '+ACTS[G.act].n),'boss:'+n.bid);break;
     case'fogueira':G.screen='rest';G.restDone=false;render();break;
-    case'loja':G.shop=makeShop();G.screen='shop';render();break;
+    case'loja':G.shop=makeShop();G.screen='shop';render();if(!G.metMerc){G.metMerc=1;save();playIntro(null,'merc')}break;
     case'tesouro':G.screen='treasure';G.chest=null;render();break;
     case'forja':G.screen='forge';G.forgeLine=null;render();if(!G.metHef){G.metHef=1;save();playIntro(null,'hefesto')}break;
     case'evento':{G.metW=G.metW||{};if(!G.metW[G.act]&&rnd()<.45){G.metW[G.act]=1;G.seenW=G.seenW||[];let wp=Object.keys(WARR).filter(k=>!G.seenW.includes(k));if(!wp.length)wp=Object.keys(WARR);const wid=pick(wp);G.seenW.push(wid);G.war={id:wid,mode:rnd()<.5?'calm':'fight',phase:'intro',step:0};G.screen='warrior';render();playIntro(()=>{if(G.war){const W=WARR[G.war.id];G.war.step=(G.war.mode==='calm'?W.calm:W.fight).length-1;render()}},'war:'+wid);break}
@@ -1330,7 +1333,7 @@ function checkEnd(){
   const c=G.combat;if(!c||c.over)return true;
   if(G.hp<=0){
     if(hasPow('fenix')&&!G.fenixUsed){G.fenixUsed=1;G.hp=Math.floor(G.maxHp/2);fx('p','Renascido!','heal');anim('p','mv-summon');render();return false}
-    c.over=true;UI.lock=true;setTimeout(()=>{UI.lock=false;G.screen='end';G.won=false;clearSave();render()},1000);return true;
+    c.over=true;UI.lock=true;setTimeout(()=>{UI.lock=false;G.screen='end';G.won=false;clearSave();render();playIntro(null,'death')},1000);return true;
   }
   if(!alive().length&&!c.enemies.some(e=>e.revive)){c.over=true;UI.lock=true;anim('p','mv-victory',500);talkHero('win',.85,{prio:2,delay:650});render();setTimeout(()=>{UI.lock=false;winCombat()},1300);return true}
   return false;
@@ -1397,14 +1400,15 @@ function resumeCombat(){
   if(!c.pturn)enemyPhase(c);
 }
 function winCombat(){
-  const kind=G.combat.kind;
+  const kind=G.combat.kind,bossE=kind==='boss'&&G.combat.enemies.find(e=>ENEMIES[e.id].boss),bid=bossE&&bossE.id;
   if(hasRelic('brasao'))heal(6);
   G.combat=null;
   {const fr=kind==='boss'?2:kind==='elite'?1:0;if(fr)G.frags=(G.frags||0)+fr}
-  if(kind==='boss'){G.stats.bosses++;G.diamonds+=3;if(G.act>=3){G.screen='end';G.won=true;clearSave();render();playIntro(null,'ending');return}}
+  if(kind==='boss'){G.stats.bosses++;G.diamonds+=3;if(G.act>=3){G.screen='end';G.won=true;clearSave();render();playIntro(()=>playIntro(null,'ending'),'bfall:'+bid);return}}
   G.reward=makeReward(kind);G.screen='reward';
   if(G.war&&G.war.mode==='fight'&&G.war.phase==='after'&&kind!=='boss')G.screen='warrior';
   render();
+  if(bid)playIntro(null,'bfall:'+bid);
 }
 function usePotion(i,tUid){
   const id=G.potions[i];if(!id)return;const d=POTIONS[id];
@@ -2036,11 +2040,15 @@ const ACT={
       <button class="choice" data-act="cenaplay" data-k="hefesto"><b>O Ferreiro das Profundezas</b><span>O primeiro encontro com o Hefesto.</span></button>
       <button class="choice" data-act="cenaplay" data-k="war"><b>Um encontro no caminho</b><span>Um guerreiro sorteado, calmo ou no meio de uma briga.</span></button>
       <div class="cenab"><b>Entrada dos chefes</b>${['reigoblin','golem','lich','rainha','reicorvo'].map(id=>`<button class="btn small" data-act="cenaplay" data-k="boss:${id}">${ENEMIES[id].n}</button>`).join('')}</div>
+      <button class="choice" data-act="cenaplay" data-k="merc"><b>O Mercador</b><span>A primeira loja da jornada.</span></button>
+      <button class="choice" data-act="cenaplay" data-k="lore"><b>A Lenda do Corvo Rei</b><span>Quem ele era antes da coroa. Conta um segredo da história.</span></button>
+      <div class="cenab"><b>Queda dos chefes</b>${['reigoblin','golem','lich','rainha','reicorvo'].map(id=>`<button class="btn small" data-act="cenaplay" data-k="bfall:${id}">${ENEMIES[id].n}</button>`).join('')}</div>
+      <button class="choice" data-act="cenaplay" data-k="death"><b>Você tombou</b><span>O que acontece quando o herói cai.</span></button>
       <button class="choice" data-act="cenaplay" data-k="ending"><b>O Retorno: Classe S</b><span>Depois de derrotar o Corvo Rei, a coroa no balcão. Contém o final do jogo.</span></button>
      </div><div class="mfoot"><button class="btn small" data-act="mclose">Fechar</button></div></div>`;m.hidden=false;m.scrollTop=0},
   cenah:el=>{UI.cenaHero=el.dataset.ch;ACT.cenas()},
   cenaplay:el=>{const k=el.dataset.k;closeModal();if(k==='video'){openAbertura(true);return}
-    const prev=G,ac=k.startsWith('act:')?+k.split(':')[1]:k==='boss:lich'||k==='boss:rainha'?2:k==='boss:reicorvo'?3:1;G={char:UI.cenaHero||'cav',pers:null,act:ac,seed:1,stats:{floors:30,bosses:3},weapon:{lv:k==='ending'?3:Math.min(3,ac-1),path:'a'}};if(k==='war')G.war={id:pickL(Object.keys(WARR)),mode:pickL(['calm','fight'])};heroPers();
+    const prev=G,ac=k.startsWith('act:')?+k.split(':')[1]:/lich|rainha|lore/.test(k)?2:/reicorvo/.test(k)?3:1;G={char:UI.cenaHero||'cav',pers:null,act:ac,seed:1,stats:{floors:30,bosses:3},weapon:{lv:k==='ending'?3:Math.min(3,ac-1),path:'a'}};if(k==='war')G.war={id:pickL(Object.keys(WARR)),mode:pickL(['calm','fight'])};heroPers();
     playIntro(()=>{G=prev;render()},k)},
   howto:()=>{const m=$('#modal');m.innerHTML=`<div class="mbox" style="max-width:720px"><h2 class="h2">Como jogar</h2><div class="panel" style="width:100%">${HOWTO}</div><div class="mfoot"><button class="btn small" data-act="mclose">Fechar</button></div></div>`;m.hidden=false;m.scrollTop=0},
   go:el=>{if(UI.moving)return;if(G.screen!=='map'&&!(UI.dev&&UI.freeMap))return;const r=+el.dataset.r,c=+el.dataset.c;const n=r===ROWS?G.map.boss:G.map.rows[r][c];if(G.screen==='map')moveToken(n,()=>enterNode(r,c));else enterNode(r,c)},
@@ -3298,7 +3306,21 @@ const ACT_L={2:{scn:'catacumbas',loc:['Ato 2 · Andar 11','As Catacumbas'],narr:
  3:{scn:'telhado',loc:['Ato 3 · Andar 21','A Torre do Corvo'],narr:'Lá no alto, um grasnado. O Corvo Rei sabe que você chegou.',hero:{corajoso:'Lá em cima. É lá que termina.',sarcastico:'Claro que o chefe mora na cobertura.',nervoso:'Por que tinha que ser uma torre? Eu tenho medo de altura!',sombrio:'Os corvos já sabem que eu cheguei.'}}};
 const HEF_HERO={corajoso:'Me disseram que você faz armas de lenda.',sarcastico:'Bela fornalha. Aceita encomenda?',nervoso:'Desculpa! A porta tava aberta! Quer dizer... não tinha porta.',sombrio:'O fogo daqui é mais velho que a torre.'};
 const COLD_SCN=['catacumbas','cripta','aranhas','ruinas','telhado','entrada','labirinto','esgoto'];
-function cutScenesFor(which){const[t,a]=which.split(':');if(t==='boss')return[BOSS_SCN[a]];if(t==='act')return[ACT_L[a].scn];if(t==='hefesto')return['forjaHef'];if(t==='war')return[G.war&&G.war.mode==='fight'?'mina':'santuario'];return['taverna','entrada']}
+/* ---------- cenas: queda dos chefes, morte do herói, Mercador e a lenda ---------- */
+const BOSS_FALL={reigoblin:{line:'Meu ouro... ninguém toca... no meu ouro...',how:'fall'},golem:{line:'ERRO... CLASSE D... ERRO... ERR...',how:'crumble'},lich:{line:'Eu volto... eu sempre... volto...',how:'dust',c:'#8affa0'},rainha:{line:'Minhas filhas... fujam...',how:'fall'},reicorvo:{line:'Aldric... era esse... o meu nome...',how:'dust',c:'#2a2434',feathers:1}};
+const HERO_FALL={corajoso:'Acabou. Descanse.',sarcastico:'Bela saída. Pouco brilho.',nervoso:'Ele morreu? Morreu mesmo? Cutuca com a espada.',sombrio:'Pó volta ao pó.'};
+const HERO_DEAD={corajoso:'Eu... ainda... consigo...',sarcastico:'Tá... essa foi feia...',nervoso:'Eu morri? Eu tô no céu? Isso é a taverna?',sombrio:'A escuridão me devolveu. Que gentil.'};
+const MERC_HERO={corajoso:'Preciso de equipamento. Do bom.',sarcastico:'Uma loja. No meio da masmorra. Super normal.',nervoso:'Você vende... coragem? Em frasco?',sombrio:'Quanto custa sair vivo daqui?'};
+const LORE_HERO={corajoso:'Então ele já foi um rei justo. Vou lembrar ele disso.',sarcastico:'Moral da história: nunca aceite remédio de quem conversa com pássaros.',nervoso:'Então eu vou lutar contra um rei amaldiçoado. Ótimo. Ótimo!',sombrio:'Todo monstro já foi alguém.'};
+function dissolve(S,a,{mode='dust',color=null,feathers=false,ms=2200}={}){
+  const img=a.img,n=img.width,sz=a.sz||32,d=img.getContext('2d').getImageData(0,0,n,n).data;S.parts=S.parts||[];
+  for(let j=0;j<n;j++)for(let i=0;i<n;i++){const k=(j*n+i)*4;if(d[k+3]<20)continue;if(Math.random()<.35)continue;
+    const wx=a.x+(a.flip?-1:1)*((i+.5)*sz/n-sz/2),wy=a.y-sz+(j+.5)*sz/n,c=color&&Math.random()<.5?color:`rgb(${d[k]},${d[k+1]},${d[k+2]})`;
+    const delay=mode==='crumble'?(n-j)/n*600:j/n*900;
+    S.parts.push({x:wx,y:wy,vx:mode==='crumble'?(Math.random()-.5)*8:4+Math.random()*10,vy:mode==='crumble'?-Math.random()*6:-8-Math.random()*14,g:mode==='crumble'?120:-4,life:1.6+Math.random()*1.2,t:-delay/1000,c,s:sz/n})}
+  if(feathers)for(let f=0;f<26;f++)S.parts.push({x:a.x+(Math.random()-.5)*sz*.6,y:a.y-sz*Math.random(),vx:(Math.random()-.5)*40,vy:-20-Math.random()*30,g:6,life:2.5+Math.random(),t:-Math.random()*.6,c:'#0a0a12',s:2.5,feather:1});
+  return tween(a,{alpha:0},ms,q=>q)}
+function cutScenesFor(which){const[t,a]=which.split(':');if(t==='bfall')return[BOSS_SCN[a]];if(t==='death')return['taverna'];if(t==='merc')return['mina'];if(t==='lore')return['salao','telhado','catacumbas'];if(t==='boss')return[BOSS_SCN[a]];if(t==='act')return[ACT_L[a].scn];if(t==='hefesto')return['forjaHef'];if(t==='war')return[G.war&&G.war.mode==='fight'?'mina':'santuario'];return['taverna','entrada']}
 async function CUT_EXTRA(which,T){
   const[t,arg]=which.split(':'),{A,S,say,cut,fade,loc,box}=T,hk=CHARS[G.char].spr,hname=CHARS[G.char].n,P=HERO_PERS[G.pers]?G.pers:'corajoso';
   const tint=n=>COLD_SCN.includes(n)?'rgba(10,20,60,.32)':'rgba(60,25,5,.2)';
@@ -3318,6 +3340,41 @@ async function CUT_EXTRA(which,T){
     await say(E.n,BOSS_START[id]);cut({x:234,y:CFL-46,z:2.1});await say(E.n,BOSS_L2[id]);
     cut({x:96,y:CFL-20,z:3.2});await say(hname,HERO_BOSS[P]);
     cut({x:166,y:CFL-32,z:1.5});await tween(S.cam,{z:2},1300);return}
+  if(t==='bfall'){const id=arg,E=ENEMIES[id],F=BOSS_FALL[id];S.scene=BOSS_SCN[id];const tn=tint(S.scene);
+    A.hero={img:actorCanvas(hk,tn),x:110,y:CFL,flip:false};A.boss={img:actorCanvas(E.spr,tn),x:220,y:CFL,flip:true,sz:64};S.cast=['hero','boss'];
+    cut({x:220,y:CFL-40,z:1.8});await tween(A.boss,{hop:3},120);await tween(A.boss,{hop:0},120);await tween(A.boss,{x:224},300);
+    await say(E.n,F.line,2600);
+    if(F.how==='fall'){cut({x:200,y:CFL-30,z:1.6});await tween(A.boss,{rot:Math.PI/2.2,y:CFL+8},900,q=>q*q);if(id==='reigoblin'){S.parts=S.parts||[];for(let k=0;k<40;k++)S.parts.push({x:230+(Math.random()-.5)*30,y:CFL-10,vx:(Math.random()-.5)*60,vy:-30-Math.random()*40,g:140,life:2,t:-Math.random()*.3,c:Math.random()<.5?'#ffd04a':'#e0a020',s:1.5})}await tween(A.boss,{alpha:0},1600)}
+    else{cut({x:222,y:CFL-34,z:1.9});await dissolve(S,A.boss,{mode:F.how,color:F.c,feathers:F.feathers,ms:2400});await cutSleep(800)}
+    cut({x:110,y:CFL-20,z:3.2});await say(hname,HERO_FALL[P]);
+    cut({x:165,y:90,z:1.2});await cutSleep(900);return}
+  if(t==='death'){S.scene='taverna';const tn=tint('taverna');S.counter=true;
+    A.marta={img:actorCanvas('w_marta',tn),x:238,y:CFL,flip:true};A.kael={img:actorCanvas('w_kael',tn),x:12,y:CFL,flip:false};A.bruna={img:actorCanvas('w_bruna',tn),x:-24,y:CFL,flip:false};A.hero={img:actorCanvas(hk,'rgba(30,10,10,.45)'),x:-6,y:CFL-12,rot:-Math.PI/2,flip:false};S.cast=['marta','bruna','hero','kael'];
+    fade.classList.add('in');await cutSleep(400);fade.classList.remove('in');loc.innerHTML='<small>Vila de Pedra Funda, de madrugada</small>Taverna do Javali Torto';loc.classList.add('on');
+    cut({x:60,y:100,z:1.4});A.kael.walk=1;A.bruna.walk=1;tween(A.kael,{x:150},5000,q=>q);tween(A.bruna,{x:114},5000,q=>q);tween(A.hero,{x:132},5000,q=>q);await tween(S.cam,{x:160,y:96,z:1.2},5000);A.kael.walk=0;A.bruna.walk=0;loc.classList.remove('on');
+    cut({x:238,y:CFL-26,z:3});await say('Marta, a Escrivã da Guilda','Classe D. Eu avisei.');
+    cut({x:132,y:CFL-16,z:3.2});await say(hname,HERO_DEAD[P]);
+    cut({x:132,y:CFL-24,z:2});await say('Bruna, a Ferreira','Achamos no fundo da masmorra. Ainda respirando. Teimoso.');
+    cut({x:238,y:CFL-26,z:3});await say('Marta, a Escrivã da Guilda','Deixa ali no canto. Amanhã ele tenta de novo.');
+    fade.classList.add('in');fade.style.transition='opacity 1.2s';await cutSleep(1300);await title('A jornada recomeça','Você tombou',2400);return}
+  if(t==='merc'){S.scene='mina';const tn=tint('mina');A.hero={img:actorCanvas(hk,tn),x:20,y:CFL,flip:false};A.merc={img:actorCanvas('merchant',tn),x:190,y:CFL,flip:true};S.cast=['hero','merc'];
+    loc.innerHTML='<small>Uma luz no meio do túnel</small>O Mercador';loc.classList.add('on');
+    cut({x:70,y:96,z:1.3});await walkIn(140,{x:165,y:94,z:1.2},3400);loc.classList.remove('on');
+    cut({x:190,y:CFL-24,z:3});await tween(A.merc,{hop:5},150);await tween(A.merc,{hop:0},150);await say('O Mercador','Ah! Um cliente vivo! Que raridade.');
+    cut({x:140,y:CFL-20,z:3.2});await say(hname,MERC_HERO[P]);
+    cut({x:190,y:CFL-24,z:3});await say('O Mercador','Preços justos. Justos pra mim, claro.');
+    cut({x:166,y:CFL-28,z:2});await say('O Mercador','Aceito ouro. Não aceito promessas, dentes nem "depois eu pago".');return}
+  if(t==='lore'){const nar=(s2)=>say('',s2,Math.max(3200,s2.length*55));
+    S.scene='salao';A.king={img:actorCanvas('crowking','rgba(40,10,30,.25)'),x:280,y:CFL-12,flip:true,sz:48,alpha:0};S.cast=['king'];
+    loc.innerHTML='<small>Uma história contada nas paredes</small>A Lenda do Corvo Rei';loc.classList.add('on');
+    cut({x:170,y:70,z:1.5});tween(S.cam,{x:200,y:80,z:1.25},7000,q=>q);await nar('Há cem anos, esta torre tinha um rei de verdade: Aldric, o Rei Justo.');loc.classList.remove('on');
+    await nar('Seu conselheiro era um mago estranho, que falava com os corvos.');
+    S.scene='telhado';S.cast=[];cut({x:240,y:60,z:1.6});tween(S.cam,{x:160,y:90,z:1},7000,q=>q);
+    await nar('Quando o rei adoeceu, o mago ofereceu a cura: um pacto com a revoada.');
+    await nar('O rei aceitou. Viveu. Mas a cada dia ficava mais escuro, mais leve... mais pássaro.');
+    S.scene='salao';S.cast=['king'];cut({x:278,y:CFL-34,z:2.6});tween(A.king,{alpha:1},2500);
+    await nar('Hoje, Aldric não lembra o próprio nome. Só da coroa. E de que todos que sobem, viram corvos.');
+    S.scene='catacumbas';A.hero={img:actorCanvas(hk,tint('catacumbas')),x:150,y:CFL,flip:false};S.cast=['hero'];cut({x:150,y:CFL-20,z:3.2});await say(hname,LORE_HERO[P]);return}
   if(t==='act'){const L=ACT_L[arg];S.scene=L.scn;A.hero={img:actorCanvas(hk,tint(L.scn)),x:20,y:CFL,flip:false};S.cast=['hero'];
     loc.innerHTML=`<small>${L.loc[0]}</small>${L.loc[1]}`;loc.classList.add('on');
     cut({x:60,y:96,z:1.3});await walkIn(150,{x:200,y:92,z:1.15},4600);loc.classList.remove('on');
@@ -3362,8 +3419,9 @@ async function playIntro(done,which='intro'){
     x.setTransform(1,0,0,1,0,0);x.fillStyle='#000';x.fillRect(0,0,1280,720);x.setTransform(k,0,0,k,640-cx*k,360-cy*k);
     const bg=BG[S.scene];if(bg)x.drawImage(bg,0,0,320,180);
     for(const n of S.cast){const a=A[n];if(!a||a.alpha<=0)continue;const step=Math.floor(now/120)%4,bob=a.walk?0:a.laugh?-Math.abs(Math.sin(now/70))*1.5:(Math.sin(now/500+a.x)>.6?-.5:0);
-      x.save();x.globalAlpha=a.alpha??1;x.translate(Math.round(a.x),a.y+bob-(a.hop||0));if(a.flip)x.scale(-1,1);const sz=a.sz||32;x.fillStyle='rgba(0,0,0,.45)';x.beginPath();x.ellipse(0,0,sz*.32,2,0,0,7);x.fill();x.drawImage(a.walk&&a.img.frames?a.img.frames[step]:a.img,-sz/2,-sz,sz,sz);x.restore()}
+      x.save();x.globalAlpha=a.alpha??1;x.translate(Math.round(a.x),a.y+bob-(a.hop||0));if(a.rot)x.rotate(a.rot);if(a.flip)x.scale(-1,1);const sz=a.sz||32;x.fillStyle='rgba(0,0,0,.45)';x.beginPath();x.ellipse(0,0,sz*.32,2,0,0,7);x.fill();x.drawImage(a.walk&&a.img.frames?a.img.frames[step]:a.img,-sz/2,-sz,sz,sz);x.restore()}
     if(S.counter&&S.scene==='taverna'){x.fillStyle='#4a2a14';x.fillRect(206,CFL-13,62,13);x.fillStyle='#7a4a24';x.fillRect(204,CFL-15,66,3);x.fillStyle='#2a160a';for(let i=210;i<266;i+=10)x.fillRect(i,CFL-12,1,12);x.fillStyle='#c09040';x.fillRect(214,CFL-19,4,4);x.fillStyle='#e8dcc0';x.fillRect(222,CFL-17,8,2)}
+    if(S.parts&&S.parts.length){const dt=Math.min(.05,(now-(S.pt||now))/1000);S.pt=now;S.parts=S.parts.filter(q=>{q.t+=dt;if(q.t<0){x.fillStyle=q.c;x.fillRect(q.x,q.y,q.s,q.s);return true}q.vy+=q.g*dt;q.x+=q.vx*dt+(q.feather?Math.sin(now/200+q.x)*.3:0);q.y+=q.vy*dt;const al=Math.max(0,1-q.t/q.life);if(al<=0)return false;x.globalAlpha=al;x.fillStyle=q.c;if(q.feather){x.fillRect(q.x,q.y,q.s*1.6,q.s*.6)}else x.fillRect(q.x,q.y,q.s,q.s);x.globalAlpha=1;return true})}
     if(S.crown){const q=S.crown;x.save();x.translate(q.x,q.y);x.fillStyle='#e8b23a';x.fillRect(-5,-2,10,3);for(const d of [-5,-1,3])x.fillRect(d,-5,2,3);x.fillStyle='#fff0a0';x.fillRect(-5,-2,10,1);x.fillStyle='#e02a3a';x.fillRect(-1,-1,2,1);x.fillStyle='#3ad0ff';x.fillRect(-4,-1,1,1);x.fillRect(3,-1,1,1);x.restore()}
     CUT.raf=requestAnimationFrame(draw)};
   CUT.raf=requestAnimationFrame(draw);
