@@ -3300,6 +3300,13 @@ return{grid,portrait,scene:SCN.renderScene,weaponIcon:ARM.weaponIcon,WTREE:ARM.W
 const CFL=142;
 SPR.w_marta=recol('merchant',{m:'p',M:'P'});
 const CUT={on:false,skip:false,raf:0};
+const MARTA_D={
+ cav:['Nome? Cavaleiro da Ordem do Vale Cinzento? Hm.','Essa ordem acabou faz dez anos. Sem ordem, sem título.'],
+ cac:['Nome? Caçadora... das Brumas. Espera. Você é a irmã da Liora, né?','Ela também era D. E não voltou.'],
+ mag:['Nome? Mago Arcano. Aqui na carta diz: "expulso da Academia".','Sem diploma, sem cajado de mestre. Hm.'],
+ tan:['Nome? Guardião... Peraí. Você não é o ferreiro da rua de baixo?','Lutou alguma vez na vida? Armadura bonita não conta.'],
+ nec:['Nome?','... Nada? Tá. Vou escrever "sem nome".'],
+};
 const CUT_LINES={
  corajoso:{back:'Eu disse que ia trazer.',fin:'Agora sim. Qual é a próxima masmorra?',react:'D?! Eu enfrentei lobos sozinho no caminho até aqui!',vow:'Pois guardem essa letra. Eu vou descer até o fundo e trazer a coroa do Corvo Rei.',gate:'Classe D. Vamos ver quanto dura essa letra.'},
  sarcastico:{back:'Pode conferir. Ainda tem pena grudada.',fin:'Eu falei que ia ser um A. Errei pra cima.',react:'D. De "deslumbrante", imagino.',vow:'Ótimo. Eu desço, pego a coroa do Corvo Rei, e vocês reimprimem isso com um A bem grande.',gate:'Lar doce lar. Cheira a mofo e a morte.'},
@@ -3480,8 +3487,8 @@ async function playIntro(done,which='intro'){
     cut({x:60,y:90,z:1.25});A.hero.walk=1;tween(A.hero,{x:150},4200,t=>t);await tween(S.cam,{x:210,y:96,z:1.15},4200);A.hero.walk=0;loc.classList.remove('on');
     cut({x:88,y:CFL-22,z:2.6});A.kael.laugh=1;await say('Kael, o Mercenário','Olha só. Mais um que acha que vai voltar.');A.kael.laugh=0;
     cut({x:150,y:CFL-24,z:2.2});A.hero.walk=1;tween(A.hero,{x:186},1500,t=>t);await cutSleep(1500);A.hero.walk=0;
-    cut({x:240,y:CFL-26,z:3});tween(S.cam,{z:3.3},3000);await say('Marta, a Escrivã da Guilda',`Nome? ${hname}. Hm. Vamos ver o que a guilda acha de você.`);
-    const lic=box.querySelector('.clic');lic.innerHTML=`<div class="lp"><small>Guilda dos Aventureiros de Pedra Funda</small><h3>Licença de Aventureiro</h3><dl><dt>Nome</dt><dd>${hname}</dd><dt>Temperamento</dt><dd>${heroPers().n}</dd><dt>Andares concluídos</dt><dd>0</dd></dl><div class="rank"><span>Classe</span><b>D</b></div><div class="stamp">D</div></div>`;
+    cut({x:240,y:CFL-26,z:3});tween(S.cam,{z:3.3},3000);{const md=MARTA_D[G.char]||[`Nome? ${hname}. Hm.`,'Vamos ver o que a guilda acha de você.'];await say('Marta, a Escrivã da Guilda',md[0]);if(G.char==='nec'){cut({x:186,y:CFL-20,z:3.4});await cutSleep(1400);cut({x:240,y:CFL-26,z:3.3})}await say('Marta, a Escrivã da Guilda',md[1])}
+    const lic=box.querySelector('.clic');lic.innerHTML=`<div class="lp"><small>Guilda dos Aventureiros de Pedra Funda</small><h3>Licença de Aventureiro</h3><dl><dt>Nome</dt><dd>${G.char==='nec'?'<i>sem nome</i>':hname}</dd><dt>Temperamento</dt><dd>${heroPers().n}</dd><dt>Andares concluídos</dt><dd>0</dd></dl><div class="rank"><span>Classe</span><b>D</b></div><div class="stamp">D</div></div>`;
     lic.hidden=false;await cutSleep(1200);lic.classList.add('stamped');await cutSleep(1700);
     await say('Marta, a Escrivã da Guilda','Classificação: D. Próximo!',1900);lic.classList.add('gone');await cutSleep(400);lic.hidden=true;
     cut({x:184,y:CFL-20,z:3.4});A.hero.hop=0;tween(A.hero,{hop:5},150).then(()=>tween(A.hero,{hop:0},200));await say(hname,pers.react);
