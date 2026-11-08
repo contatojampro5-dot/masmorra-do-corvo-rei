@@ -462,6 +462,7 @@ button:focus-visible,[data-act]:focus-visible{outline:2px solid var(--gold);outl
 #cut .csub.on{opacity:1}
 #cut .csub b{display:block;font-family:var(--f-sc);font-weight:400;font-size:.72em;letter-spacing:.12em;color:var(--gold)}
 #cut .csub span{font-style:italic}
+#cut .csub b:empty{display:none}#cut .csub.narr span{color:#d8ccb0}
 #cut .cloc{position:absolute;z-index:4;left:max(24px,env(safe-area-inset-left,0px));top:calc(11vh + 18px);font-family:var(--f-disp);font-size:clamp(22px,3.4vw,40px);color:#f0d68a;text-shadow:0 3px 0 #000;opacity:0;transform:translateY(6px);transition:opacity .8s,transform .8s}
 #cut .cloc small{display:block;font:500 12px var(--f-num);letter-spacing:.3em;text-transform:uppercase;color:#cdbf9f}
 #cut .cloc.on{opacity:1;transform:none}
@@ -484,6 +485,7 @@ button:focus-visible,[data-act]:focus-visible{outline:2px solid var(--gold);outl
 .cenah{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;width:100%}
 .cenahb{display:flex;flex-direction:column;align-items:center;gap:2px;width:112px;padding:8px 6px;background:#14100c;border:1px solid var(--line);border-radius:8px;font-family:var(--f-sc);font-size:13px;color:var(--muted)}
 .cenahb .spr{width:56px}
+.cenab{display:flex;flex-wrap:wrap;gap:6px;align-items:center;padding:10px 14px;background:#14100c;border:1px solid var(--line);border-radius:8px}.cenab b{font-family:var(--f-sc);font-weight:400;font-size:19px;width:100%}
 .cenahb:hover{border-color:#8a6a35}
 .cenahb.on{border-color:var(--gold);color:#fff3d6;box-shadow:0 0 16px #e0a23a44}
 #cut .clic .rank b.old{font:800 34px/56px var(--f-num);color:#b2241a;text-decoration:line-through 3px}
@@ -1111,18 +1113,18 @@ function enterNode(r,c){
   switch(n.type){
     case'luta':{const pool=r<(G.act===1?3:2)?A.easy:A.hard;let e;do{e=pick(pool)}while(pool.length>1&&e.join()===G.lastEnc);G.lastEnc=e.join();startCombat(e,'normal');break}
     case'elite':{let e;do{e=pick(A.elite)}while(A.elite.length>1&&e.join()===G.lastEnc);G.lastEnc=e.join();startCombat(e,'elite');break}
-    case'chefe':startCombat([n.bid],'boss');break;
+    case'chefe':startCombat([n.bid],'boss',true);playIntro(()=>cinematic(ENEMIES[n.bid].n,'Chefe · '+ACTS[G.act].n),'boss:'+n.bid);break;
     case'fogueira':G.screen='rest';G.restDone=false;render();break;
     case'loja':G.shop=makeShop();G.screen='shop';render();break;
     case'tesouro':G.screen='treasure';G.chest=null;render();break;
-    case'forja':G.screen='forge';G.forgeLine=null;render();break;
-    case'evento':{G.metW=G.metW||{};if(!G.metW[G.act]&&rnd()<.45){G.metW[G.act]=1;G.seenW=G.seenW||[];let wp=Object.keys(WARR).filter(k=>!G.seenW.includes(k));if(!wp.length)wp=Object.keys(WARR);const wid=pick(wp);G.seenW.push(wid);G.war={id:wid,mode:rnd()<.5?'calm':'fight',phase:'intro',step:0};G.screen='warrior';render();break}
+    case'forja':G.screen='forge';G.forgeLine=null;render();if(!G.metHef){G.metHef=1;save();playIntro(null,'hefesto')}break;
+    case'evento':{G.metW=G.metW||{};if(!G.metW[G.act]&&rnd()<.45){G.metW[G.act]=1;G.seenW=G.seenW||[];let wp=Object.keys(WARR).filter(k=>!G.seenW.includes(k));if(!wp.length)wp=Object.keys(WARR);const wid=pick(wp);G.seenW.push(wid);G.war={id:wid,mode:rnd()<.5?'calm':'fight',phase:'intro',step:0};G.screen='warrior';render();playIntro(()=>{if(G.war){const W=WARR[G.war.id];G.war.step=(G.war.mode==='calm'?W.calm:W.fight).length-1;render()}},'war:'+wid);break}
       const keys=Object.keys(EVENTS);G.seenEv=G.seenEv||[];let pool=keys.filter(k=>!G.seenEv.includes(k));if(!pool.length)pool=keys;const k=pick(pool);G.seenEv.push(k);G.event={id:k,res:null};G.screen='event';render();break}
   }
 }
 function nextAct(){
   G.act++;G.pos=null;G.path=[];G.map=genMap();G.hp=G.maxHp;G.screen='map';G.sant=null;G.reward=null;
-  render();cinematic(ACTS[G.act].n,'Ato '+G.act);
+  render();playIntro(null,'act:'+G.act);
 }
 
 /* =========================================================
@@ -1137,7 +1139,7 @@ function spawn(id,minion){
   return e;
 }
 function pickMove(e){e.turn++;const k=ENEMIES[e.id].ai(e);e.hist.push(k);e.mv=k}
-function startCombat(ids,kind){
+function startCombat(ids,kind,quiet){
   G.combat={kind,cid:Math.floor(Math.random()*1e9),enemies:[],uidc:0,draw:shuffle(G.deck.map(c=>({...c}))),hand:[],discard:[],exhaust:[],
     energy:0,maxE:3+(hasPow('coracao')?1:0),turn:0,atkTotal:0,p:{uid:'p',block:0,st:{}},over:false};
   ids.forEach(id=>spawn(id));
@@ -1162,8 +1164,8 @@ function startCombat(ids,kind){
   FXQ.length=0;
   anim('p','mv-enter');c.enemies.forEach((e,i)=>anim(e.uid,'mv-enter',i*90));
   render();c.started=true;
-  talkStart(kind);
-  if(kind==='boss')cinematic(ENEMIES[ids[0]].n,'Chefe · '+ACTS[G.act].n);else banner(kind==='elite'?'Elite!':'Combate');
+  if(!quiet)talkStart(kind);
+  if(quiet){}else if(kind==='boss')cinematic(ENEMIES[ids[0]].n,'Chefe · '+ACTS[G.act].n);else banner(kind==='elite'?'Elite!':'Combate');
 }
 function startPlayerTurn(){
   const c=G.combat,p=c.p;c.turn++;
@@ -2029,11 +2031,16 @@ const ACT={
      <div class="panel" style="width:100%">
       <button class="choice" data-act="cenaplay" data-k="video"><b>Abertura</b><span>O vídeo de abertura do jogo.</span></button>
       <button class="choice" data-act="cenaplay" data-k="intro"><b>A Taverna: Classe D</b><span>O herói recebe a licença de aventureiro e jura provar que não é D.</span></button>
+      <button class="choice" data-act="cenaplay" data-k="act:2"><b>Descida às Catacumbas</b><span>A troca para o Ato 2.</span></button>
+      <button class="choice" data-act="cenaplay" data-k="act:3"><b>A Torre do Corvo</b><span>A troca para o Ato 3.</span></button>
+      <button class="choice" data-act="cenaplay" data-k="hefesto"><b>O Ferreiro das Profundezas</b><span>O primeiro encontro com o Hefesto.</span></button>
+      <button class="choice" data-act="cenaplay" data-k="war"><b>Um encontro no caminho</b><span>Um guerreiro sorteado, calmo ou no meio de uma briga.</span></button>
+      <div class="cenab"><b>Entrada dos chefes</b>${['reigoblin','golem','lich','rainha','reicorvo'].map(id=>`<button class="btn small" data-act="cenaplay" data-k="boss:${id}">${ENEMIES[id].n}</button>`).join('')}</div>
       <button class="choice" data-act="cenaplay" data-k="ending"><b>O Retorno: Classe S</b><span>Depois de derrotar o Corvo Rei, a coroa no balcão. Contém o final do jogo.</span></button>
      </div><div class="mfoot"><button class="btn small" data-act="mclose">Fechar</button></div></div>`;m.hidden=false;m.scrollTop=0},
   cenah:el=>{UI.cenaHero=el.dataset.ch;ACT.cenas()},
   cenaplay:el=>{const k=el.dataset.k;closeModal();if(k==='video'){openAbertura(true);return}
-    const prev=G;G={char:UI.cenaHero||'cav',pers:null,act:1,seed:1,stats:{floors:30,bosses:3},weapon:{lv:k==='ending'?3:0,path:'a'}};heroPers();
+    const prev=G,ac=k.startsWith('act:')?+k.split(':')[1]:k==='boss:lich'||k==='boss:rainha'?2:k==='boss:reicorvo'?3:1;G={char:UI.cenaHero||'cav',pers:null,act:ac,seed:1,stats:{floors:30,bosses:3},weapon:{lv:k==='ending'?3:Math.min(3,ac-1),path:'a'}};if(k==='war')G.war={id:pickL(Object.keys(WARR)),mode:pickL(['calm','fight'])};heroPers();
     playIntro(()=>{G=prev;render()},k)},
   howto:()=>{const m=$('#modal');m.innerHTML=`<div class="mbox" style="max-width:720px"><h2 class="h2">Como jogar</h2><div class="panel" style="width:100%">${HOWTO}</div><div class="mfoot"><button class="btn small" data-act="mclose">Fechar</button></div></div>`;m.hidden=false;m.scrollTop=0},
   go:el=>{if(UI.moving)return;if(G.screen!=='map'&&!(UI.dev&&UI.freeMap))return;const r=+el.dataset.r,c=+el.dataset.c;const n=r===ROWS?G.map.boss:G.map.rows[r][c];if(G.screen==='map')moveToken(n,()=>enterNode(r,c));else enterNode(r,c)},
@@ -3282,6 +3289,57 @@ function actorCanvas(key,tint){const g=VIS.grid(key,key===CHARS[G.char].spr?hero
 const ease=t=>t<.5?2*t*t:1-Math.pow(-2*t+2,2)/2;
 function cutSleep(ms){return new Promise(r=>{const t0=performance.now(),f=()=>{if(CUT.skip||performance.now()-t0>=ms)r();else requestAnimationFrame(f)};f()})}
 function tween(obj,to,ms,fn=ease){const from={};for(const k in to)from[k]=obj[k];const t0=performance.now();CUT.tw.push({obj,from,to,t0,ms,fn});return cutSleep(ms)}
+/* ---------- cenas extras: chefes, troca de ato, Hefesto e guerreiros ---------- */
+const BOSS_SCN={reigoblin:'goblins',golem:'ruinas',lich:'cripta',rainha:'aranhas',reicorvo:'salao'};
+const BOSS_LOC={reigoblin:'O Acampamento do Rei Goblin',golem:'As Ruínas do Golem',lich:'A Cripta do Lich',rainha:'O Ninho da Rainha',reicorvo:'O Salão do Corvo Rei'};
+const BOSS_L2={reigoblin:'Guardas! ... Ah, é. Eu comi os guardas. Eu mesmo resolvo.',golem:'ANÁLISE CONCLUÍDA. CLASSE D. RESULTADO: IRRELEVANTE.',lich:'Os mortos daqui trabalham para mim. Você vai ser o próximo funcionário.',rainha:'Cada fio desta teia já pegou um herói. Você é só mais um nó.',reicorvo:'Cada corvo desta torre já foi alguém como você. Bem-vindo à revoada.'};
+const HERO_BOSS={corajoso:'Desci até aqui por este momento. Levanta e luta.',sarcastico:'Bonita entrada. Ensaiou muito?',nervoso:'Ele é maior do que eu imaginei. Bem maior.',sombrio:'Mais um trono. Mais uma queda.'};
+const ACT_L={2:{scn:'catacumbas',loc:['Ato 2 · Andar 11','As Catacumbas'],narr:'Algo sussurra entre os ossos.',hero:{corajoso:'Mais fundo. Mais frio. Continuamos.',sarcastico:'Adorei a decoração. Ossos, sério?',nervoso:'Isso são... caveiras? São todas caveiras?',sombrio:'Aqui os mortos não descansam. Nem eu.'}},
+ 3:{scn:'telhado',loc:['Ato 3 · Andar 21','A Torre do Corvo'],narr:'Lá no alto, um grasnado. O Corvo Rei sabe que você chegou.',hero:{corajoso:'Lá em cima. É lá que termina.',sarcastico:'Claro que o chefe mora na cobertura.',nervoso:'Por que tinha que ser uma torre? Eu tenho medo de altura!',sombrio:'Os corvos já sabem que eu cheguei.'}}};
+const HEF_HERO={corajoso:'Me disseram que você faz armas de lenda.',sarcastico:'Bela fornalha. Aceita encomenda?',nervoso:'Desculpa! A porta tava aberta! Quer dizer... não tinha porta.',sombrio:'O fogo daqui é mais velho que a torre.'};
+const COLD_SCN=['catacumbas','cripta','aranhas','ruinas','telhado','entrada','labirinto','esgoto'];
+function cutScenesFor(which){const[t,a]=which.split(':');if(t==='boss')return[BOSS_SCN[a]];if(t==='act')return[ACT_L[a].scn];if(t==='hefesto')return['forjaHef'];if(t==='war')return[G.war&&G.war.mode==='fight'?'mina':'santuario'];return['taverna','entrada']}
+async function CUT_EXTRA(which,T){
+  const[t,arg]=which.split(':'),{A,S,say,cut,fade,loc,box}=T,hk=CHARS[G.char].spr,hname=CHARS[G.char].n,P=HERO_PERS[G.pers]?G.pers:'corajoso';
+  const tint=n=>COLD_SCN.includes(n)?'rgba(10,20,60,.32)':'rgba(60,25,5,.2)';
+  for(const k of Object.keys(A))delete A[k];S.counter=false;S.crown=null;
+  const title=async(sm,big,ms=2200)=>{const tt=box.querySelector('.ctitle');tt.innerHTML=`<small>${sm}</small>${big}`;tt.classList.add('on');await cutSleep(ms);tt.classList.remove('on')};
+  const walkIn=async(to,cam,ms)=>{A.hero.walk=1;tween(A.hero,{x:to},ms,q=>q);await tween(S.cam,cam,ms);A.hero.walk=0};
+  fade.classList.add('in');await cutSleep(60);fade.classList.remove('in');
+  if(t==='boss'){const id=arg,E=ENEMIES[id];S.scene=BOSS_SCN[id];const tn=tint(S.scene);
+    A.hero={img:actorCanvas(hk,tn),x:20,y:CFL,flip:false};A.boss={img:actorCanvas(E.spr,tn),x:236,y:CFL,flip:true,sz:64,alpha:0};S.cast=['hero','boss'];
+    loc.innerHTML=`<small>Ato ${G.act} · O fundo da masmorra</small>${BOSS_LOC[id]}`;loc.classList.add('on');
+    cut({x:70,y:96,z:1.3});await walkIn(96,{x:160,y:92,z:1.05},3400);loc.classList.remove('on');
+    cut({x:232,y:CFL-40,z:1.7});const B=A.boss;
+    if(id==='reicorvo'||id==='rainha'){B.y=CFL-100;B.alpha=1;await tween(B,{y:CFL},1700)}
+    else if(id==='lich'){B.y=CFL+34;await tween(B,{y:CFL,alpha:1},1900)}
+    else if(id==='golem'){await tween(B,{alpha:1},1800);await tween(B,{hop:6},180);await tween(B,{hop:0},160)}
+    else{B.alpha=1;await tween(B,{hop:14},260);await tween(B,{hop:0},220)}
+    await say(E.n,BOSS_START[id]);cut({x:234,y:CFL-46,z:2.1});await say(E.n,BOSS_L2[id]);
+    cut({x:96,y:CFL-20,z:3.2});await say(hname,HERO_BOSS[P]);
+    cut({x:166,y:CFL-32,z:1.5});await tween(S.cam,{z:2},1300);return}
+  if(t==='act'){const L=ACT_L[arg];S.scene=L.scn;A.hero={img:actorCanvas(hk,tint(L.scn)),x:20,y:CFL,flip:false};S.cast=['hero'];
+    loc.innerHTML=`<small>${L.loc[0]}</small>${L.loc[1]}`;loc.classList.add('on');
+    cut({x:60,y:96,z:1.3});await walkIn(150,{x:200,y:92,z:1.15},4600);loc.classList.remove('on');
+    await say('',L.narr,2600);cut({x:150,y:CFL-20,z:3.2});await say(hname,L.hero[P]);
+    cut({x:160,y:90,z:1});await title('Ato '+arg,ACTS[arg].n);return}
+  if(t==='hefesto'){S.scene='forjaHef';const tn=tint('forjaHef');A.hero={img:actorCanvas(hk,tn),x:20,y:CFL,flip:false};A.hef={img:actorCanvas('hefesto',tn),x:166,y:CFL,flip:true,sz:40};S.cast=['hero','hef'];
+    let ham=true;(async()=>{while(ham&&!CUT.skip){await tween(A.hef,{hop:3},170);await tween(A.hef,{hop:0},130);await cutSleep(420)}})();
+    loc.innerHTML='<small>Andar 7</small>A Forja de Hefesto';loc.classList.add('on');
+    cut({x:60,y:96,z:1.3});await walkIn(112,{x:150,y:94,z:1.2},3600);loc.classList.remove('on');
+    cut({x:166,y:CFL-26,z:3});await cutSleep(900);ham=false;await say('Hefesto','Hm? Visita. Faz uns cem anos que ninguém desce até a minha forja sem estar morto.');
+    cut({x:112,y:CFL-20,z:3.2});await say(hname,HEF_HERO[P]);
+    cut({x:166,y:CFL-26,z:3});await say('Hefesto','Classe D, é? Hah. Eu também já fui D. Aí aprendi a bater ferro.');
+    cut({x:140,y:CFL-26,z:2});await say('Hefesto','Traz Fragmentos das elites e dos chefes. Eu transformo esse aço torto em lenda.');return}
+  if(t==='war'){const w=G.war,W=WARR[w.id],fight=w.mode==='fight';S.scene=fight?'mina':'santuario';const tn=tint(S.scene);
+    A.hero={img:actorCanvas(hk,tn),x:20,y:CFL,flip:false};A.war={img:actorCanvas(W.spr,tn),x:fight?200:170,y:CFL,flip:true};S.cast=['hero','war'];
+    if(fight){const foe=pick(ACTS[G.act||1].easy).find(id=>TALKERS.includes(id))||'goblin',fs=ENEMIES[foe].spr;A.f1={img:actorCanvas(fs,tn),x:244,y:CFL,flip:true,laugh:1};A.f2={img:actorCanvas(fs,tn),x:272,y:CFL,flip:true,laugh:1};S.cast.push('f1','f2');A.war.flip=false}
+    loc.innerHTML=`<small>Um encontro no caminho</small>${W.n}, ${W.t}`;loc.classList.add('on');
+    cut({x:70,y:96,z:1.3});await walkIn(fight?140:118,{x:170,y:94,z:1.15},3400);loc.classList.remove('on');
+    const lines=fight?W.fight:W.calm;
+    for(const l of lines){const q=l.startsWith('"');if(q){cut({x:A.war.x,y:CFL-26,z:3});if(fight)A.war.flip=true;await say(W.n,l.replace(/^"|"$/g,''))}else{cut({x:fight?200:150,y:CFL-30,z:1.6});await say('',l,Math.max(2600,l.length*50))}}
+    return}
+}
 async function playIntro(done,which='intro'){
   if(CUT.on)return;CUT.on=true;CUT.skip=false;CUT.tw=[];
   const box=document.createElement('div');box.id='cut';box.innerHTML=`<canvas width="1280" height="720"></canvas><div class="cbar t"></div><div class="cbar b"></div><div class="cloc"></div><div class="csub"><b></b><span></span></div><div class="clic" hidden></div><div class="ctitle"></div><div class="cfade"></div><button class="cskip" type="button">Pular ›</button>`;document.body.appendChild(box);
@@ -3290,7 +3348,7 @@ async function playIntro(done,which='intro'){
   const key=e=>{if(e.key==='Escape'||e.key===' '){e.preventDefault();e.stopImmediatePropagation();CUT.skip=true;end()}};
   box.querySelector('.cskip').onclick=()=>{CUT.skip=true;end()};document.addEventListener('keydown',key,true);
   const load=n=>new Promise(r=>{const i=new Image();i.onload=()=>r(i);i.onerror=()=>r(null);i.src=VIS.scene(n)});
-  const BG={taverna:await load('taverna'),entrada:await load('entrada')};
+  const BG={};for(const n of cutScenesFor(which))BG[n]=await load(n);
   const hk=CHARS[G.char].spr,pers=CUT_LINES[G.pers]||CUT_LINES.corajoso,hname=CHARS[G.char].n;
   const warm='rgba(60,25,5,.22)',cold='rgba(10,20,60,.35)';
   const A={hero:{img:actorCanvas(hk,warm),x:22,y:CFL,flip:false,walk:0,alpha:1,hop:0,s:1},
@@ -3304,14 +3362,15 @@ async function playIntro(done,which='intro'){
     x.setTransform(1,0,0,1,0,0);x.fillStyle='#000';x.fillRect(0,0,1280,720);x.setTransform(k,0,0,k,640-cx*k,360-cy*k);
     const bg=BG[S.scene];if(bg)x.drawImage(bg,0,0,320,180);
     for(const n of S.cast){const a=A[n];if(!a||a.alpha<=0)continue;const step=Math.floor(now/120)%4,bob=a.walk?0:a.laugh?-Math.abs(Math.sin(now/70))*1.5:(Math.sin(now/500+a.x)>.6?-.5:0);
-      x.save();x.globalAlpha=a.alpha??1;x.translate(Math.round(a.x),a.y+bob-(a.hop||0));if(a.flip)x.scale(-1,1);x.fillStyle='rgba(0,0,0,.45)';x.beginPath();x.ellipse(0,0,10,2,0,0,7);x.fill();x.drawImage(a.walk&&a.img.frames?a.img.frames[step]:a.img,-16,-32,32,32);x.restore()}
+      x.save();x.globalAlpha=a.alpha??1;x.translate(Math.round(a.x),a.y+bob-(a.hop||0));if(a.flip)x.scale(-1,1);const sz=a.sz||32;x.fillStyle='rgba(0,0,0,.45)';x.beginPath();x.ellipse(0,0,sz*.32,2,0,0,7);x.fill();x.drawImage(a.walk&&a.img.frames?a.img.frames[step]:a.img,-sz/2,-sz,sz,sz);x.restore()}
     if(S.counter&&S.scene==='taverna'){x.fillStyle='#4a2a14';x.fillRect(206,CFL-13,62,13);x.fillStyle='#7a4a24';x.fillRect(204,CFL-15,66,3);x.fillStyle='#2a160a';for(let i=210;i<266;i+=10)x.fillRect(i,CFL-12,1,12);x.fillStyle='#c09040';x.fillRect(214,CFL-19,4,4);x.fillStyle='#e8dcc0';x.fillRect(222,CFL-17,8,2)}
     if(S.crown){const q=S.crown;x.save();x.translate(q.x,q.y);x.fillStyle='#e8b23a';x.fillRect(-5,-2,10,3);for(const d of [-5,-1,3])x.fillRect(d,-5,2,3);x.fillStyle='#fff0a0';x.fillRect(-5,-2,10,1);x.fillStyle='#e02a3a';x.fillRect(-1,-1,2,1);x.fillStyle='#3ad0ff';x.fillRect(-4,-1,1,1);x.fillRect(3,-1,1,1);x.restore()}
     CUT.raf=requestAnimationFrame(draw)};
   CUT.raf=requestAnimationFrame(draw);
   const sub=box.querySelector('.csub'),loc=box.querySelector('.cloc'),fade=box.querySelector('.cfade');
-  const say=async(who,text,ms)=>{if(CUT.skip)return;sub.querySelector('b').textContent=who;sub.querySelector('span').textContent='“'+text+'”';sub.classList.add('on');await cutSleep(ms||Math.max(2200,text.length*55));sub.classList.remove('on');await cutSleep(220)};
+  const say=async(who,text,ms)=>{if(CUT.skip)return;sub.querySelector('b').textContent=who;sub.querySelector('span').textContent=who?'“'+text+'”':text;sub.classList.toggle('narr',!who);sub.classList.add('on');await cutSleep(ms||Math.max(2200,text.length*55));sub.classList.remove('on');await cutSleep(220)};
   const cut=(cam,patch={})=>{Object.assign(S.cam,cam);Object.assign(S,patch)};
+  if(which!=='intro'&&which!=='ending'){try{await CUT_EXTRA(which,{A,S,say,cut,fade,loc,box})}catch(e){console.error(e)}end();return}
   if(which==='ending'){try{
     const st=G.stats||{};fade.classList.add('in');await cutSleep(60);fade.classList.remove('in');
     loc.innerHTML='<small>Vila de Pedra Funda, três dias depois</small>Taverna do Javali Torto';loc.classList.add('on');
