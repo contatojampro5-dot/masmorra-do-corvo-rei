@@ -32,3 +32,4 @@ Arraste a carta até o inimigo (ou clique na carta e depois no alvo). **E** ence
 - **v1.7** — novas cenas: queda dos 5 chefes (o Corvo Rei vira pó e penas), a volta do herói carregado à taverna quando tomba, o Mercador e a Lenda do Corvo Rei (Aldric, o Rei Justo).
 - **v1.8** — botão **Heróis** no menu com a história de cada um (o cavaleiro sem bandeira, a irmã de Liora, o aluno expulso, o ferreiro de Pedra Funda e o necromante que está virando corvo).
 - **v1.9** — na Taverna, a Marta explica por que cada herói ganha D (ordem extinta, a irmã Liora, expulso da Academia, ferreiro sem luta, e o Necromante registrado como "sem nome").
+- **v2.0** — dê nome ao seu herói (com nomes sugeridos e sorteio). O Necromante começa "sem nome" e só diz o nome dele na cena da Classe S.

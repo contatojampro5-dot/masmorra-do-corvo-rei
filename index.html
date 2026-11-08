@@ -485,6 +485,12 @@ button:focus-visible,[data-act]:focus-visible{outline:2px solid var(--gold);outl
 .cenah{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;width:100%}
 .cenahb{display:flex;flex-direction:column;align-items:center;gap:2px;width:112px;padding:8px 6px;background:#14100c;border:1px solid var(--line);border-radius:8px;font-family:var(--f-sc);font-size:13px;color:var(--muted)}
 .cenahb .spr{width:56px}
+.nameform{align-items:stretch;gap:12px}.nfhead{display:flex;align-items:center;gap:14px}.nfhead .spr{width:84px;flex:none}.nfhead small{font-family:var(--f-sc);color:#ffb35a;font-size:15px}.nfhead .h2{text-align:left;font-size:24px}
+.nfrow{display:flex;gap:8px}.nfrow input,.cname input{flex:1;min-width:0;background:#100d0a;border:1px solid #6b5535;border-radius:6px;color:var(--text);padding:10px 12px;font:400 22px var(--f-body)}
+.nfrow input:focus,.cname input:focus{outline:2px solid var(--gold);outline-offset:1px}
+.nameform .row{justify-content:flex-end}
+#cut .cname{position:absolute;z-index:6;left:50%;top:50%;transform:translate(-50%,-50%);width:min(440px,88vw);background:#140f0bf2;border:1px solid #8a6a35;border-radius:8px;padding:18px;display:flex;flex-direction:column;gap:10px;box-shadow:0 20px 60px #000c}
+#cut .cname label{font-family:var(--f-sc);color:var(--gold);font-size:17px;text-align:center}#cut .cname div{display:flex;gap:8px}#cut .cname .t-item{padding:10px 26px;font-size:18px}
 .hlist{display:flex;flex-direction:column;gap:12px;width:100%}
 .hcard{display:grid;grid-template-columns:150px minmax(0,1fr);gap:18px;align-items:start;background:linear-gradient(#1d1812f2,#110d0af2);border:1px solid var(--line);border-radius:8px;padding:16px 18px}
 .hfig{display:flex;flex-direction:column;align-items:center;gap:6px}.hfig .spr{width:136px;filter:drop-shadow(0 0 12px #e0a23a33)}
@@ -1414,7 +1420,7 @@ function winCombat(){
   if(hasRelic('brasao'))heal(6);
   G.combat=null;
   {const fr=kind==='boss'?2:kind==='elite'?1:0;if(fr)G.frags=(G.frags||0)+fr}
-  if(kind==='boss'){G.stats.bosses++;G.diamonds+=3;if(G.act>=3){G.screen='end';G.won=true;clearSave();render();playIntro(()=>playIntro(null,'ending'),'bfall:'+bid);return}}
+  if(kind==='boss'){G.stats.bosses++;G.diamonds+=3;if(G.act>=3){G.screen='end';G.won=true;clearSave();render();playIntro(()=>playIntro(()=>render(),'ending'),'bfall:'+bid);return}}
   G.reward=makeReward(kind);G.screen='reward';
   if(G.war&&G.war.mode==='fight'&&G.war.phase==='after'&&kind!=='boss')G.screen='warrior';
   render();
@@ -1490,7 +1496,7 @@ const gemHTML=k=>`<span class="gem" data-tip="<b>${POWERS[k].n}</b>${POWERS[k].d
 const DIA='<span class="dia"></span>';
 function topHTML(){
   const fl=G.pos?(G.pos.r===ROWS?'Chefe':'Andar '+(G.pos.r+1)):'Entrada';
-  return`<span class="hero" data-tip="<b>Temperamento: ${heroPers().n}</b>Sorteado no começo da jornada. Muda o jeito de falar do herói.">${CHARS[G.char].n}</span><span class="pers" style="color:${heroPers().c}">${heroPers().n}</span>
+  return`<span class="hero" data-tip="<b>Temperamento: ${heroPers().n}</b>Sorteado no começo da jornada. Muda o jeito de falar do herói.">${heroName()}</span><span class="pers" style="color:${heroPers().c}">${heroPers().n}</span>
    <span class="stat" data-tip="<b>Vida</b>Se chegar a zero, a jornada acaba.">${SVG.heart}${G.hp}/${G.maxHp}</span>
    <span class="stat" data-tip="<b>Ouro</b>Use nas lojas."><span class="coin"></span>${G.gold}</span>
    <span class="stat" data-tip="<b>Diamantes</b>Ganhos ao derrotar chefes. Compram poderes especiais no Santuário e no Mercador.">${DIA}${G.diamonds}</span>
@@ -1806,7 +1812,7 @@ function endHTML(){
   const s=G.stats;
   return`<div class="page" style="justify-content:safe center">
    ${G.won?`<div class="emblem" style="opacity:.55;filter:grayscale(1)">${sprHTML('crowking',{flip:1})}</div><h1 class="h1">O Corvo Rei caiu</h1><p class="lead">A torre silencia. Pela primeira vez em cem anos, os corvos deixam as ameias.</p>`:`<div class="emblem" style="filter:grayscale(1) brightness(.6)">${sprHTML(CHARS[G.char].spr)}</div><h1 class="h1">Você tombou</h1><p class="lead">A masmorra guarda mais um aventureiro. Você chegou ao ato ${G.act}, ${ACTS[G.act].n}.</p>`}
-   <dl class="stats"><dt>Personagem</dt><dd>${CHARS[G.char].n}</dd><dt>Andares</dt><dd>${s.floors}</dd><dt>Chefes derrotados</dt><dd>${s.bosses}</dd><dt>Inimigos derrotados</dt><dd>${s.kills}</dd><dt>Dano causado</dt><dd>${s.dmg}</dd><dt>Cartas jogadas</dt><dd>${s.cards}</dd><dt>Semente</dt><dd>${G.seed}</dd></dl>
+   <dl class="stats"><dt>Personagem</dt><dd>${heroName()}${G.name?' · '+CHARS[G.char].n:''}</dd><dt>Andares</dt><dd>${s.floors}</dd><dt>Chefes derrotados</dt><dd>${s.bosses}</dd><dt>Inimigos derrotados</dt><dd>${s.kills}</dd><dt>Dano causado</dt><dd>${s.dmg}</dd><dt>Cartas jogadas</dt><dd>${s.cards}</dd><dt>Semente</dt><dd>${G.seed}</dd></dl>
    <div class="row"><button class="btn primary" data-act="new">Nova jornada</button><button class="btn" data-act="menu">Menu</button></div></div>`;
 }
 function render(){
@@ -1920,7 +1926,7 @@ function say(uid,text,{prio=0,delay=0}={}){
   setTimeout(()=>{
     if(!G||G.screen!=='combat'&&prio<3)return;
     const isP=uid==='p',e=!isP&&G.combat&&G.combat.enemies.find(x=>x.uid===uid);
-    const name=isP?CHARS[G.char].n:e?ENEMIES[e.id].n:'',col=isP?heroPers().c:'#ff9a7a';
+    const name=isP?heroName():e?ENEMIES[e.id].n:'',col=isP?heroPers().c:'#ff9a7a';
     const L=$('#fxlayer');L.querySelectorAll('.cap').forEach(x=>x.remove());
     const cap=document.createElement('div');cap.className='cap';cap.innerHTML=`<b style="color:${col}"></b><span></span>`;cap.querySelector('b').textContent=name+':';cap.querySelector('span').textContent='“'+text+'”';
     const f=$('#field');if(f){const r=f.getBoundingClientRect();cap.style.top=(r.bottom-52)+'px'}L.appendChild(cap);setTimeout(()=>cap.remove(),2900);
@@ -2044,7 +2050,12 @@ function devCmd(cmd){
 const ACT={
   new:()=>{G=null;UI.choose=true;render()},
   back:()=>{UI.choose=false;render()},
-  start:el=>{const s=$('#seed');const v=s&&parseInt(s.value,10);clearSave();UI.choose=false;newRun(isNaN(v)?0:v,el.dataset.ch);heroPers();save();playIntro(()=>banner(ACTS[G.act].n))},
+  start:el=>{const ch=el.dataset.ch,c=CHARS[ch],m=$('#modal'),sd=$('#seed');UI.seedV=sd&&parseInt(sd.value,10);UI.pickCh=ch;const nec=ch==='nec';
+    m.innerHTML=`<div class="mbox" style="max-width:480px"><div class="panel nameform"><div class="nfhead">${sprHTML(c.spr)}<div><small>${c.n}</small><h2 class="h2">${nec?'Sem nome':'Como a guilda vai te registrar?'}</h2></div></div>
+     ${nec?`<p class="sub">O Necromante não diz o próprio nome. A guilda vai registrar como <i>sem nome</i>. Quem sabe um dia, se ele chegar longe...</p>`:`<form class="nfrow" id="nameform"><input id="heroname" maxlength="14" autocomplete="off" value="${pickL(DEF_NAMES[ch])}" aria-label="Nome do herói"><button class="btn small" type="button" data-act="namedice" title="Sortear outro nome">🎲</button></form><p class="sub">Até 14 letras.</p>`}
+     <div class="row"><button class="btn small" data-act="mclose">Voltar</button><button class="btn primary" data-act="namego">Descer à masmorra</button></div></div></div>`;m.hidden=false;const inp=$('#heroname');if(inp){inp.focus();inp.select();$('#nameform').onsubmit=e=>{e.preventDefault();ACT.namego()}}},
+  namedice:()=>{const i=$('#heroname');if(!i)return;const pool=DEF_NAMES[UI.pickCh].filter(n=>n!==i.value);i.value=pickL(pool.length?pool:DEF_NAMES[UI.pickCh])},
+  namego:()=>{const i=$('#heroname'),nm=i?i.value.trim().slice(0,14):'',v=UI.seedV;closeModal();clearSave();UI.choose=false;newRun(isNaN(v)?0:v,UI.pickCh);G.name=nm||null;heroPers();save();render();playIntro(()=>banner(ACTS[G.act].n))},
   cont:()=>{G=loadSave();if(G){UI.lock=false;render();resumeCombat()}},
   menu:()=>{G=null;UI.choose=false;render()},
   abertura:()=>openAbertura(true),
@@ -2074,7 +2085,7 @@ const ACT={
      <div class="mfoot"><button class="btn small" data-act="mclose">Fechar</button></div></div>`;m.hidden=false;m.scrollTop=0},
   cenah:el=>{UI.cenaHero=el.dataset.ch;ACT.cenas()},
   cenaplay:el=>{const k=el.dataset.k;closeModal();if(k==='video'){openAbertura(true);return}
-    const prev=G,ac=k.startsWith('act:')?+k.split(':')[1]:/lich|rainha|lore/.test(k)?2:/reicorvo/.test(k)?3:1;G={char:UI.cenaHero||'cav',pers:null,act:ac,seed:1,stats:{floors:30,bosses:3},weapon:{lv:k==='ending'?3:Math.min(3,ac-1),path:'a'}};if(k==='war')G.war={id:pickL(Object.keys(WARR)),mode:pickL(['calm','fight'])};heroPers();
+    const prev=G,ac=k.startsWith('act:')?+k.split(':')[1]:/lich|rainha|lore/.test(k)?2:/reicorvo/.test(k)?3:1;G={char:UI.cenaHero||'cav',pers:null,act:ac,seed:1,stats:{floors:30,bosses:3},weapon:{lv:k==='ending'?3:Math.min(3,ac-1),path:'a'}};if(k==='war')G.war={id:pickL(Object.keys(WARR)),mode:pickL(['calm','fight'])};G.name=DEF_NAMES[G.char].length?DEF_NAMES[G.char][0]:null;heroPers();
     playIntro(()=>{G=prev;render()},k)},
   howto:()=>{const m=$('#modal');m.innerHTML=`<div class="mbox" style="max-width:720px"><h2 class="h2">Como jogar</h2><div class="panel" style="width:100%">${HOWTO}</div><div class="mfoot"><button class="btn small" data-act="mclose">Fechar</button></div></div>`;m.hidden=false;m.scrollTop=0},
   go:el=>{if(UI.moving)return;if(G.screen!=='map'&&!(UI.dev&&UI.freeMap))return;const r=+el.dataset.r,c=+el.dataset.c;const n=r===ROWS?G.map.boss:G.map.rows[r][c];if(G.screen==='map')moveToken(n,()=>enterNode(r,c));else enterNode(r,c)},
@@ -3300,11 +3311,13 @@ return{grid,portrait,scene:SCN.renderScene,weaponIcon:ARM.weaponIcon,WTREE:ARM.W
 const CFL=142;
 SPR.w_marta=recol('merchant',{m:'p',M:'P'});
 const CUT={on:false,skip:false,raf:0};
+const DEF_NAMES={cav:['Edran','Galvão','Rodrigo','Tristão','Aldo'],cac:['Sela','Íris','Maya','Luna','Raia'],mag:['Caio','Teodoro','Benedito','Fausto','Ícaro'],tan:['Bortolo','Gaspar','Otávio','Bento','Moisés'],nec:[]};
+function heroName(){return(G&&G.name)||CHARS[G.char].n}
 const MARTA_D={
- cav:['Nome? Cavaleiro da Ordem do Vale Cinzento? Hm.','Essa ordem acabou faz dez anos. Sem ordem, sem título.'],
- cac:['Nome? Caçadora... das Brumas. Espera. Você é a irmã da Liora, né?','Ela também era D. E não voltou.'],
- mag:['Nome? Mago Arcano. Aqui na carta diz: "expulso da Academia".','Sem diploma, sem cajado de mestre. Hm.'],
- tan:['Nome? Guardião... Peraí. Você não é o ferreiro da rua de baixo?','Lutou alguma vez na vida? Armadura bonita não conta.'],
+ cav:['Nome? NM, cavaleiro da Ordem do Vale Cinzento? Hm.','Essa ordem acabou faz dez anos. Sem ordem, sem título.'],
+ cac:['Nome? NM... Espera. Você é a irmã da Liora, né?','Ela também era D. E não voltou.'],
+ mag:['Nome? NM. Aqui na carta diz: "expulso da Academia".','Sem diploma, sem cajado de mestre. Hm.'],
+ tan:['Nome? NM... Peraí. Você não é o ferreiro da rua de baixo?','Lutou alguma vez na vida? Armadura bonita não conta.'],
  nec:['Nome?','... Nada? Tá. Vou escrever "sem nome".'],
 };
 const CUT_LINES={
@@ -3355,7 +3368,7 @@ function dissolve(S,a,{mode='dust',color=null,feathers=false,ms=2200}={}){
   return tween(a,{alpha:0},ms,q=>q)}
 function cutScenesFor(which){const[t,a]=which.split(':');if(t==='bfall')return[BOSS_SCN[a]];if(t==='death')return['taverna'];if(t==='merc')return['mina'];if(t==='lore')return['salao','telhado','catacumbas'];if(t==='boss')return[BOSS_SCN[a]];if(t==='act')return[ACT_L[a].scn];if(t==='hefesto')return['forjaHef'];if(t==='war')return[G.war&&G.war.mode==='fight'?'mina':'santuario'];return['taverna','entrada']}
 async function CUT_EXTRA(which,T){
-  const[t,arg]=which.split(':'),{A,S,say,cut,fade,loc,box}=T,hk=CHARS[G.char].spr,hname=CHARS[G.char].n,P=HERO_PERS[G.pers]?G.pers:'corajoso';
+  const[t,arg]=which.split(':'),{A,S,say,cut,fade,loc,box}=T,hk=CHARS[G.char].spr,hname=heroName(),P=HERO_PERS[G.pers]?G.pers:'corajoso';
   const tint=n=>COLD_SCN.includes(n)?'rgba(10,20,60,.32)':'rgba(60,25,5,.2)';
   for(const k of Object.keys(A))delete A[k];S.counter=false;S.crown=null;
   const title=async(sm,big,ms=2200)=>{const tt=box.querySelector('.ctitle');tt.innerHTML=`<small>${sm}</small>${big}`;tt.classList.add('on');await cutSleep(ms);tt.classList.remove('on')};
@@ -3430,16 +3443,19 @@ async function CUT_EXTRA(which,T){
     for(const l of lines){const q=l.startsWith('"');if(q){cut({x:A.war.x,y:CFL-26,z:3});if(fight)A.war.flip=true;await say(W.n,l.replace(/^"|"$/g,''))}else{cut({x:fight?200:150,y:CFL-30,z:1.6});await say('',l,Math.max(2600,l.length*50))}}
     return}
 }
+function askName(box,label){return new Promise(res=>{if(CUT.skip){res(null);return}const d=document.createElement('form');d.className='cname';
+  d.innerHTML=`<label for="cutname">${label}</label><div><input id="cutname" maxlength="14" autocomplete="off" placeholder="Nome"><button class="t-item primary" type="submit" style="--d:0s">Dizer</button></div>`;box.appendChild(d);const i=d.querySelector('input');setTimeout(()=>i.focus(),50);
+  const fin=v=>{d.remove();res(v)};d.onsubmit=e=>{e.preventDefault();const v=i.value.trim().slice(0,14);if(v)fin(v)};const chk=()=>{if(!d.isConnected)return;if(CUT.skip)fin(null);else requestAnimationFrame(chk)};chk()})}
 async function playIntro(done,which='intro'){
   if(CUT.on)return;CUT.on=true;CUT.skip=false;CUT.tw=[];
   const box=document.createElement('div');box.id='cut';box.innerHTML=`<canvas width="1280" height="720"></canvas><div class="cbar t"></div><div class="cbar b"></div><div class="cloc"></div><div class="csub"><b></b><span></span></div><div class="clic" hidden></div><div class="ctitle"></div><div class="cfade"></div><button class="cskip" type="button">Pular ›</button>`;document.body.appendChild(box);
   const cv=box.querySelector('canvas'),x=cv.getContext('2d');x.imageSmoothingEnabled=false;
   const end=()=>{if(!CUT.on)return;CUT.on=false;CUT.skip=true;cancelAnimationFrame(CUT.raf);box.classList.add('out');document.removeEventListener('keydown',key,true);setTimeout(()=>{box.remove();done&&done()},700)};
-  const key=e=>{if(e.key==='Escape'||e.key===' '){e.preventDefault();e.stopImmediatePropagation();CUT.skip=true;end()}};
+  const key=e=>{if(e.target&&e.target.tagName==='INPUT'&&e.key!=='Escape')return;if(e.key==='Escape'||e.key===' '){e.preventDefault();e.stopImmediatePropagation();CUT.skip=true;end()}};
   box.querySelector('.cskip').onclick=()=>{CUT.skip=true;end()};document.addEventListener('keydown',key,true);
   const load=n=>new Promise(r=>{const i=new Image();i.onload=()=>r(i);i.onerror=()=>r(null);i.src=VIS.scene(n)});
   const BG={};for(const n of cutScenesFor(which))BG[n]=await load(n);
-  const hk=CHARS[G.char].spr,pers=CUT_LINES[G.pers]||CUT_LINES.corajoso,hname=CHARS[G.char].n;
+  const hk=CHARS[G.char].spr,pers=CUT_LINES[G.pers]||CUT_LINES.corajoso;let hname=heroName();
   const warm='rgba(60,25,5,.22)',cold='rgba(10,20,60,.35)';
   const A={hero:{img:actorCanvas(hk,warm),x:22,y:CFL,flip:false,walk:0,alpha:1,hop:0,s:1},
     marta:{img:actorCanvas('w_marta',warm),x:238,y:CFL,flip:true,s:1},
@@ -3472,6 +3488,8 @@ async function playIntro(done,which='intro'){
     await say('Marta, a Escrivã da Guilda','Isso é... a coroa do Corvo Rei?!');
     cut({x:184,y:CFL-20,z:3.4});await say(hname,pers.back);
     cut({x:96,y:CFL-26,z:2.1});await cutSleep(900);await say('Bruna, a Ferreira','...Retiro o que eu disse sobre as botas.');
+    if(G.char==='nec'&&!G.name){cut({x:240,y:CFL-26,z:3});await say('Marta, a Escrivã da Guilda','Agora que você é Classe S... vai me dizer o seu nome?');cut({x:186,y:CFL-20,z:3.4});
+      const nm=await askName(box,'Pela primeira vez, o Necromante diz o próprio nome:');if(nm){G.name=nm;hname=nm;await say(hname,`...${nm}. Meu nome é ${nm}.`);cut({x:240,y:CFL-26,z:3});await say('Marta, a Escrivã da Guilda',`${nm}. Bonito. Devia ter dito antes.`)}}
     cut({x:240,y:CFL-26,z:3});tween(S.cam,{z:3.3},3200);await say('Marta, a Escrivã da Guilda',`Andares: ${st.floors||0}. Chefes: ${st.bosses||3}. A guilda só tem uma letra pra isso.`);
     const lic=box.querySelector('.clic');lic.classList.add('gold');lic.innerHTML=`<div class="lp"><small>Guilda dos Aventureiros de Pedra Funda</small><h3>Licença de Aventureiro</h3><dl><dt>Nome</dt><dd>${hname}</dd><dt>Temperamento</dt><dd>${heroPers().n}</dd><dt>Andares concluídos</dt><dd>${st.floors||0}</dd><dt>Feito</dt><dd>Derrotou o Corvo Rei</dd></dl><div class="rank"><span>Classe</span><b class="old">D</b></div><div class="stamp">S</div></div>`;
     lic.hidden=false;await cutSleep(1300);lic.classList.add('stamped');await cutSleep(1900);
@@ -3487,7 +3505,7 @@ async function playIntro(done,which='intro'){
     cut({x:60,y:90,z:1.25});A.hero.walk=1;tween(A.hero,{x:150},4200,t=>t);await tween(S.cam,{x:210,y:96,z:1.15},4200);A.hero.walk=0;loc.classList.remove('on');
     cut({x:88,y:CFL-22,z:2.6});A.kael.laugh=1;await say('Kael, o Mercenário','Olha só. Mais um que acha que vai voltar.');A.kael.laugh=0;
     cut({x:150,y:CFL-24,z:2.2});A.hero.walk=1;tween(A.hero,{x:186},1500,t=>t);await cutSleep(1500);A.hero.walk=0;
-    cut({x:240,y:CFL-26,z:3});tween(S.cam,{z:3.3},3000);{const md=MARTA_D[G.char]||[`Nome? ${hname}. Hm.`,'Vamos ver o que a guilda acha de você.'];await say('Marta, a Escrivã da Guilda',md[0]);if(G.char==='nec'){cut({x:186,y:CFL-20,z:3.4});await cutSleep(1400);cut({x:240,y:CFL-26,z:3.3})}await say('Marta, a Escrivã da Guilda',md[1])}
+    cut({x:240,y:CFL-26,z:3});tween(S.cam,{z:3.3},3000);{const md=MARTA_D[G.char]||[`Nome? ${hname}. Hm.`,'Vamos ver o que a guilda acha de você.'];await say('Marta, a Escrivã da Guilda',md[0].replace('NM',hname));if(G.char==='nec'){cut({x:186,y:CFL-20,z:3.4});await cutSleep(1400);cut({x:240,y:CFL-26,z:3.3})}await say('Marta, a Escrivã da Guilda',md[1])}
     const lic=box.querySelector('.clic');lic.innerHTML=`<div class="lp"><small>Guilda dos Aventureiros de Pedra Funda</small><h3>Licença de Aventureiro</h3><dl><dt>Nome</dt><dd>${G.char==='nec'?'<i>sem nome</i>':hname}</dd><dt>Temperamento</dt><dd>${heroPers().n}</dd><dt>Andares concluídos</dt><dd>0</dd></dl><div class="rank"><span>Classe</span><b>D</b></div><div class="stamp">D</div></div>`;
     lic.hidden=false;await cutSleep(1200);lic.classList.add('stamped');await cutSleep(1700);
     await say('Marta, a Escrivã da Guilda','Classificação: D. Próximo!',1900);lic.classList.add('gone');await cutSleep(400);lic.hidden=true;
