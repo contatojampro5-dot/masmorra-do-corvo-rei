@@ -30,3 +30,4 @@ Arraste a carta até o inimigo (ou clique na carta e depois no alvo). **E** ence
 - **v1.5** — personagens andam com passos de verdade nas cenas (pernas abrem, cruzam e o pé de trás levanta).
 - **v1.6** — novas cenas: entrada dos 5 chefes, troca para o Ato 2 e o Ato 3, primeiro encontro com o Hefesto e os guerreiros em cena. Todas também no menu Cenas.
 - **v1.7** — novas cenas: queda dos 5 chefes (o Corvo Rei vira pó e penas), a volta do herói carregado à taverna quando tomba, o Mercador e a Lenda do Corvo Rei (Aldric, o Rei Justo).
+- **v1.8** — botão **Heróis** no menu com a história de cada um (o cavaleiro sem bandeira, a irmã de Liora, o aluno expulso, o ferreiro de Pedra Funda e o necromante que está virando corvo).

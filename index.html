@@ -485,6 +485,16 @@ button:focus-visible,[data-act]:focus-visible{outline:2px solid var(--gold);outl
 .cenah{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;width:100%}
 .cenahb{display:flex;flex-direction:column;align-items:center;gap:2px;width:112px;padding:8px 6px;background:#14100c;border:1px solid var(--line);border-radius:8px;font-family:var(--f-sc);font-size:13px;color:var(--muted)}
 .cenahb .spr{width:56px}
+.hlist{display:flex;flex-direction:column;gap:12px;width:100%}
+.hcard{display:grid;grid-template-columns:150px minmax(0,1fr);gap:18px;align-items:start;background:linear-gradient(#1d1812f2,#110d0af2);border:1px solid var(--line);border-radius:8px;padding:16px 18px}
+.hfig{display:flex;flex-direction:column;align-items:center;gap:6px}.hfig .spr{width:136px;filter:drop-shadow(0 0 12px #e0a23a33)}
+.htxt h3{margin:0;font-family:var(--f-disp);font-weight:400;font-size:30px;color:var(--gold);line-height:1}
+.htxt .hep{margin:2px 0 10px;font-family:var(--f-sc);color:#ffb35a;font-size:15px}
+.htxt p{margin:0 0 7px;line-height:1.45;color:var(--text);max-width:62ch}
+.htxt .hq{font-style:italic;color:#e8d8b0;border-left:2px solid #8a6a35;padding-left:10px;margin-top:10px}
+.htxt .hmot{display:flex;flex-wrap:wrap;gap:4px 10px;font-size:14px;color:var(--muted);margin:8px 0 0}.htxt .hmot b{font-family:var(--f-sc);font-weight:400;color:#cdbf9f}
+.charc .cmot{font-family:var(--f-sc);color:#ffb35a;font-size:14px;margin-top:-4px}
+@media (max-width:600px){.hcard{grid-template-columns:1fr;justify-items:center;text-align:center}.htxt .hq{text-align:left}.htxt .hmot{justify-content:center}.hfig .spr{width:110px}}
 .cenab{display:flex;flex-wrap:wrap;gap:6px;align-items:center;padding:10px 14px;background:#14100c;border:1px solid var(--line);border-radius:8px}.cenab b{font-family:var(--f-sc);font-weight:400;font-size:19px;width:100%}
 .cenahb:hover{border-color:#8a6a35}
 .cenahb.on{border-color:var(--gold);color:#fff3d6;box-shadow:0 0 16px #e0a23a44}
@@ -1501,6 +1511,7 @@ function titleHTML(){
    <div class="chars">${Object.entries(CHARS).map(([k,ch],i)=>`<button class="charc" data-act="start" data-ch="${k}" style="--d:${(i*.08).toFixed(2)}s">
      <span class="ped">${sprHTML(ch.spr)}</span><h3>${ch.n}</h3>
      <span class="stat">${SVG.heart}${ch.hp} de vida</span>
+     <p class="cmot">${LORE[k].ep}</p>
      <p>${ch.d}</p>
      <p class="rel">${sealHTML(ch.relic)} ${RELICS[ch.relic].n}: ${RELICS[ch.relic].d}</p></button>`).join('')}</div>
    ${UI.dev?`<div class="row"><label for="seed" style="color:var(--muted);font-family:var(--f-sc)">Semente</label><input id="seed" class="seedin" placeholder="aleatória" inputmode="numeric"></div>`:''}
@@ -1509,6 +1520,7 @@ function titleHTML(){
   const items=[`<button class="t-item primary" data-act="new">Nova jornada</button>`,
     cont?`<button class="t-item" data-act="cont">Continuar<small>${CHARS[sv.char]?CHARS[sv.char].n:'Jornada salva'} · Ato ${sv.act||1}</small></button>`:'',
     `<button class="t-item" data-act="howto">Como jogar</button>`,
+    `<button class="t-item" data-act="herois">Heróis</button>`,
     `<button class="t-item" data-act="cenas">Cenas</button>`,
     `<button class="t-item dim" data-act="dev">${UI.dev?'Modo DEV ligado':'Modo DEV'}</button>`].filter(Boolean);
   return`<div class="page title">
@@ -1838,6 +1850,13 @@ function flushFx(){FXQ.splice(0).forEach(f=>setTimeout(()=>runFx(f),f.delay))}
 function banner(t,small){const d=document.createElement('div');d.className='banner';if(small)d.style.fontSize='34px';d.textContent=t;$('#fxlayer').appendChild(d);setTimeout(()=>d.remove(),1150)}
 function cinematic(name,sub){const d=document.createElement('div');d.className='cine';d.innerHTML=`<div class="cn"></div><div class="cs"></div>`;d.querySelector('.cn').textContent=name;d.querySelector('.cs').textContent=sub;$('#fxlayer').appendChild(d);setTimeout(()=>d.remove(),2900)}
 /* ---------- falas com legenda: personalidades sorteadas ---------- */
+const LORE={
+ cav:{ep:'O último da Ordem do Vale Cinzento',mot:'Honra',txt:['Ele era cavaleiro da Ordem do Vale Cinzento. Quando os corvos tomaram o castelo do seu senhor, foi o único que não fugiu, e o único que sobreviveu.','Sem senhor, sem ordem e sem bandeira, passou a vender a espada de vila em vila. Na taverna, chamam ele de errante. Ele odeia o apelido.','Desce a masmorra para provar que um cavaleiro sem bandeira ainda é um cavaleiro.'],q:'Um juramento não morre com quem o recebeu.'},
+ cac:{ep:'A irmã que ficou para trás',mot:'Encontrar Liora',txt:['Cresceu nas florestas enevoadas ao pé da torre, caçando ao lado da irmã gêmea, Liora.','Num inverno, Liora seguiu um corvo branco até a entrada da masmorra e nunca mais voltou. A Caçadora achou só o arco dela, quebrado, na porta.','Desde então, crava uma flecha na parede de cada andar que desce, para a irmã saber o caminho de volta.'],q:'Toda trilha tem um fim. Eu vou até o da minha irmã.'},
+ mag:{ep:'O aluno que abriu o livro errado',mot:'O diário do mago dos corvos',txt:['Foi o melhor aluno da Academia de Pedra Funda até abrir um livro trancado: o diário do mago que fez o pacto de Aldric.','Expulso, sem título e sem cajado de mestre, descobriu nas últimas páginas que todo pacto tem uma cláusula de saída, escrita no próprio trono.','Desce em busca do conhecimento que a academia teve medo de estudar.'],q:'Proibido é só o que ninguém entendeu ainda.'},
+ tan:{ep:'O ferreiro que virou muralha',mot:'Proteger Pedra Funda',txt:['Foi o ferreiro da vila por vinte anos. Nunca quis ser herói.','Quando os corvos começaram a levar as crianças das plantações, vestiu a armadura que ele mesmo tinha forjado e pegou o escudo maior da oficina.','Não sabe lutar bonito, mas ninguém passa por ele. Jurou que Pedra Funda não vai virar a próxima torre.'],q:'Eu não preciso ganhar. Eu preciso ficar de pé.'},
+ nec:{ep:'O que está virando outra coisa',mot:'Quebrar o próprio pacto',txt:['Ninguém na vila sabe o nome dele, e ele prefere assim.','Fez um pacto parecido com o de Aldric: trocou o calor do próprio corpo pelo poder de erguer os mortos. Todo dia sente o frio subir um pouco mais.','Desce para olhar nos olhos do Corvo Rei e descobrir como termina um pacto desses, e se ainda dá tempo de quebrar o dele.'],q:'Eu sei o que ele virou. Eu estou virando também.'},
+};
 const HERO_PERS={
  corajoso:{n:'Corajoso',c:'#f0c46a',
   start:['Venham. Um de cada vez ou todos juntos.','Hoje ninguém passa por mim.','Pela luz que ainda resta!','Já enfrentei coisa pior que vocês.'],
@@ -2046,6 +2065,13 @@ const ACT={
       <button class="choice" data-act="cenaplay" data-k="death"><b>Você tombou</b><span>O que acontece quando o herói cai.</span></button>
       <button class="choice" data-act="cenaplay" data-k="ending"><b>O Retorno: Classe S</b><span>Depois de derrotar o Corvo Rei, a coroa no balcão. Contém o final do jogo.</span></button>
      </div><div class="mfoot"><button class="btn small" data-act="mclose">Fechar</button></div></div>`;m.hidden=false;m.scrollTop=0},
+  herois:()=>{const m=$('#modal');
+    m.innerHTML=`<div class="mbox" style="max-width:860px"><h2 class="h2">Os Heróis</h2><p class="sub">Cinco almas, cinco motivos para descer.</p>
+     <div class="hlist">${Object.entries(CHARS).map(([k,c])=>{const L=LORE[k];return`<article class="hcard">
+       <div class="hfig">${sprHTML(c.spr)}<span class="stat">${SVG.heart}${c.hp}</span></div>
+       <div class="htxt"><h3>${c.n}</h3><p class="hep">${L.ep}</p>${L.txt.map(t=>`<p>${t}</p>`).join('')}
+        <p class="hq">“${L.q}”</p><p class="hmot"><b>Motivo</b>${L.mot}<b>Relíquia</b>${RELICS[c.relic].n}</p></div></article>`}).join('')}</div>
+     <div class="mfoot"><button class="btn small" data-act="mclose">Fechar</button></div></div>`;m.hidden=false;m.scrollTop=0},
   cenah:el=>{UI.cenaHero=el.dataset.ch;ACT.cenas()},
   cenaplay:el=>{const k=el.dataset.k;closeModal();if(k==='video'){openAbertura(true);return}
     const prev=G,ac=k.startsWith('act:')?+k.split(':')[1]:/lich|rainha|lore/.test(k)?2:/reicorvo/.test(k)?3:1;G={char:UI.cenaHero||'cav',pers:null,act:ac,seed:1,stats:{floors:30,bosses:3},weapon:{lv:k==='ending'?3:Math.min(3,ac-1),path:'a'}};if(k==='war')G.war={id:pickL(Object.keys(WARR)),mode:pickL(['calm','fight'])};heroPers();
