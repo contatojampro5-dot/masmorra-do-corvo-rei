@@ -37,3 +37,4 @@ Arraste a carta até o inimigo (ou clique na carta e depois no alvo). **E** ence
 - **v1.9** — na Taverna, a Marta explica por que cada herói ganha D (ordem extinta, a irmã Liora, expulso da Academia, ferreiro sem luta, e o Necromante registrado como "sem nome").
 - **v2.0** — dê nome ao seu herói (com nomes sugeridos e sorteio). O Necromante começa "sem nome" e só diz o nome dele na cena da Classe S.
 - **v2.1** — Atlas 1.0, Etapa 1 (celular): dicas com toque longo, aviso para girar o celular na luta, botões maiores, barra de cima compacta no celular deitado, tela de Opções (cenas sempre/primeira vez/nunca, velocidade das falas, falas na luta, vibração), vibração ao levar dano, fontes dentro do jogo (funciona sem internet) e botão DEV escondido.
+- **v2.2** — luta: personagens com os pés no chão do cenário em qualquer tela, moldura nas bordas (pilares, estalactites, pedras e tochas, por ato) e inimigos mais perto do herói.

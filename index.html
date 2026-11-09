@@ -476,9 +476,12 @@ button:focus-visible,[data-act]:focus-visible{outline:2px solid var(--gold);outl
 .ab-skip{position:absolute;right:max(16px,env(safe-area-inset-right,0px));bottom:calc(16px + env(safe-area-inset-bottom,0px));background:#000a;border:1px solid #ffffff40;border-radius:4px;color:#ebe2cd;font-family:var(--f-sc);font-size:16px;padding:8px 14px}
 .ab-skip:hover,.ab-skip:focus-visible{border-color:var(--gold);color:#fff3d6}
 /* ---------- cenários, forja e retratos ---------- */
-.field.scened{background:var(--scn) center 78%/cover no-repeat}
-.field.scened::before{display:none}
-.field.scened::after{opacity:.35}
+.field.scened{background:var(--scn) center var(--by,100%)/cover no-repeat;justify-content:center;gap:clamp(36px,11vw,230px);padding-left:9%;padding-right:9%;padding-top:10px}
+.field.scened::before{content:"";display:block;position:absolute;inset:0;left:0;right:0;top:0;bottom:0;height:auto;transform:none;-webkit-mask-image:none;mask-image:none;opacity:1;background:var(--frame) center var(--by,100%)/cover no-repeat!important;image-rendering:pixelated;z-index:2;pointer-events:none}
+.field.scened::after{display:none}
+.field.scened .side{flex:none}
+.field.scened .unit .uinfo{position:absolute;top:100%;left:0;right:0;margin-top:2px}
+.field.scened .hint,.field.scened .devstrip{z-index:3}
 .frag{display:inline-block;width:11px;height:13px;flex:none;background:linear-gradient(135deg,#ffe0a0,#ff8a2a 50%,#a0380a);clip-path:polygon(50% 0,100% 40%,70% 100%,20% 90%,0 35%);box-shadow:0 0 8px #ff7a2a}
 .wchip{gap:5px}.wchip img{width:24px;height:24px;image-rendering:pixelated;filter:drop-shadow(0 0 4px #ff9a4a66)}
 .forgepage{border-radius:10px}
@@ -1750,6 +1753,24 @@ function unitHTML(u,isP,targeting){
 function targetingNow(){const c=G.combat;const selCard=UI.sel&&UI.sel.card?c.hand.find(k=>k.uid===UI.sel.card):null;return{selCard,targeting:(selCard&&CARDS[selCard.id].tg==='e')||(UI.sel&&UI.sel.pot!=null&&POTIONS[G.potions[UI.sel.pot]]?.tg==='e')}}
 function hintText(){const{selCard,targeting}=targetingNow();return targeting?'Escolha um alvo (Esc cancela)':selCard?'Clique de novo na carta ou arraste para cima para jogar':UI.lock?'':'Arraste uma carta para jogar  ·  E encerra o turno'}
 const devStrip=()=>UI.dev?`Próximas compras: ${G.combat.draw.slice(0,5).map(k=>CARDS[k.id].n+(k.up?'+':'')).join(' › ')||'(vazio, vai embaralhar o descarte)'}`:'';
+const FRAME={};
+function makeFrame(act){if(FRAME[act])return FRAME[act];const W=320,H=180,c=document.createElement('canvas');c.width=W;c.height=H;const x=c.getContext('2d');
+  let seed=act*977+13;const R=()=>(seed=(seed*16807)%2147483647)/2147483647;
+  const P={1:{d:'#0b0805',m:'#1c140c',h:'#4a3420',acc:'#3c5a24'},2:{d:'#06080c',m:'#121820',h:'#34404e',acc:'#6a7a6a'},3:{d:'#0c0505',m:'#1e0c0a',h:'#5a2418',acc:'#a03a1a'}}[act]||{d:'#0b0805',m:'#1c140c',h:'#4a3420',acc:'#3c5a24'};
+  const f=(cx,y,w,h,col)=>{x.fillStyle=col;x.fillRect(Math.round(cx),Math.round(y),Math.round(w),Math.round(h))};
+  for(const side of [0,1]){const X=side?W-24:0,ins=side?X:X+23;
+    f(X,0,24,H,P.d);for(let y=0;y<H;y+=9)for(let bx=X+((y/9)%2)*6;bx<X+24;bx+=12){f(bx,y,11,8,R()<.5?P.m:P.d);f(bx,y,11,1,P.h+'55')}
+    f(ins-(side?0:1),0,1,H,P.h);f(side?X:X+20,0,4,H,'rgba(0,0,0,.35)');
+    f(side?X-4:X+18,20,10,6,P.m);f(side?X-4:X+18,20,10,1,P.h);f(side?X-4:X+18,H-46,10,6,P.m);f(side?X-4:X+18,H-46,10,1,P.h);
+    if(act===1)for(let k=0;k<14;k++){const vy=30+R()*90;f((side?X-2:X+21)+(R()*3|0),vy,2,3,P.acc)}
+    if(act===2){for(let y=26;y<70;y+=3){f(side?X-1:X+22,y,2,2,'#4a4650')}}
+    if(act===3)for(let k=0;k<10;k++){const vy=20+R()*120;f(side?X+4+R()*14:X+4+R()*14,vy,1,4,P.acc)}}
+  for(let xx=24;xx<W-24;xx+=3+R()*7){const hh=2+R()*(act===3?5:10);x.fillStyle=P.d;x.beginPath();x.moveTo(xx-3,0);x.lineTo(xx+3,0);x.lineTo(xx,hh);x.fill()}
+  f(0,0,W,3,P.d);
+  for(const side of [0,1])for(let k=0;k<7;k++){const rx=side?W-24-k*9-R()*6:24+k*9+R()*6,rw=6+R()*10,rh=3+R()*(9-k);x.fillStyle=k%2?P.m:P.d;x.beginPath();x.ellipse(rx,H-1,rw,rh,0,Math.PI,0);x.fill();f(rx-rw*.5,H-1-rh,rw*.5,1,P.h+'66')}
+  if(act!==2){for(const tx of [33,W-33]){f(tx-1,52,3,9,'#2a1a10');f(tx-2,51,5,2,'#5a3a20');x.fillStyle='#e0601c';x.fillRect(tx-1,46,3,5);x.fillStyle='#ffd06a';x.fillRect(tx,47,1,3);const g=x.createRadialGradient(tx,48,0,tx,48,16);g.addColorStop(0,'rgba(255,150,60,.45)');g.addColorStop(1,'rgba(0,0,0,0)');x.fillStyle=g;x.fillRect(tx-16,32,32,32)}}
+  return FRAME[act]=c.toDataURL()}
+function fitField(){const f=$('#field');if(!f||!f.classList.contains('scened'))return;const W=f.clientWidth,H=f.clientHeight;if(!W||!H)return;const bh=Math.max(H,W*180/320),fl=bh*142/180,want=H-Math.min(66,Math.max(58,H*.2));let off=Math.min(0,Math.max(H-bh,want-fl));f.style.setProperty('--by',Math.round(off)+'px');f.style.paddingBottom=Math.max(6,Math.round(H-(off+fl)))+'px'}
 const SCN_BY={rato:'esgoto',limo:'esgoto',goblin:'goblins',kobold:'goblins',reigoblin:'goblins',morcego:'mina',aranha:'aranhas',rainha:'aranhas',sapo:'pantano',bruxa:'pantano',orc:'orc',mimico:'carrasco',carrasco:'carrasco',golem:'ruinas',zumbi:'catacumbas',carnical:'catacumbas',fantasma:'catacumbas',cultista:'cripta',lich:'cripta',cavaleiro:'capela',gargula:'telhado',diabrete:'forja',elemental:'forja',cao:'forja',minotauro:'labirinto',olho:'olho',dragao:'dragao',reicorvo:'salao',corvo:'salao'};
 function sceneFor(c){const es=c.enemies.filter(e=>!e.minion),top=es.find(e=>ENEMIES[e.id].boss)||es.find(e=>ENEMIES[e.id].elite)||es[0]||c.enemies[0];if(!top)return null;
   if(top.id==='esqueleto'||top.id==='arqueiro')return G.act===2?'cripta':'mina';return SCN_BY[top.id]||null}
@@ -1757,7 +1778,7 @@ const fieldKey=()=>G.combat.cid+'|'+G.combat.enemies.map(e=>e.uid+e.id).join(','
 function combatHTML(){
   const c=G.combat,{targeting}=targetingNow();
   return`<div class="combat ${c.kind} act${G.act}">
-    ${(()=>{const sc=sceneFor(c),u=sc&&VIS.scene(sc);return`<div class="field ${u?'scened':''}" id="field" data-key="${fieldKey()}" ${u?`style="--scn:url(${u})"`:''}>`})()}<div class="devstrip">${devStrip()}</div><div class="hint">${hintText()}</div>
+    ${(()=>{const sc=sceneFor(c),u=sc&&VIS.scene(sc);return`<div class="field ${u?'scened':''}" id="field" data-key="${fieldKey()}" ${u?`style="--scn:url(${u});--frame:url(${makeFrame(G.act||1)})"`:''}>`})()}<div class="devstrip">${devStrip()}</div><div class="hint">${hintText()}</div>
       <div class="side">${unitHTML(c.p,true)}${c.ally&&WARR[c.ally]?allyHTML(c.ally):''}</div>
       <div class="side foes">${c.enemies.map(e=>unitHTML(e,false,targeting)).join('')}</div>
     </div>
@@ -1893,7 +1914,7 @@ function render(){
   const s=G?G.screen:'title',top=$('#top');
   top.hidden=!G||s==='title';
   top.innerHTML=G&&s!=='title'?topHTML():'';
-  if(s==='combat'){patchCombat();layoutHand()}
+  if(s==='combat'){patchCombat();layoutHand();fitField()}
   else $('#screen').innerHTML=({title:titleHTML,map:mapHTML,reward:rewardHTML,santuario:santHTML,rest:restHTML,shop:shopHTML,event:eventHTML,treasure:treasureHTML,warrior:warriorHTML,forge:forgeHTML,end:endHTML})[s]();
   if(s==='map')requestAnimationFrame(()=>scrollMap());
   bgSet(s==='title'?'title':s==='combat'?'combat':'room',G?G.act:1);
@@ -2309,7 +2330,7 @@ document.addEventListener('mouseover',e=>{
   if(y+th>innerHeight-8)y=r.top-th-8;
   t.style.left=Math.max(8,Math.min(innerWidth-tw-8,x))+'px';t.style.top=Math.max(8,y)+'px';
 });
-window.addEventListener('resize',()=>{if(G&&G.screen==='combat')layoutHand()});
+window.addEventListener('resize',()=>{if(G&&G.screen==='combat'){layoutHand();fitField()}});
 
 /* =========================================================
    Cenário vivo: parede de pedra, tochas, janela com lua e corvos
