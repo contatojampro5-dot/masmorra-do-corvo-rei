@@ -620,7 +620,7 @@ const $=s=>document.querySelector(s);
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));
 let G=null;
 const DEVOK=/dev/.test(location.hash);
-const OPT=(()=>{const d={cenas:'primeira',fala:'normal',falasLuta:true,vib:true,musica:'media'};try{return Object.assign(d,JSON.parse(localStorage.getItem('trc-opt')||'{}'))}catch(e){return d}})();
+const OPT=(()=>{const d={cenas:'primeira',fala:'normal',falasLuta:true,vib:true,musica:'media',efeitos:'media'};try{return Object.assign(d,JSON.parse(localStorage.getItem('trc-opt')||'{}'))}catch(e){return d}})();
 function saveOpt(){try{localStorage.setItem('trc-opt',JSON.stringify(OPT))}catch(e){}}
 const FALA_K=()=>({lenta:1.45,normal:1,rapida:.7})[OPT.fala]||1;
 function seenCut(k){try{return JSON.parse(localStorage.getItem('trc-seen')||'[]').includes(k)}catch(e){return false}}
@@ -645,6 +645,21 @@ function screenMusic(){if(!G)return'menu';const s=G.screen,c=G.combat;
 const CUT_MUS=w=>{const[t,a]=w.split(':');if(t==='boss'||t==='bfall')return a==='reicorvo'?'corvo':'chefe';if(t==='act')return'a'+a;if(t==='hefesto')return'forja';if(t==='lore')return'a2';if(t==='war')return G&&G.char||'cav';if(t==='death')return'tombou';if(t==='merc')return'taverna';return'taverna'};
 ['pointerdown','keydown'].forEach(ev=>document.addEventListener(ev,()=>{if(MUS.unlocked)return;MUS.unlocked=true;musApply()},true));
 document.addEventListener('visibilitychange',musApply);
+/* Efeitos sonoros (v2.5): Web Audio, pouco atraso no celular */
+const SFX={ctx:null,buf:{},last:{},loop:null,loopK:null};
+const SFX_N=['carta-comprar','carta-jogar','golpe-espada','golpe-pesado','flecha','magia','bloqueio','dano-heroi','inimigo-morre','moedas','carimbo','martelo-hefesto','tocha','botao','pocao','forjar','cura','turno'];
+const sfxVol=()=>({desligada:0,baixa:.3,media:.6,alta:1})[OPT.efeitos]??.6;
+function sfxInit(){if(SFX.ctx)return;const AC=window.AudioContext||window.webkitAudioContext;if(!AC)return;try{SFX.ctx=new AC()}catch(e){return}
+  SFX.out=SFX.ctx.createGain();SFX.out.connect(SFX.ctx.destination);
+  SFX_N.forEach(k=>fetch('sfx/'+k+'.mp3').then(r=>r.arrayBuffer()).then(b=>new Promise((ok,no)=>SFX.ctx.decodeAudioData(b,ok,no))).then(d=>{SFX.buf[k]=d;if(k==='tocha')sfxAmb()}).catch(()=>{}))}
+function sfx(k,o={}){const v=sfxVol();if(!v||!SFX.ctx||document.hidden)return;const b=SFX.buf[k];if(!b)return;const now=performance.now()+(o.delay||0);if(now-(SFX.last[k]||0)<(o.gap??55))return;SFX.last[k]=now;
+  const c=SFX.ctx;if(c.state==='suspended')c.resume();const src=c.createBufferSource(),g=c.createGain();src.buffer=b;src.playbackRate.value=o.rate||(1+(Math.random()-.5)*.08);g.gain.value=v*(o.vol??1);src.connect(g).connect(SFX.out);src.start(c.currentTime+(o.delay||0)/1000)}
+function sfxAmb(){const want=G&&(G.screen==='map'||G.screen==='forge')&&!CUT.on&&!document.hidden&&sfxVol()>0?'tocha':null;if(want===SFX.loopK)return;
+  if(SFX.loop){const l=SFX.loop;try{l.g.gain.setTargetAtTime(0,SFX.ctx.currentTime,.3);setTimeout(()=>{try{l.s.stop()}catch(e){}},1200)}catch(e){}SFX.loop=null}SFX.loopK=null;
+  if(!want||!SFX.ctx||!SFX.buf.tocha)return;const c=SFX.ctx,s=c.createBufferSource(),g=c.createGain();s.buffer=SFX.buf.tocha;s.loop=true;g.gain.value=0;g.gain.setTargetAtTime(sfxVol()*.35,c.currentTime,.5);s.connect(g).connect(SFX.out);s.start();SFX.loop={s,g};SFX.loopK=want}
+['pointerdown','keydown'].forEach(ev=>document.addEventListener(ev,()=>{sfxInit();if(SFX.ctx&&SFX.ctx.state==='suspended')SFX.ctx.resume()},true));
+document.addEventListener('visibilitychange',()=>{if(SFX.ctx){document.hidden?SFX.ctx.suspend():SFX.ctx.resume()}sfxAmb()});
+document.addEventListener('click',e=>{const b=e.target.closest('button,.btn,.tbtn,.choice,.optb,.ritem,[data-act]');if(b&&!b.closest('#hand')&&!b.disabled)sfx('botao',{vol:.7,gap:40})},true);
 function vib(p){if(OPT.vib&&navigator.vibrate)try{navigator.vibrate(p)}catch(e){}}
 const UI={sel:null,lock:false,dev:false,devOpen:false,devTab:'pilhas',freeMap:false,god:false,modal:null,libF:'all',choose:false,moving:false,newServo:0};
 try{UI.dev=DEVOK&&localStorage.getItem('trc-dev')==='1'}catch(e){}
@@ -1243,7 +1258,7 @@ function enterNode2(r,c,n,A){
     case'fogueira':G.screen='rest';G.restDone=false;render();break;
     case'loja':G.shop=makeShop();G.screen='shop';render();if(!G.metMerc){G.metMerc=1;save();playIntro(null,'merc')}break;
     case'tesouro':G.screen='treasure';G.chest=null;render();break;
-    case'forja':G.screen='forge';G.forgeLine=null;render();if(!G.metHef){G.metHef=1;save();playIntro(null,'hefesto')}break;
+    case'forja':G.screen='forge';G.forgeLine=null;render();sfx('martelo-hefesto',{vol:.6,delay:300});if(!G.metHef){G.metHef=1;save();playIntro(null,'hefesto')}break;
     case'evento':{G.metW=G.metW||{};if(!G.metW[G.act]&&rnd()<.45){G.metW[G.act]=1;G.seenW=G.seenW||[];let wp=Object.keys(WARR).filter(k=>!G.seenW.includes(k));if(!wp.length)wp=Object.keys(WARR);const wid=pick(wp);G.seenW.push(wid);G.war={id:wid,mode:rnd()<.5?'calm':'fight',phase:'intro',step:0};G.screen='warrior';render();playIntro(sk=>{if(sk)return;if(G.war){const W=WARR[G.war.id];G.war.step=(G.war.mode==='calm'?W.calm:W.fight).length-1;render()}},'war:'+wid);break}
       const keys=Object.keys(EVENTS);G.seenEv=G.seenEv||[];let pool=keys.filter(k=>!G.seenEv.includes(k));if(!pool.length)pool=keys;const k=pick(pool);G.seenEv.push(k);G.event={id:k,res:null};G.screen='event';render();break}
   }
@@ -1295,7 +1310,7 @@ function startCombat(ids,kind,quiet){
 }
 function startPlayerTurn(){
   const c=G.combat,p=c.p;c.turn++;
-  c.pturn=true;c.cardsTurn=0;c.atkTurn=0;
+  c.pturn=true;c.cardsTurn=0;c.atkTurn=0;sfx('turno',{vol:.7});
   if(!p.st.bastiao)p.block=0;
   delete p.st.espinhos;delete p.st.esquiva;
   c.energy=c.maxE+(c.turn===1&&hasRelic('vela')?1:0);
@@ -1315,7 +1330,7 @@ function startPlayerTurn(){
 function addHand(id,n=1,up=0){const c=G.combat;for(let i=0;i<n;i++){const k=mk(id,up);if(c.hand.length<10)c.hand.push(k);else c.discard.push(k)}}
 function discardRandom(){const c=G.combat;if(!c.hand.length)return;const k=c.hand.splice(Math.floor(rnd()*c.hand.length),1)[0];c.discard.push(k);fx('p','Descartou '+CARDS[k.id].n,'st')}
 function draw(n){
-  const c=G.combat;
+  const c=G.combat;if(n>0)sfx('carta-comprar',{vol:.8});
   for(let i=0;i<n;i++){
     if(c.hand.length>=10)break;
     if(!c.draw.length){if(!c.discard.length)break;c.draw=shuffle(c.discard);c.discard=[]}
@@ -1338,13 +1353,13 @@ const frost=(t,n)=>apply(t,'gelo',n+(P().st.foco||0));
 const burn=(t,n)=>apply(t,'queima',n+(P().st.foco||0));
 function freeze(t){if(t.hp<=0)return;t.st.congelado=1;fx(t.uid,'Congelado!','blk');anim(t.uid,'mv-freeze')}
 function dec(u,k){if(u.st[k]){u.st[k]--;if(u.st[k]<=0)delete u.st[k]}}
-function addBlock(n){if(n<=0)return;P().block+=n;fx('p','+'+n,'blk')}
+function addBlock(n){if(n<=0)return;sfx('bloqueio',{vol:.8,gap:150});P().block+=n;fx('p','+'+n,'blk')}
 function gainBlock(n){addBlock(Math.max(0,n+(P().st.destreza||0)));const j=P().st.juggernaut;if(j){const a=alive();if(a.length){const e=pick(a);proj('p',e.uid,'bone');FXB+=200;dealDamage(e,j);FXB-=200}}}
 function gainEnergy(n){G.combat.energy+=n;fx('p','+'+n+' Energia','nrg')}
-function heal(n){const h=Math.min(n,G.maxHp-G.hp);G.hp+=h;if(inC()&&h>0){fx('p','+'+h,'heal');anim('p','mv-heal')}}
+function heal(n){const h=Math.min(n,G.maxHp-G.hp);G.hp+=h;if(h>0)sfx('cura',{gap:300});if(inC()&&h>0){fx('p','+'+h,'heal');anim('p','mv-heal')}}
 function healE(e,n){const h=Math.min(n,e.maxHp-e.hp);if(h>0&&e.hp>0){e.hp+=h;fx(e.uid,'+'+h,'heal');anim(e.uid,'mv-heal')}}
-function loseHp(n){if(UI.god&&UI.dev)n=0;G.hp=Math.max(0,G.hp-n);if(inC()&&n>0){fx('p','-'+n,'dmg');const p=P();if(G.combat.pturn&&p.st.furiasangue&&G.hp>0)apply(p,'forca',p.st.furiasangue)}}
-function gainGold(n,raw){if(!raw){if(hasRelic('bolsa'))n*=1.3;if(hasPow('tesouro'))n*=1.5}G.gold+=Math.round(n)}
+function loseHp(n){if(UI.god&&UI.dev)n=0;G.hp=Math.max(0,G.hp-n);if(inC()&&n>0){sfx('dano-heroi',{vol:.8});fx('p','-'+n,'dmg');const p=P();if(G.combat.pturn&&p.st.furiasangue&&G.hp>0)apply(p,'forca',p.st.furiasangue)}}
+function gainGold(n,raw){if(!raw){if(hasRelic('bolsa'))n*=1.3;if(hasPow('tesouro'))n*=1.5}G.gold+=Math.round(n);if(n>0)sfx('moedas',{gap:200})}
 function steal(n){const s=Math.min(G.gold,n);G.gold-=s;if(s)fx('p','-'+s+' ouro','bad')}
 function addCardTo(id,where,n=1){
   const c=G.combat;
@@ -1366,6 +1381,7 @@ function dealDamage(t,d,i=0,pierce=false){
   G.stats.dmg+=un;
   if(un>0&&t.hp>0)talkFoe(t,'hurt',.22,{delay:300});
   if(un>0&&t.hp>0&&t.st.enfurecer)apply(t,'forca',t.st.enfurecer);
+  if(t.hp<=0)sfx('inimigo-morre',{delay:120});
   if(t.hp<=0)onEnemyDeath(t);
   return un;
 }
@@ -1388,6 +1404,7 @@ function enemyHit(e,base,i){
   if(un>0&&p.st.servos){servoDie(false);un=0;fx('p','Servo protegeu','st',i)}
   if(UI.god&&UI.dev)un=0;
   G.hp=Math.max(0,G.hp-un);
+  {const bs=ENEMIES[e.id]&&ENEMIES[e.id].boss;if(un>0){sfx(bs?'golpe-pesado':'dano-heroi',{delay:i*170,gap:30});if(bs)sfx('dano-heroi',{delay:i*170+60,vol:.6,gap:30})}else if(blk>0)sfx('bloqueio',{delay:i*170,gap:30})}
   if(un>0){talkHero('hurt',.3,{delay:300});checkLow();vib(un>=12?[50,30,60]:35)}
   if(un>0||blk>0)fx('p',un>0?'-'+un:'Bloqueado',un>0?'dmg':'blk',i);
   if(un>0&&p.st.armadura&&!p.st.armViva)dec(p,'armadura');
@@ -1417,7 +1434,8 @@ function canPlay(card){
   return[true];
 }
 function playerAttackFx(d,v,t){
-  const style=CHARS[G.char].atk;
+  const style=CHARS[G.char].atk;sfx('carta-jogar',{vol:.7});
+  if(d.t==='atk')sfx(style==='arrow'?'flecha':style==='melee'?(G.char==='tan'||d.fxk==='heavy'?'golpe-pesado':'golpe-espada'):'magia',{delay:90,gap:40});else if(t)sfx('magia',{delay:90});
   if(d.t==='atk'){
     const tg=d.tg==='e'?[t]:alive();
     if(style==='melee'&&!d.fxk){anim('p','mv-lunge');tg.forEach(x=>slash(x.uid,150));FXB=150}
@@ -1476,7 +1494,7 @@ function doMove(e,mv){
 }
 async function endTurn(){
   const c=G.combat;if(!c||UI.lock||c.over)return;
-  UI.lock=true;UI.sel=null;const p=c.p;
+  UI.lock=true;UI.sel=null;const p=c.p;sfx('turno',{vol:.5,rate:.84});
   c.hand.forEach(k=>{if(k.id==='ressaca')loseHp(1)});
   if(p.st.cota)addBlock(p.st.cota);
   if(p.st.armadura)addBlock(p.st.armadura);
@@ -1536,6 +1554,7 @@ function winCombat(){
 function usePotion(i,tUid){
   const id=G.potions[i];if(!id)return;const d=POTIONS[id];
   if(!inC()&&!d.any){toast('Só pode ser usada em combate.');return}
+  sfx('pocao');
   if(inC()&&(UI.lock||G.combat.over))return;
   let t=null;
   if(d.tg==='e'){t=alive().find(e=>e.uid===tUid);if(!t){const a=alive();if(a.length===1)t=a[0];else{UI.sel={pot:i};render();toast('Escolha um alvo');return}}}
@@ -1576,7 +1595,7 @@ function buyPower(k){
 function upgradeFlow(done){
   const list=G.deck.filter(canUp);
   if(!list.length){toast('Nenhuma carta para melhorar.');return}
-  openPicker({title:'Melhorar uma carta',sub:'A carta mostrada já está na versão melhorada',cards:list.map(c=>({...c,up:1})),skip:'Cancelar',onPick:k=>{const c=G.deck.find(x=>x.uid===k.uid);if(c)c.up=1;done&&done();render()}});
+  openPicker({title:'Melhorar uma carta',sub:'A carta mostrada já está na versão melhorada',cards:list.map(c=>({...c,up:1})),skip:'Cancelar',onPick:k=>{const c=G.deck.find(x=>x.uid===k.uid);if(c)c.up=1;sfx('martelo-hefesto');done&&done();render()}});
 }
 function removeFlow(done){
   openPicker({title:'Remover uma carta',sub:'A carta sai do baralho para sempre',cards:G.deck,skip:'Cancelar',onPick:k=>{G.deck=G.deck.filter(x=>x.uid!==k.uid);done&&done();render()}});
@@ -1944,7 +1963,7 @@ function endHTML(){
    <div class="row"><button class="btn primary" data-act="new">Nova jornada</button><button class="btn" data-act="menu">Menu</button></div></div>`;
 }
 function render(){
-  const s=G?G.screen:'title',top=$('#top');
+  const s=G?G.screen:'title',top=$('#top');setTimeout(sfxAmb,0);
   top.hidden=!G||s==='title';
   top.innerHTML=G&&s!=='title'?topHTML():'';
   if(s==='combat'){patchCombat();layoutHand();fitField()}
@@ -2245,12 +2264,12 @@ const ACT={
   forge:()=>upgradeFlow(()=>{G.restDone=true}),
   buy:el=>{const s=G.shop,w=s[el.dataset.k][+el.dataset.i];if(w.sold)return;if(G.gold<w.price){toast('Ouro insuficiente.');return}
     if(el.dataset.k==='pots'&&!gainPotion(w.id)){toast('Sem espaço para poções.');return}
-    G.gold-=w.price;w.sold=1;
+    G.gold-=w.price;w.sold=1;sfx('moedas');
     if(el.dataset.k==='cards')G.deck.push(w.card);if(el.dataset.k==='relics')gainRelic(w.id);render()},
   buyremove:()=>{const s=G.shop;if(s.removeUsed)return;if(G.gold<s.removePrice){toast('Ouro insuficiente.');return}removeFlow(()=>{G.gold-=s.removePrice;s.removeUsed=true})},
   evopt:el=>{const o=EVENTS[G.event.id].ops[+el.dataset.i];if(o.ok&&!o.ok())return;G.event.res=o.f();render()},
   forgeup:el=>{const w=G.weapon,cost=FORGE_COST[w.lv];if((G.frags||0)<cost){G.forgeLine='sem';render();return}
-    G.frags-=cost;if(w.lv===1)w.path=el.dataset.p||'a';w.lv++;
+    G.frags-=cost;if(w.lv===1)w.path=el.dataset.p||'a';w.lv++;sfx('martelo-hefesto',{vol:.8});sfx('forjar',{delay:250});
     G.forgeLine=w.lv===1?'n2':w.lv===2?'n3':'n4';
     if(w.lv===3){const c=ARMA[G.char][wIdx()].card;if(c){addToDeck(c);toast('Carta nova: '+CARDS[c].n)}}
     G.forgeFlash=1;render();setTimeout(()=>{G.forgeFlash=0},900);banner(weaponName())},
@@ -2259,12 +2278,13 @@ const ACT={
     m.innerHTML=`<div class="mbox" style="max-width:560px"><h2 class="h2">Opções</h2><div class="panel optpanel">
      <div class="optrow"><b>Cenas</b><span>Quando mostrar as cenas durante a jornada. Todas continuam no menu Cenas.</span><div>${r('cenas','sempre','Sempre')}${r('cenas','primeira','Só a primeira vez')}${r('cenas','nunca','Nunca')}</div></div>
      <div class="optrow"><b>Música</b><span>Volume da música do jogo.</span><div>${r('musica','desligada','Desligada')}${r('musica','baixa','Baixa')}${r('musica','media','Média')}${r('musica','alta','Alta')}</div></div>
+     <div class="optrow"><b>Efeitos</b><span>Volume dos sons de golpes, cartas e moedas.</span><div>${r('efeitos','desligada','Desligados')}${r('efeitos','baixa','Baixo')}${r('efeitos','media','Médio')}${r('efeitos','alta','Alto')}</div></div>
      <div class="optrow"><b>Velocidade das falas</b><span>Quanto tempo cada legenda fica na tela.</span><div>${r('fala','lenta','Lenta')}${r('fala','normal','Normal')}${r('fala','rapida','Rápida')}</div></div>
      <div class="optrow"><b>Falas na luta</b><span>Heróis e inimigos comentam durante o combate.</span><div>${r('falasLuta',true,'Ligadas')}${r('falasLuta',false,'Desligadas')}</div></div>
      <div class="optrow"><b>Vibração</b><span>Vibra ao levar dano (nos aparelhos que permitem).</span><div>${r('vib',true,'Ligada')}${r('vib',false,'Desligada')}</div></div>
      <div class="optrow"><b>Cenas já vistas</b><span>Volta a mostrar as cenas como na primeira vez.</span><div><button class="optb" data-act="optreset">Esquecer cenas vistas</button></div></div>
     </div><div class="mfoot"><button class="btn small" data-act="mclose">Fechar</button></div></div>`;m.hidden=false;m.scrollTop=0},
-  optset:el=>{const k=el.dataset.k,v=el.dataset.v;OPT[k]=v==='true'?true:v==='false'?false:v;saveOpt();if(k==='musica'){MUS.unlocked=true;musApply()}if(k==='vib'&&OPT.vib)vib(40);ACT.opcoes();if(G)render()},
+  optset:el=>{const k=el.dataset.k,v=el.dataset.v;OPT[k]=v==='true'?true:v==='false'?false:v;saveOpt();if(k==='musica'){MUS.unlocked=true;musApply()}if(k==='efeitos'){sfxInit();SFX.loopK=null;sfxAmb();setTimeout(()=>sfx('moedas'),60)}if(k==='vib'&&OPT.vib)vib(40);ACT.opcoes();if(G)render()},
   optreset:()=>{try{localStorage.removeItem('trc-seen')}catch(e){}toast('Cenas esquecidas.')},
   rotok:()=>{document.body.classList.add('rotok')},
   wnext:()=>{G.war.step++;render()},
@@ -3644,7 +3664,7 @@ async function playIntro(done,which='intro'){
       const nm=await askName(box,'Pela primeira vez, o Necromante diz o próprio nome:');if(nm){G.name=nm;hname=nm;await say(hname,`...${nm}. Meu nome é ${nm}.`);cut({x:240,y:CFL-26,z:3});await say('Marta, a Escrivã da Guilda',`${nm}. Bonito. Devia ter dito antes.`)}}
     cut({x:240,y:CFL-26,z:3});tween(S.cam,{z:3.3},3200);await say('Marta, a Escrivã da Guilda',`Andares: ${st.floors||0}. Chefes: ${st.bosses||3}. A guilda só tem uma letra pra isso.`);
     const lic=box.querySelector('.clic');lic.classList.add('gold');lic.innerHTML=`<div class="lp"><small>Guilda dos Aventureiros de Pedra Funda</small><h3>Licença de Aventureiro</h3><dl><dt>Nome</dt><dd>${hname}</dd><dt>Temperamento</dt><dd>${heroPers().n}</dd><dt>Andares concluídos</dt><dd>${st.floors||0}</dd><dt>Feito</dt><dd>Derrotou o Corvo Rei</dd></dl><div class="rank"><span>Classe</span><b class="old">D</b></div><div class="stamp">S</div></div>`;
-    lic.hidden=false;await cutSleep(1300);lic.classList.add('stamped');await cutSleep(1900);
+    lic.hidden=false;await cutSleep(1300);lic.classList.add('stamped');sfx('carimbo',{rate:1});await cutSleep(1900);
     await say('Marta, a Escrivã da Guilda','Classificação: S. A primeira desta guilda.',2600);lic.classList.add('gone');await cutSleep(400);lic.hidden=true;
     cut({x:186,y:CFL-20,z:3.4});A.hero.hop=0;tween(A.hero,{hop:5},150).then(()=>tween(A.hero,{hop:0},200));await say(hname,pers.fin);
     cut({x:140,y:CFL-30,z:1.6});A.kael.laugh=1;A.bruna.laugh=1;await say('Kael, o Mercenário','Uma rodada pro Classe S! Hoje quem paga sou eu!',2800);
@@ -3659,7 +3679,7 @@ async function playIntro(done,which='intro'){
     cut({x:150,y:CFL-24,z:2.2});A.hero.walk=1;tween(A.hero,{x:186},1500,t=>t);await cutSleep(1500);A.hero.walk=0;
     cut({x:240,y:CFL-26,z:3});tween(S.cam,{z:3.3},3000);{const md=MARTA_D[G.char]||[`Nome? ${hname}. Hm.`,'Vamos ver o que a guilda acha de você.'];await say('Marta, a Escrivã da Guilda',md[0].replace('NM',hname));if(G.char==='nec'){cut({x:186,y:CFL-20,z:3.4});await cutSleep(1400);cut({x:240,y:CFL-26,z:3.3})}await say('Marta, a Escrivã da Guilda',md[1])}
     const lic=box.querySelector('.clic');lic.innerHTML=`<div class="lp"><small>Guilda dos Aventureiros de Pedra Funda</small><h3>Licença de Aventureiro</h3><dl><dt>Nome</dt><dd>${G.char==='nec'?'<i>sem nome</i>':hname}</dd><dt>Temperamento</dt><dd>${heroPers().n}</dd><dt>Andares concluídos</dt><dd>0</dd></dl><div class="rank"><span>Classe</span><b>D</b></div><div class="stamp">D</div></div>`;
-    lic.hidden=false;await cutSleep(1200);lic.classList.add('stamped');await cutSleep(1700);
+    lic.hidden=false;await cutSleep(1200);lic.classList.add('stamped');sfx('carimbo',{rate:1});await cutSleep(1700);
     await say('Marta, a Escrivã da Guilda','Classificação: D. Próximo!',1900);lic.classList.add('gone');await cutSleep(400);lic.hidden=true;
     cut({x:184,y:CFL-20,z:3.4});A.hero.hop=0;tween(A.hero,{hop:5},150).then(()=>tween(A.hero,{hop:0},200));await say(hname,pers.react);
     cut({x:96,y:CFL-26,z:2.1});A.kael.laugh=1;A.bruna.laugh=1;await say('Bruna, a Ferreira','Classe D! Ha! Classe D desce até o terceiro andar e volta sem as botas!');A.kael.laugh=0;A.bruna.laugh=0;
