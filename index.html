@@ -125,6 +125,7 @@ button:focus-visible,[data-act]:focus-visible{outline:2px solid var(--gold);outl
 .optpanel{gap:4px;width:100%}.optrow{display:flex;flex-direction:column;gap:4px;padding:10px 4px;border-bottom:1px solid var(--line)}.optrow:last-child{border-bottom:0}
 .optrow b{font-family:var(--f-sc);font-weight:400;font-size:19px;color:var(--text)}.optrow span{color:var(--muted);font-size:14px}.optrow div{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px}
 .optb{background:#14100c;border:1px solid var(--line);border-radius:6px;padding:7px 12px;font-family:var(--f-sc);font-size:15px;color:var(--muted)}
+.optb.danger{border-color:#8e2f26;color:#f0b3a8}.optb.danger:hover{border-color:#e0503f;background:#3a1612;color:#fff}
 .optb:hover{border-color:#8a6a35}.optb.on{border-color:var(--gold);color:#fff3d6;background:#2a2014}
 
 /* ---------- cartas ---------- */
@@ -2396,7 +2397,12 @@ const ACT={
      <div class="optrow"><b>Falas na luta</b><span>Heróis e inimigos comentam durante o combate.</span><div>${r('falasLuta',true,'Ligadas')}${r('falasLuta',false,'Desligadas')}</div></div>
      <div class="optrow"><b>Vibração</b><span>Vibra ao levar dano (nos aparelhos que permitem).</span><div>${r('vib',true,'Ligada')}${r('vib',false,'Desligada')}</div></div>
      <div class="optrow"><b>Cenas já vistas</b><span>Volta a mostrar as cenas como na primeira vez.</span><div><button class="optb" data-act="optreset">Esquecer cenas vistas</button></div></div>
+     ${G&&G.screen!=='end'?`<div class="optrow"><b>Abandonar jornada</b><span>Desiste da partida atual e volta ao menu. A jornada salva é apagada.</span><div><button class="optb danger" data-act="abandonar">Abandonar partida</button></div></div>`:''}
     </div><div class="mfoot"><button class="btn small" data-act="mclose">Fechar</button></div></div>`;m.hidden=false;m.scrollTop=0},
+  abandonar:()=>{const m=$('#modal');
+    m.innerHTML=`<div class="mbox" style="max-width:460px"><h2 class="h2">Abandonar a jornada?</h2><div class="panel"><p class="sub">Você perde esta partida e volta ao menu. Não dá para desfazer.</p></div>
+     <div class="mfoot"><button class="btn small" data-act="mclose">Continuar jogando</button><button class="btn primary" data-act="abandonar2">Sim, abandonar</button></div></div>`;m.hidden=false;m.scrollTop=0},
+  abandonar2:()=>{if(G&&G.combat)G.combat.over=true;UI.lock=false;UI.choose=false;clearSave();G=null;closeModal();render()},
   optset:el=>{const k=el.dataset.k,v=el.dataset.v;OPT[k]=v==='true'?true:v==='false'?false:v;saveOpt();if(k==='musica'){MUS.unlocked=true;musApply()}if(k==='efeitos'){sfxInit();SFX.loopK=null;sfxAmb();setTimeout(()=>sfx('moedas'),60)}if(k==='vib'&&OPT.vib)vib(40);ACT.opcoes();if(G)render()},
   optreset:()=>{try{localStorage.removeItem('trc-seen')}catch(e){}toast('Cenas esquecidas.')},
   rotok:()=>{document.body.classList.add('rotok')},
