@@ -3,6 +3,10 @@
 Objetivo: levar **Masmorra do Corvo Rei** do navegador para a **App Store**, jogável e confortável no celular.
 Cada etapa termina com o jogo publicado (GitHub Pages + artifact), testado pela Hera e com uma linha em "Versões" no README.
 
+Versão em PDF: [Plano-Atlas-1.0.pdf](Plano-Atlas-1.0.pdf).
+
+**Ponto de checagem:** quando uma etapa testável termina, o Zeus pergunta ao Theo se já pode seguir, e a próxima etapa só começa com o OK. Papelada e decisões (Etapa 6) não precisam dessa pergunta.
+
 | Etapa | Nome | Responsáveis (Olimpo) | Situação |
 |---|---|---|---|
 | 1 | Celular | Hermes, Hefesto, Hera | ✅ v2.1 |
