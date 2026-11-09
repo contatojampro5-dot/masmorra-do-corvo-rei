@@ -10,7 +10,7 @@ Versão em PDF: [Plano-Atlas-1.0.pdf](Plano-Atlas-1.0.pdf).
 | Etapa | Nome | Responsáveis (Olimpo) | Situação |
 |---|---|---|---|
 | 1 | Celular | Hermes, Hefesto, Hera | ✅ v2.1 |
-| 2 | Som | Apolo | ⏳ próxima |
+| 2 | Som | Apolo | ⏳ músicas prontas (v2.4); faltam os efeitos |
 | 3 | Primeira jornada | Atena, Apolo | ⬜ |
 | 4 | Leveza e bateria | Hélio, Hefesto | ⬜ |
 | 5 | O app | Hefesto | ⬜ |

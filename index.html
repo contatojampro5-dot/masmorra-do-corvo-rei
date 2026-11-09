@@ -617,11 +617,31 @@ const $=s=>document.querySelector(s);
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));
 let G=null;
 const DEVOK=/dev/.test(location.hash);
-const OPT=(()=>{const d={cenas:'primeira',fala:'normal',falasLuta:true,vib:true};try{return Object.assign(d,JSON.parse(localStorage.getItem('trc-opt')||'{}'))}catch(e){return d}})();
+const OPT=(()=>{const d={cenas:'primeira',fala:'normal',falasLuta:true,vib:true,musica:'media'};try{return Object.assign(d,JSON.parse(localStorage.getItem('trc-opt')||'{}'))}catch(e){return d}})();
 function saveOpt(){try{localStorage.setItem('trc-opt',JSON.stringify(OPT))}catch(e){}}
 const FALA_K=()=>({lenta:1.45,normal:1,rapida:.7})[OPT.fala]||1;
 function seenCut(k){try{return JSON.parse(localStorage.getItem('trc-seen')||'[]').includes(k)}catch(e){return false}}
 function markCut(k){try{const a=JSON.parse(localStorage.getItem('trc-seen')||'[]');if(!a.includes(k)){a.push(k);localStorage.setItem('trc-seen',JSON.stringify(a))}}catch(e){}}
+/* ---------- música (Apolo) ---------- */
+const MUS={cur:null,want:null,el:{},unlocked:false,over:null,hold:false};
+const TRK={menu:'01-tema-principal',taverna:'02-taverna',a1:'03-luta-masmorra',a2:'04-luta-catacumbas',a3:'05-luta-torre',chefe:'06-chefe',corvo:'07-corvo-rei',forja:'08-forja-hefesto',
+  cav:'09-tema-cavaleiro',cac:'10-tema-cacadora',mag:'11-tema-mago',tan:'12-tema-guardiao',nec:'13-tema-necromante',vitoria:'14-vitoria-classe-s',tombou:'15-voce-tombou'};
+const ONCE=['vitoria','tombou'];
+const musVol=()=>({desligada:0,baixa:.25,media:.5,alta:.85})[OPT.musica]??.5;
+function musEl(k){if(!MUS.el[k]){const a=new Audio('musica/'+TRK[k]+'.mp3');a.loop=!ONCE.includes(k);a.preload='auto';a.volume=0;MUS.el[k]=a}return MUS.el[k]}
+function fadeTo(a,v,ms,done){const v0=a.volume,t0=performance.now();clearInterval(a._f);a._f=setInterval(()=>{const k=Math.min(1,(performance.now()-t0)/ms);a.volume=Math.max(0,Math.min(1,v0+(v-v0)*k));if(k>=1){clearInterval(a._f);done&&done()}},40)}
+function musApply(){const k=MUS.over||MUS.want;if(!MUS.unlocked||MUS.hold||document.hidden||musVol()===0||!k){for(const x in MUS.el)fadeTo(MUS.el[x],0,400,()=>MUS.el[x].pause());MUS.cur=null;return}
+  if(MUS.cur===k){const a=musEl(k);if(a.paused&&!(ONCE.includes(k)&&a.ended))a.play().catch(()=>{});fadeTo(a,musVol(),400);return}
+  for(const x in MUS.el)if(x!==k){const b=MUS.el[x];fadeTo(b,0,900,()=>b.pause())}
+  const a=musEl(k);try{a.currentTime=0}catch(e){}a.volume=0;a.play().catch(()=>{});fadeTo(a,musVol(),1100);MUS.cur=k}
+function music(k){MUS.want=k;musApply()}
+function musOver(k){MUS.over=k;musApply()}
+function screenMusic(){if(!G)return'menu';const s=G.screen,c=G.combat;
+  if(s==='combat'&&c){const b=c.enemies.find(e=>ENEMIES[e.id].boss);if(b)return b.id==='reicorvo'?'corvo':'chefe';return'a'+Math.min(3,G.act||1)}
+  if(s==='end')return G.won?'vitoria':'tombou';if(s==='forge')return'forja';if(s==='shop')return'taverna';if(s==='warrior')return G.char;return'menu'}
+const CUT_MUS=w=>{const[t,a]=w.split(':');if(t==='boss'||t==='bfall')return a==='reicorvo'?'corvo':'chefe';if(t==='act')return'a'+a;if(t==='hefesto')return'forja';if(t==='lore')return'a2';if(t==='war')return G&&G.char||'cav';if(t==='death')return'tombou';if(t==='merc')return'taverna';return'taverna'};
+['pointerdown','keydown'].forEach(ev=>document.addEventListener(ev,()=>{if(MUS.unlocked)return;MUS.unlocked=true;musApply()},true));
+document.addEventListener('visibilitychange',musApply);
 function vib(p){if(OPT.vib&&navigator.vibrate)try{navigator.vibrate(p)}catch(e){}}
 const UI={sel:null,lock:false,dev:false,devOpen:false,devTab:'pilhas',freeMap:false,god:false,modal:null,libF:'all',choose:false,moving:false,newServo:0};
 try{UI.dev=DEVOK&&localStorage.getItem('trc-dev')==='1'}catch(e){}
@@ -1930,6 +1950,7 @@ function render(){
   const scr=s==='title'?'title'+(UI.choose?'c':''):s;
   if(UI.lastScr!==scr){const el=$('#screen');el.classList.remove('scr-in');void el.offsetWidth;el.classList.add('scr-in');UI.lastScr=scr}
   document.body.classList.toggle('in-combat',s==='combat');
+  if(!CUT.on&&!UI.musLock)music(screenMusic());
   renderDev();flushFx();if(G&&s!=='title')save();
   $('#tip').hidden=true;
 }
@@ -2060,7 +2081,7 @@ function openPicker({title,sub='',cards,onPick,skip,order=false}){
     <div class="mfoot"><button class="btn small" data-act="mclose">${skip||'Fechar'}</button></div></div>`;
   m.hidden=false;m.scrollTop=0;
 }
-function closeModal(){$('#modal').hidden=true;$('#modal').innerHTML='';UI.modal=null}
+function closeModal(){$('#modal').hidden=true;$('#modal').innerHTML='';UI.modal=null;if(UI.musLock){UI.musLock=false;music(screenMusic())}}
 const TORD={atk:0,skl:1,pwr:2,sts:3,crs:4};
 const byType=a=>[...a].sort((x,y)=>(TORD[CARDS[x.id].t]-TORD[CARDS[y.id].t])||CARDS[x.id].n.localeCompare(CARDS[y.id].n));
 
@@ -2155,12 +2176,12 @@ function devCmd(cmd){
 const ACT={
   new:()=>{G=null;UI.choose=true;render()},
   back:()=>{UI.choose=false;render()},
-  start:el=>{const ch=el.dataset.ch,c=CHARS[ch],m=$('#modal'),sd=$('#seed');UI.seedV=sd&&parseInt(sd.value,10);UI.pickCh=ch;const nec=ch==='nec';
+  start:el=>{UI.musLock=true;music(el.dataset.ch);const ch=el.dataset.ch,c=CHARS[ch],m=$('#modal'),sd=$('#seed');UI.seedV=sd&&parseInt(sd.value,10);UI.pickCh=ch;const nec=ch==='nec';
     m.innerHTML=`<div class="mbox" style="max-width:480px"><div class="panel nameform"><div class="nfhead">${sprHTML(c.spr)}<div><small>${c.n}</small><h2 class="h2">${nec?'Sem nome':'Como a guilda vai te registrar?'}</h2></div></div>
      ${nec?`<p class="sub">O Necromante não diz o próprio nome. A guilda vai registrar como <i>sem nome</i>. Quem sabe um dia, se ele chegar longe...</p>`:`<form class="nfrow" id="nameform"><input id="heroname" maxlength="14" autocomplete="off" value="${pickL(DEF_NAMES[ch])}" aria-label="Nome do herói"><button class="btn small" type="button" data-act="namedice" title="Sortear outro nome">🎲</button></form><p class="sub">Até 14 letras.</p>`}
      <div class="row"><button class="btn small" data-act="mclose">Voltar</button><button class="btn primary" data-act="namego">Descer à masmorra</button></div></div></div>`;m.hidden=false;const inp=$('#heroname');if(inp){inp.focus();inp.select();$('#nameform').onsubmit=e=>{e.preventDefault();ACT.namego()}}},
   namedice:()=>{const i=$('#heroname');if(!i)return;const pool=DEF_NAMES[UI.pickCh].filter(n=>n!==i.value);i.value=pickL(pool.length?pool:DEF_NAMES[UI.pickCh])},
-  namego:()=>{const i=$('#heroname'),nm=i?i.value.trim().slice(0,14):'',v=UI.seedV;closeModal();clearSave();UI.choose=false;newRun(isNaN(v)?0:v,UI.pickCh);G.name=nm||null;heroPers();save();render();playIntro(()=>banner(ACTS[G.act].n))},
+  namego:()=>{UI.musLock=false;const i=$('#heroname'),nm=i?i.value.trim().slice(0,14):'',v=UI.seedV;closeModal();clearSave();UI.choose=false;newRun(isNaN(v)?0:v,UI.pickCh);G.name=nm||null;heroPers();save();render();playIntro(()=>banner(ACTS[G.act].n))},
   cont:()=>{G=loadSave();if(G){UI.lock=false;render();resumeCombat()}},
   menu:()=>{G=null;UI.choose=false;render()},
   abertura:()=>openAbertura(true),
@@ -2233,12 +2254,13 @@ const ACT={
   opcoes:()=>{const m=$('#modal'),r=(k,v,l)=>`<button class="optb ${OPT[k]===v?'on':''}" data-act="optset" data-k="${k}" data-v="${v}" aria-pressed="${OPT[k]===v}">${l}</button>`;
     m.innerHTML=`<div class="mbox" style="max-width:560px"><h2 class="h2">Opções</h2><div class="panel optpanel">
      <div class="optrow"><b>Cenas</b><span>Quando mostrar as cenas durante a jornada. Todas continuam no menu Cenas.</span><div>${r('cenas','sempre','Sempre')}${r('cenas','primeira','Só a primeira vez')}${r('cenas','nunca','Nunca')}</div></div>
+     <div class="optrow"><b>Música</b><span>Volume da música do jogo.</span><div>${r('musica','desligada','Desligada')}${r('musica','baixa','Baixa')}${r('musica','media','Média')}${r('musica','alta','Alta')}</div></div>
      <div class="optrow"><b>Velocidade das falas</b><span>Quanto tempo cada legenda fica na tela.</span><div>${r('fala','lenta','Lenta')}${r('fala','normal','Normal')}${r('fala','rapida','Rápida')}</div></div>
      <div class="optrow"><b>Falas na luta</b><span>Heróis e inimigos comentam durante o combate.</span><div>${r('falasLuta',true,'Ligadas')}${r('falasLuta',false,'Desligadas')}</div></div>
      <div class="optrow"><b>Vibração</b><span>Vibra ao levar dano (nos aparelhos que permitem).</span><div>${r('vib',true,'Ligada')}${r('vib',false,'Desligada')}</div></div>
      <div class="optrow"><b>Cenas já vistas</b><span>Volta a mostrar as cenas como na primeira vez.</span><div><button class="optb" data-act="optreset">Esquecer cenas vistas</button></div></div>
     </div><div class="mfoot"><button class="btn small" data-act="mclose">Fechar</button></div></div>`;m.hidden=false;m.scrollTop=0},
-  optset:el=>{const k=el.dataset.k,v=el.dataset.v;OPT[k]=v==='true'?true:v==='false'?false:v;saveOpt();if(k==='vib'&&OPT.vib)vib(40);ACT.opcoes();if(G)render()},
+  optset:el=>{const k=el.dataset.k,v=el.dataset.v;OPT[k]=v==='true'?true:v==='false'?false:v;saveOpt();if(k==='musica'){MUS.unlocked=true;musApply()}if(k==='vib'&&OPT.vib)vib(40);ACT.opcoes();if(G)render()},
   optreset:()=>{try{localStorage.removeItem('trc-seen')}catch(e){}toast('Cenas esquecidas.')},
   rotok:()=>{document.body.classList.add('rotok')},
   wnext:()=>{G.war.step++;render()},
@@ -3573,10 +3595,10 @@ function askName(box,label){return new Promise(res=>{if(CUT.skip){res(null);retu
 async function playIntro(done,which='intro'){
   const forced=UI.forceCut;UI.forceCut=false;
   if(!forced){const key=which.startsWith('war:')?'war':which;if(OPT.cenas==='nunca'||(OPT.cenas==='primeira'&&seenCut(key))){done&&done(true);return}markCut(key)}
-  if(CUT.on)return;CUT.on=true;CUT.skip=false;CUT.tw=[];
+  if(CUT.on)return;CUT.on=true;CUT.skip=false;CUT.tw=[];musOver(CUT_MUS(which));
   const box=document.createElement('div');box.id='cut';box.innerHTML=`<canvas width="1280" height="720"></canvas><div class="cbar t"></div><div class="cbar b"></div><div class="cloc"></div><div class="csub"><b></b><span></span></div><div class="clic" hidden></div><div class="ctitle"></div><div class="cfade"></div><button class="cskip" type="button">Pular ›</button>`;document.body.appendChild(box);
   const cv=box.querySelector('canvas'),x=cv.getContext('2d');x.imageSmoothingEnabled=false;
-  const end=()=>{if(!CUT.on)return;CUT.on=false;CUT.skip=true;cancelAnimationFrame(CUT.raf);box.classList.add('out');document.removeEventListener('keydown',key,true);setTimeout(()=>{box.remove();done&&done()},700)};
+  const end=()=>{if(!CUT.on)return;CUT.on=false;CUT.skip=true;cancelAnimationFrame(CUT.raf);box.classList.add('out');document.removeEventListener('keydown',key,true);setTimeout(()=>{box.remove();MUS.over=null;done&&done();if(!CUT.on){music(screenMusic())}},700)};
   const key=e=>{if(e.target&&e.target.tagName==='INPUT'&&e.key!=='Escape')return;if(e.key==='Escape'||e.key===' '){e.preventDefault();e.stopImmediatePropagation();CUT.skip=true;end()}};
   box.querySelector('.cskip').onclick=()=>{CUT.skip=true;end()};document.addEventListener('keydown',key,true);
   const load=n=>new Promise(r=>{const i=new Image();i.onload=()=>r(i);i.onerror=()=>r(null);i.src=VIS.scene(n)});
@@ -3655,12 +3677,13 @@ function openAbertura(play){
   const a=$('#abert'),v=$('#abv');if(!a||!v)return;
   a.hidden=false;a.classList.remove('out');$('#abstart').hidden=!!play;$('#abskip').hidden=!play;
   try{v.currentTime=0}catch(e){}
+  MUS.hold=true;musApply();
   if(play)v.play().catch(()=>{$('#abstart').hidden=false;$('#abskip').hidden=true});
 }
 function closeAbertura(){
   const a=$('#abert'),v=$('#abv');if(!a||a.hidden)return;
   try{localStorage.setItem('trc-abertura','1')}catch(e){}
-  a.classList.add('out');setTimeout(()=>{a.hidden=true;try{v.pause()}catch(e){}},800);
+  a.classList.add('out');setTimeout(()=>{a.hidden=true;try{v.pause()}catch(e){}},800);MUS.hold=false;MUS.unlocked=true;musApply();
 }
 (function(){
   const v=$('#abv');if(!v)return;
