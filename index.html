@@ -125,7 +125,6 @@ button:focus-visible,[data-act]:focus-visible{outline:2px solid var(--gold);outl
 .optpanel{gap:4px;width:100%}.optrow{display:flex;flex-direction:column;gap:4px;padding:10px 4px;border-bottom:1px solid var(--line)}.optrow:last-child{border-bottom:0}
 .optrow b{font-family:var(--f-sc);font-weight:400;font-size:19px;color:var(--text)}.optrow span{color:var(--muted);font-size:14px}.optrow div{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px}
 .optb{background:#14100c;border:1px solid var(--line);border-radius:6px;padding:7px 12px;font-family:var(--f-sc);font-size:15px;color:var(--muted)}
-.optb.danger{border-color:#8e2f26;color:#f0b3a8}.optb.danger:hover{border-color:#e0503f;background:#3a1612;color:#fff}
 .optb:hover{border-color:#8a6a35}.optb.on{border-color:var(--gold);color:#fff3d6;background:#2a2014}
 
 /* ---------- cartas ---------- */
@@ -146,29 +145,6 @@ button:focus-visible,[data-act]:focus-visible{outline:2px solid var(--gold);outl
 .card.unplayable .cost{background:radial-gradient(circle at 35% 30%,#bbb,#666);color:#222}
 .card.sel{box-shadow:0 0 0 3px var(--gold),0 0 24px #f5c56aaa}
 .card.big{--cw:150px;--ch:210px}
-/* cartas v2.6: um estilo por classe */
-.cl-cav{--frame:#1b2a52;--gold:#d9b45c;--nameBg:#10192f;--nameInk:#f3ead6;--paper:#efe4c8;--cink:#241a10}
-.cl-cac{--frame:#16342a;--gold:#b9d6c4;--nameBg:#0c1f19;--nameInk:#e6f3ea;--paper:#e4ecdc;--cink:#16241c}
-.cl-mag{--frame:#2a2046;--gold:#c9a24a;--nameBg:#17112b;--nameInk:#f3ead6;--paper:#e9e3f3;--cink:#201830}
-.cl-tan{--frame:#2d3441;--gold:#e3b34f;--nameBg:#1a1f28;--nameInk:#f4f6f9;--paper:#e6e9ee;--cink:#1c2230}
-.cl-nec{--frame:#14211c;--gold:#8fd0a0;--nameBg:#0a1210;--nameInk:#dcefe3;--paper:#dde6dc;--cink:#16201a}
-.cl-any{--frame:#183b4a;--gold:#9fe6ff;--nameBg:#0b2330;--nameInk:#eafaff;--paper:#e2f3f8;--cink:#10222c}
-.card[class*="cl-"]{background:var(--frame);color:var(--cink);gap:calc(var(--cw)*.022);padding:calc(var(--cw)*.05);box-shadow:0 4px 12px #000a,inset 0 0 0 calc(var(--cw)*.012) var(--gold)}
-.card[class*="cl-"].r-arma{box-shadow:0 0 14px #ff7a2a77,0 4px 12px #000a,inset 0 0 0 calc(var(--cw)*.012) var(--gold)}
-.card[class*="cl-"].r-lend{box-shadow:0 0 16px #6fd3f588,0 4px 12px #000a,inset 0 0 0 calc(var(--cw)*.012) var(--gold)}
-.card[class*="cl-"] .cname{width:100%;box-sizing:border-box;background:var(--nameBg);color:var(--nameInk);border:1px solid var(--gold);border-radius:calc(var(--cw)*.03);min-height:0;white-space:nowrap;overflow:hidden;padding:calc(var(--cw)*.022) calc(var(--cw)*.05) calc(var(--cw)*.022) calc(var(--cw)*.15);font-size:1em;letter-spacing:.01em}
-.card[class*="cl-"] .cname.nl{font-size:.88em}.card[class*="cl-"] .cname.nl2{font-size:.76em}
-.card[class*="cl-"].upg .cname{color:#9be59a}
-.card[class*="cl-"] .cart{flex:none;height:36%;border:2px solid var(--gold);border-radius:calc(var(--cw)*.03);overflow:hidden;background:none;box-shadow:inset 0 0 0 1px #0008;display:block}
-.cl-cav .cart{border-radius:calc(var(--cw)*.28) calc(var(--cw)*.28) calc(var(--cw)*.03) calc(var(--cw)*.03)}
-.cl-mag .cart{border-radius:calc(var(--cw)*.12) calc(var(--cw)*.12) calc(var(--cw)*.03) calc(var(--cw)*.03)}
-.cl-tan .cart{clip-path:polygon(0 0,100% 0,100% 82%,50% 100%,0 82%);border:0;box-shadow:none}
-.card[class*="cl-"] .cart svg{width:100%;height:100%;display:block;fill:none;stroke:none}
-.card[class*="cl-"] .ctype{display:flex;align-items:center;justify-content:center;gap:calc(var(--cw)*.03);width:100%;font-style:normal;font-family:var(--f-sc);font-size:.74em;white-space:nowrap;opacity:1;margin:0;line-height:1;color:var(--gold);letter-spacing:.06em}
-.rgs{display:inline-flex;gap:calc(var(--cw)*.018)}
-.rg{width:calc(var(--cw)*.036);height:calc(var(--cw)*.036);background:var(--rim);transform:rotate(45deg);display:block;box-shadow:0 0 0 1px #0006}
-.card[class*="cl-"] .ctext{flex:1;width:100%;box-sizing:border-box;background:var(--paper);border:1px solid var(--gold);border-radius:calc(var(--cw)*.03);padding:calc(var(--cw)*.02) calc(var(--cw)*.03);min-height:0;color:var(--cink);line-height:1.1}
-.card[class*="cl-"] .cost{border-color:var(--gold)}
 
 /* ---------- combate ---------- */
 .combat{height:100%;display:grid;grid-template-rows:1fr auto;position:relative}
@@ -616,6 +592,30 @@ button:focus-visible,[data-act]:focus-visible{outline:2px solid var(--gold);outl
 @media (prefers-reduced-motion:reduce){#cut .clic.stamped .stamp{opacity:.92;transform:rotate(-14deg)}}
 @media (max-width:600px){.cap{font-size:15px;padding:5px 10px}.bub{font-size:12px;max-width:140px}}
 @media (prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;transition:none!important}}
+/* v2.6 tutorial (Atlas etapa 3) */
+#coach{position:fixed;inset:0;z-index:420;pointer-events:none}
+#coach .ring{position:fixed;border:3px solid #ffd76a;border-radius:14px;box-shadow:0 0 0 9999px #0007,0 0 22px #ffcf5acc;transition:all .35s cubic-bezier(.3,1.2,.5,1);animation:ringP 1.2s ease-in-out infinite}
+#coach .ring.none{box-shadow:0 0 0 9999px #0007;border-color:transparent;animation:none}
+@keyframes ringP{50%{border-color:#fff3c0;box-shadow:0 0 0 9999px #0007,0 0 34px #ffcf5a}}
+#coach .arrow{position:fixed;width:0;height:0;border:13px solid transparent;transition:all .35s;filter:drop-shadow(0 0 6px #ffcf5a)}
+#coach .arrow.dn{border-top:18px solid #ffd76a;border-bottom:0;animation:arB 1s ease-in-out infinite}
+#coach .arrow.up{border-bottom:18px solid #ffd76a;border-top:0;animation:arT 1s ease-in-out infinite}
+@keyframes arB{50%{transform:translateY(6px)}}@keyframes arT{50%{transform:translateY(-6px)}}
+#coach .cbub{position:fixed;left:16px;width:min(560px,calc(100vw - 32px));display:grid;grid-template-columns:64px 1fr;gap:10px;align-items:center;padding:10px 12px;border:2px solid #8a6a3a;border-radius:12px;background:linear-gradient(#2a1d12f2,#160f09f2);box-shadow:0 10px 30px #000a;pointer-events:auto;transition:top .35s,bottom .35s}
+#coach .cbub .who{width:64px;height:64px;display:grid;place-items:center;overflow:hidden}#coach .cbub .who .spr{width:64px}
+#coach .cbub>div>b{display:block;font:700 13px var(--f-sc,serif);letter-spacing:.08em;color:#e8c27a;margin-bottom:2px}
+#coach .cbub p b{color:#ffd76a}#coach .cbub p{margin:0;font-size:15px;line-height:1.3;color:#f3e6cc}
+#coach .cbub .cbt{grid-column:1/-1;display:flex;justify-content:flex-end;gap:8px}
+#coach .cbub button{padding:7px 14px;border-radius:8px;border:1px solid #8a6a3a;background:#3a2816;color:#f3e6cc;font:inherit;font-size:14px}
+#coach .cbub button.go{background:#8a2a1a;border-color:#c0503a}
+#coach .cbub .wait{font-size:13px;color:#c9a46a;font-style:italic;align-self:center;margin-right:auto}
+.tipcard{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);z-index:410;width:min(520px,calc(100vw - 32px));display:grid;grid-template-columns:56px 1fr;gap:10px;align-items:center;padding:10px 12px;border:2px solid #8a6a3a;border-radius:12px;background:linear-gradient(#2a1d12f5,#160f09f5);box-shadow:0 10px 30px #000a;animation:tipIn .4s cubic-bezier(.3,1.4,.5,1)}
+.tipcard .who{width:56px;height:56px;display:grid;place-items:center;overflow:hidden}.tipcard .who .spr{width:56px}
+.tipcard>div>b{display:block;font:700 13px var(--f-sc,serif);letter-spacing:.08em;color:#e8c27a}.tipcard p{margin:2px 0 0;font-size:14px;line-height:1.3;color:#f3e6cc}
+.tipcard button{grid-column:1/-1;justify-self:end;padding:6px 14px;border-radius:8px;border:1px solid #8a6a3a;background:#3a2816;color:#f3e6cc;font:inherit;font-size:14px}
+@keyframes tipIn{from{opacity:0;transform:translate(-50%,30px)}}
+@media (max-height:460px){#coach .cbub{grid-template-columns:48px 1fr;padding:7px 10px;gap:8px}#coach .cbub .who,#coach .cbub .who .spr{width:48px;height:48px}#coach .cbub p{font-size:14px}#coach .cbub button{padding:5px 12px}}
+
 </style>
 
 <canvas id="bg" aria-hidden="true"></canvas>
@@ -684,6 +684,74 @@ function sfxAmb(){const want=G&&(G.screen==='map'||G.screen==='forge')&&!CUT.on&
 ['pointerdown','keydown'].forEach(ev=>document.addEventListener(ev,()=>{sfxInit();if(SFX.ctx&&SFX.ctx.state==='suspended')SFX.ctx.resume()},true));
 document.addEventListener('visibilitychange',()=>{if(SFX.ctx){document.hidden?SFX.ctx.suspend():SFX.ctx.resume()}sfxAmb()});
 document.addEventListener('click',e=>{const b=e.target.closest('button,.btn,.tbtn,.choice,.optb,.ritem,[data-act]');if(b&&!b.closest('#hand')&&!b.disabled)sfx('botao',{vol:.7,gap:40})},true);
+/* ===== Tutorial da primeira luta + dicas de primeira vez (v2.6, Atlas etapa 3) ===== */
+const LS_GET=(k,d)=>{try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v)}catch(e){return d}};
+const LS_SET=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}};
+const MARTA='Marta, a Escrivã';
+const TUT={on:false,i:0,el:null,timer:0};
+const TUT_STEPS=[
+ {t:null,x:'Primeira luta, D? Eu explico rapidinho. Depois você se vira sozinho.'},
+ {t:'.energy',x:'Esta é a sua <b>Energia</b>. Cada carta gasta o número da bolinha dourada dela. Todo turno a Energia volta cheia.'},
+ {t:'#field .unit:not(.hero) .u-int',x:'Em cima do inimigo fica a <b>intenção</b>: o que ele vai fazer no turno dele. Espada = ataque, e o número é o dano.'},
+ {t:'#hand .card.t-atk:not(.unplayable)',x:'Toque numa carta <b>vermelha</b> (Ataque) para bater nele. Também dá para <b>arrastar</b> a carta até ele.',w:'atk'},
+ {t:'#hand .card.t-skl:not(.unplayable)',x:'Agora uma <b>azul</b> (Habilidade). Muitas dão <b>Bloqueio</b>: ele segura o dano do próximo ataque.',w:'any',skipIf:()=>!document.querySelector('#hand .card.t-skl:not(.unplayable)')},
+ {t:'.endturn',x:'Gastou a Energia? Toque em <b>Encerrar turno</b>. Aí é a vez dele.',w:'end'},
+ {t:null,x:'Viu? O Bloqueio segura o golpe e some no começo do seu turno. Dica: <b>segure o dedo</b> em qualquer coisa (carta, inimigo, ícone) para ler a explicação. Agora é com você!',w:'pturn',last:true}
+];
+function tutWanted(){return!LS_GET('trc-tut',0)&&!(UI.dev&&UI.freeMap)}
+function tutStart(){if(TUT.on||!tutWanted())return;TUT.on=true;TUT.i=0;const go=()=>{if(!TUT.on)return;if(CUT.on||!G||G.screen!=='combat'||!$('#hand')){TUT.timer=setTimeout(go,300);return}tutShow()};go()}
+function tutEnd(skip){TUT.on=false;clearTimeout(TUT.timer);LS_SET('trc-tut',1);const c=$('#coach');if(c)c.remove();if(skip)toast('Tutorial pulado. Dá pra rever nas Opções.')}
+function tutShow(){
+  let st=TUT_STEPS[TUT.i];if(!st){tutEnd();return}
+  if(st.skipIf&&st.skipIf()){TUT.i++;return tutShow()}
+  let c=$('#coach');if(!c){c=document.createElement('div');c.id='coach';c.innerHTML='<div class="ring none"></div><div class="arrow"></div><div class="cbub"><div class="who">'+sprHTML('w_marta',{flip:1})+'</div><div><b>'+MARTA+'</b><p></p></div><div class="cbt"></div></div>';document.body.appendChild(c)}
+  c.querySelector('p').innerHTML=st.x;
+  const waiting=st.w&&st.w!=='pturn';
+  c.querySelector('.cbt').innerHTML=(waiting?'<span class="wait">Faça isso para continuar</span>':'')+(st.last?'':'<button data-tut="skip">Pular tutorial</button>')+(waiting?'':'<button class="go" data-tut="next">'+(st.last?'Bora!':'Entendi')+'</button>');
+  c.querySelectorAll('[data-tut]').forEach(b=>b.onclick=e=>{e.stopPropagation();sfx('botao',{vol:.7});if(b.dataset.tut==='skip')tutEnd(true);else{TUT.i++;tutShow()}});
+  if(st.w==='pturn'&&G.combat&&!G.combat.pturn){c.style.display='none'}else c.style.display='';
+  tutPlace();
+}
+function tutPlace(){
+  const c=$('#coach');if(!c||!TUT.on)return;const st=TUT_STEPS[TUT.i];if(!st)return;
+  const ring=c.querySelector('.ring'),ar=c.querySelector('.arrow'),bub=c.querySelector('.cbub');
+  let sel=st.t;if(st.w==='atk'&&UI.sel){sel='#field .unit:not(.hero)';c.querySelector('p').innerHTML='Agora toque no <b>inimigo</b> para atacar.'}else if(st.w==='any'&&UI.sel){sel='#hand .card.sel';c.querySelector('p').innerHTML='Isso! Toque <b>de novo</b> na carta para usar (ou arraste para cima).'}else if(st.w==='atk'||st.w==='any')c.querySelector('p').innerHTML=st.x;
+  const el=sel&&document.querySelector(sel);const vh=innerHeight;
+  if(el){const r=el.getBoundingClientRect(),p=6;ring.className='ring';Object.assign(ring.style,{left:r.left-p+'px',top:r.top-p+'px',width:r.width+2*p+'px',height:r.height+2*p+'px'});
+    const below=r.top+r.height/2<vh/2;ar.style.display='';ar.className='arrow '+(below?'up':'dn');ar.style.left=(r.left+r.width/2-13)+'px';ar.style.top=(below?r.bottom+p+4:r.top-p-22)+'px';
+    bubAvoid(bub,r);
+    // cartas e botão continuam tocáveis: o anel não bloqueia toques
+  }else{ring.className='ring none';Object.assign(ring.style,{left:'50%',top:'50%',width:'0px',height:'0px'});ar.style.display='none';bubAvoid(bub,null)}
+}
+function bubAvoid(bub,r){const vw=innerWidth,vh=innerHeight,land=vw>vh*1.3,w=land?Math.min(430,vw*.5):Math.min(560,vw-32);bub.style.width=w+'px';const h=bub.offsetHeight;
+  const C=land?[[16,6],[vw-w-16,6],[16,vh-h-6],[vw-w-16,vh-h-6]]:[[(vw-w)/2,6],[(vw-w)/2,vh-h-6],[(vw-w)/2,(vh-h)/2]];
+  const hit=([x,y])=>r&&!(x+w<r.left-8||x>r.right+8||y+h<r.top-8||y>r.bottom+30);
+  const [x,y]=r?(C.find(q=>!hit(q))||C[0]):[(vw-w)/2,(vh-h)/2];bub.style.left=Math.round(x)+'px';bub.style.top=Math.round(y)+'px'}
+function tutEvent(k,info){if(!TUT.on)return;const st=TUT_STEPS[TUT.i];if(!st)return;
+  if(k==='render'){setTimeout(tutPlace,30);setTimeout(tutPlace,350);return}
+  if(k==='win'){tutEnd();return}
+  if((st.w==='atk'&&k==='play'&&info==='atk')||(st.w==='any'&&k==='play')||(st.w==='end'&&k==='end')){TUT.i++;const c=$('#coach');if(c)c.style.display='none';setTimeout(()=>{if(!TUT.on)return;const n=TUT_STEPS[TUT.i];if(n&&n.w==='pturn'){const wt=()=>{if(!TUT.on)return;if(G.combat&&G.combat.pturn&&!UI.lock&&!G.combat.over){tutShow()}else TUT.timer=setTimeout(wt,300)};wt();return}if($('#coach'))$('#coach').style.display='';tutShow()},k==='end'?400:700)}
+}
+window.addEventListener('resize',()=>setTimeout(tutPlace,60));
+/* dicas que aparecem uma vez */
+const TIPS={
+ mapa:'Este é o mapa. Cada andar desce mais fundo. Toque num dos lugares que brilham para seguir. Os ícones dizem o que tem lá: luta, elite (mais forte), evento, loja, forja.',
+ recompensa:'Venceu! Escolha uma carta para pôr no baralho, ou pule. Baralho pequeno também é força: as cartas boas aparecem mais.',
+ forja:'Na forja do Hefesto você troca <b>Fragmentos</b> (dados por elites e chefes) por níveis da sua arma. No nível III você escolhe um dos dois caminhos.',
+ loja:'Na loja você gasta ouro em cartas, poções e relíquias. Também dá para pagar para <b>tirar</b> uma carta fraca do baralho.',
+ evento:'Eventos são encontros no caminho. Leia com calma: algumas escolhas ajudam, outras cobram um preço.',
+ descanso:'Fogueira: descanse para recuperar vida ou afie uma carta para ela ficar mais forte.',
+ elite:'Elite! Inimigo mais forte que o normal, mas deixa recompensas melhores, incluindo Fragmentos para a forja.',
+ chefe:'Chefe do ato. Olhe sempre a intenção dele antes de jogar: tem turno para bater e turno para se defender.'
+};
+function tipOnce(k){if(!TIPS[k]||(UI.dev&&UI.freeMap))return;const seen=LS_GET('trc-tips',[]);if(seen.includes(k))return;
+  const show=()=>{if(CUT.on||TUT.on||$('.tipcard')){setTimeout(show,500);return}const s2=LS_GET('trc-tips',[]);if(s2.includes(k))return;s2.push(k);LS_SET('trc-tips',s2);
+    const d=document.createElement('div');d.className='tipcard';d.innerHTML='<div class="who">'+sprHTML('w_marta',{flip:1})+'</div><div><b>Dica da '+MARTA.split(',')[0]+'</b><p>'+TIPS[k]+'</p></div><button>Entendi</button>';
+    d.querySelector('button').onclick=e=>{e.stopPropagation();d.remove()};document.body.appendChild(d)};setTimeout(show,700)}
+function screenTips(){if(!G)return;const s=G.screen,c=G.combat;
+  if(s==='combat'&&c){if(c.kind==='normal'&&tutWanted()&&!TUT.on)tutStart();else if(!TUT.on){if(c.kind==='elite')tipOnce('elite');if(c.kind==='boss')tipOnce('chefe')}if(TUT.on)tutEvent('render');return}
+  if(TUT.on)tutEnd();
+  const m={map:'mapa',reward:'recompensa',forge:'forja',shop:'loja',event:'evento',rest:'descanso'}[s];if(m&&!(s==='map'&&!LS_GET('trc-tut',0)&&!G.path?.length&&false))tipOnce(m)}
 function vib(p){if(OPT.vib&&navigator.vibrate)try{navigator.vibrate(p)}catch(e){}}
 const UI={sel:null,lock:false,dev:false,devOpen:false,devTab:'pilhas',freeMap:false,god:false,modal:null,libF:'all',choose:false,moving:false,newServo:0};
 try{UI.dev=DEVOK&&localStorage.getItem('trc-dev')==='1'}catch(e){}
@@ -1491,7 +1559,7 @@ function playCard(uid,tUid){
   if(d.t==='atk'){c.atkTotal++;c.atkTurn=(c.atkTurn||0)+1;if(P().st.ritmo)addBlock(P().st.ritmo);if(hasRelic('tambor')&&c.atkTotal%3===0)gainEnergy(1)}
   if(d.t==='skl')alive().forEach(e=>{if(e.st.raiva)apply(e,'forca',e.st.raiva)});
   if(d.t!=='pwr'){if(d.ex)c.exhaust.push(card);else c.discard.push(card)}
-  UI.sel=null;G.stats.cards++;
+  UI.sel=null;G.stats.cards++;setTimeout(()=>tutEvent('play',d.t),0);
   render();checkEnd();
 }
 function checkEnd(){
@@ -1518,7 +1586,7 @@ function doMove(e,mv){
 }
 async function endTurn(){
   const c=G.combat;if(!c||UI.lock||c.over)return;
-  UI.lock=true;UI.sel=null;const p=c.p;sfx('turno',{vol:.5,rate:.84});
+  UI.lock=true;UI.sel=null;const p=c.p;tutEvent('end');sfx('turno',{vol:.5,rate:.84});
   c.hand.forEach(k=>{if(k.id==='ressaca')loseHp(1)});
   if(p.st.cota)addBlock(p.st.cota);
   if(p.st.armadura)addBlock(p.st.armadura);
@@ -1629,106 +1697,16 @@ function removeFlow(done){
    Renderização
    ========================================================= */
 const KW={Exaurir:'Depois de jogada, sai do combate.',Reter:'Não é descartada no fim do turno.','Efêmera':'Se estiver na mão no fim do turno, é Exaurida.',Inata:'Começa na mão inicial de cada combate.'};
-/* Novo design das cartas — um estilo por classe (v3) */
-const CT={
- cav:{f:'#1b2a52',gold:'#d9b45c',nameBg:'#10192f',nameInk:'#f3ead6',paper:'#efe4c8',ink:'#241a10',acc:'#a3231f',tag:'Cavaleiro'},
- cac:{f:'#16342a',gold:'#b9d6c4',nameBg:'#0c1f19',nameInk:'#e6f3ea',paper:'#e4ecdc',ink:'#16241c',acc:'#3f8f5a',tag:'Caçadora'},
- mag:{f:'#2a2046',gold:'#c9a24a',nameBg:'#17112b',nameInk:'#f3ead6',paper:'#e9e3f3',ink:'#201830',acc:'#8a6af0',tag:'Mago'},
- tan:{f:'#2d3441',gold:'#e3b34f',nameBg:'#1a1f28',nameInk:'#f4f6f9',paper:'#e6e9ee',ink:'#1c2230',acc:'#c9892a',tag:'Guardião'},
- nec:{f:'#14211c',gold:'#8fd0a0',nameBg:'#0a1210',nameInk:'#dcefe3',paper:'#dde6dc',ink:'#16201a',acc:'#5fd08a',tag:'Necromante'},
- any:{f:'#183b4a',gold:'#9fe6ff',nameBg:'#0b2330',nameInk:'#eafaff',paper:'#e2f3f8',ink:'#10222c',acc:'#38c8f0',tag:'Lendária'}
-};
-const RG={basic:0,common:1,unc:2,rare:3,arma:3,lend:4,special:0};
-function cScene(cl){
- const e=(o)=>o;
- if(cl==='cav'||cl==='any'){
-  const a=cl==='any'?['#1e5a78','#5a2a7a']:['#1f3f7a','#7a1f2a'];
-  const P=[[0,0],[85,0],[170,0],[170,50],[170,100],[85,100],[0,100],[0,50],[0,0]];
-  let s='';for(let i=0;i<8;i++)s+=`<polygon points="85,50 ${P[i][0]},${P[i][1]} ${P[i+1][0]},${P[i+1][1]}" fill="${a[i%2]}" stroke="#0b1020" stroke-width="2"/>`;
-  return s+`<circle cx="85" cy="50" r="36" fill="${cl==='any'?'#bff0ff':'#f1d48a'}" stroke="#0b1020" stroke-width="2"/>`;
- }
- if(cl==='cac'){
-  let s='<rect width="170" height="100" fill="#10302a"/><circle cx="124" cy="28" r="17" fill="#e3f3ea"/><circle cx="85" cy="50" r="36" fill="#a8d8c0" opacity=".35"/>';
-  [[8,86,26],[34,90,34],[62,88,22],[110,90,30],[140,86,36],[162,90,24]].forEach(([x,y,h])=>s+=`<polygon points="${x},${y-h} ${x-h*.42},${y} ${x+h*.42},${y}" fill="#07140f"/>`);
-  return s+'<ellipse cx="60" cy="88" rx="70" ry="8" fill="#cfe8dc" opacity=".28"/><ellipse cx="130" cy="94" rx="60" ry="7" fill="#cfe8dc" opacity=".22"/>';
- }
- if(cl==='mag'){
-  let s='<rect width="170" height="100" fill="#221d33"/><circle cx="85" cy="50" r="52" fill="#3a3357"/><circle cx="85" cy="50" r="38" fill="#4a4270"/><circle cx="85" cy="50" r="58" fill="none" stroke="#7a6cc0" stroke-width="1.5" stroke-dasharray="3 7"/>';
-  [[14,16,2],[40,10,1.5],[144,14,2.2],[158,46,1.6],[18,66,1.8],[150,78,2],[60,90,1.4],[110,92,1.5]].forEach(([x,y,r])=>s+=`<circle cx="${x}" cy="${y}" r="${r}" fill="#c9a24a"/>`);
-  return s;
- }
- if(cl==='tan'){
-  let s='<rect width="170" height="100" fill="#2b323e"/><polygon points="0,0 60,0 20,100 0,100" fill="#252b35"/><polygon points="110,0 170,0 170,100 70,100" fill="#252b35"/>';
-  [[8,8],[162,8],[8,92],[162,92]].forEach(([x,y])=>s+=`<circle cx="${x}" cy="${y}" r="3" fill="#8d97a8"/>`);
-  return s+'<circle cx="85" cy="50" r="38" fill="#3d4654" stroke="#e3b34f" stroke-width="2.5"/><circle cx="85" cy="50" r="30" fill="none" stroke="#8d97a8" stroke-width="1.5"/>';
- }
- // nec
- let s='<rect width="170" height="100" fill="#0c1512"/><circle cx="85" cy="48" r="36" fill="#2f6b4a" opacity=".55"/><circle cx="85" cy="48" r="46" fill="none" stroke="#5fd08a" stroke-width="1.2" stroke-dasharray="2 6"/>';
- [[10,70,16,24],[40,76,14,20],[130,72,16,26],[156,78,14,18]].forEach(([x,y,w,h])=>s+=`<path d="M${x} ${y+h} L${x} ${y} Q${x+w/2} ${y-w*.7} ${x+w} ${y} L${x+w} ${y+h} Z" fill="#050a08"/>`);
- return s+'<ellipse cx="50" cy="94" rx="70" ry="9" fill="#9fd8b4" opacity=".16"/><ellipse cx="130" cy="96" rx="60" ry="8" fill="#9fd8b4" opacity=".14"/>';
-}
-const IC={
- cav:{atk:A=>`<g transform="rotate(45 50 50)"><path d="M50 -4 L60 8 L60 66 L40 66 L40 8 Z" ${A.l}/><line x1="50" y1="10" x2="50" y2="60" stroke="${A.a}" stroke-width="4" stroke-linecap="round"/><rect x="22" y="66" width="56" height="10" rx="3" ${A.l}/><rect x="43" y="76" width="14" height="16" ${A.l}/><circle cx="50" cy="96" r="6" ${A.l}/></g>`,
-  skl:A=>`<path d="M50 8 L84 20 L84 50 C84 72 68 86 50 94 C32 86 16 72 16 50 L16 20 Z" ${A.l}/><rect x="44" y="26" width="12" height="52" fill="${A.a}"/><rect x="28" y="40" width="44" height="12" fill="${A.a}"/>`,
-  pwr:A=>`<g stroke="${A.s}" stroke-width="3" stroke-linecap="round">${[0,45,90,135].map(r=>`<line x1="50" y1="6" x2="50" y2="94" transform="rotate(${r} 50 50)"/>`).join('')}</g><circle cx="50" cy="50" r="22" ${A.l}/><rect x="45" y="32" width="10" height="36" fill="${A.a}"/><rect x="34" y="42" width="32" height="10" fill="${A.a}"/>`},
- cac:{atk:A=>`<path d="M26 10 Q94 50 26 90" fill="none" stroke="${A.s}" stroke-width="9" stroke-linecap="round"/><path d="M26 10 Q94 50 26 90" fill="none" stroke="${A.f}" stroke-width="4" stroke-linecap="round"/><line x1="12" y1="50" x2="92" y2="50" stroke="${A.s}" stroke-width="8" stroke-linecap="round"/><line x1="12" y1="50" x2="92" y2="50" stroke="${A.f}" stroke-width="3.5" stroke-linecap="round"/><polygon points="98,50 78,38 78,62" ${A.l}/><polygon points="12,50 4,40 22,50 4,60" fill="${A.a}"/>`,
-  skl:A=>`<path d="M16 84 C14 36 44 12 86 14 C90 54 68 88 16 84 Z" ${A.l}/><path d="M18 82 L72 28" stroke="${A.a}" stroke-width="4" fill="none" stroke-linecap="round"/>`,
-  pwr:A=>`<path d="M6 50 C26 20 74 20 94 50 C74 80 26 80 6 50 Z" ${A.l}/><circle cx="50" cy="50" r="17" fill="${A.a}" stroke="${A.s}" stroke-width="3"/><circle cx="50" cy="50" r="7" fill="${A.s}"/>`},
- mag:{atk:A=>`<path d="M50 6 C58 26 80 38 76 62 C74 80 62 94 50 94 C36 94 24 80 24 62 C24 46 38 40 40 24 C46 32 48 18 50 6 Z" ${A.l}/><path d="M50 40 C56 54 64 58 62 70 C61 80 56 86 50 86 C44 86 38 80 38 70 C38 60 48 54 50 40 Z" fill="${A.a}"/>`,
-  skl:A=>`<circle cx="50" cy="50" r="40" ${A.l}/><polygon points="50,16 80,68 20,68" fill="none" stroke="${A.a}" stroke-width="5" stroke-linejoin="round"/><polygon points="50,84 20,32 80,32" fill="none" stroke="${A.a}" stroke-width="5" stroke-linejoin="round"/>`,
-  pwr:A=>`<path d="M62 8 A42 42 0 1 0 92 62 A34 34 0 1 1 62 8 Z" ${A.l}/><path d="M74 24 L78 34 L88 38 L78 42 L74 52 L70 42 L60 38 L70 34 Z" fill="${A.a}" stroke="${A.s}" stroke-width="2"/>`},
- tan:{atk:A=>`<rect x="18" y="12" width="64" height="30" rx="5" ${A.l}/><rect x="42" y="42" width="16" height="48" rx="3" ${A.l}/><rect x="18" y="12" width="12" height="30" fill="${A.a}"/><rect x="70" y="12" width="12" height="30" fill="${A.a}"/>`,
-  skl:A=>`<circle cx="50" cy="50" r="40" ${A.l}/><circle cx="50" cy="50" r="28" fill="none" stroke="${A.a}" stroke-width="4"/><circle cx="50" cy="50" r="10" fill="${A.a}" stroke="${A.s}" stroke-width="3"/>`,
-  pwr:A=>`<path d="M22 92 L22 42 L14 42 L14 16 L30 16 L30 26 L42 26 L42 16 L58 16 L58 26 L70 26 L70 16 L86 16 L86 42 L78 42 L78 92 Z" ${A.l}/><path d="M40 92 L40 64 C40 54 60 54 60 64 L60 92 Z" fill="${A.a}"/>`},
- nec:{atk:A=>`<rect x="26" y="8" width="8" height="86" rx="3" ${A.l}/><path d="M30 14 C60 0 92 16 94 48 C80 30 58 26 36 36 Z" ${A.l}/>`,
-  skl:A=>`<path d="M22 92 L22 38 C22 10 78 10 78 38 L78 92 Z" ${A.l}/><rect x="45" y="30" width="10" height="40" fill="${A.a}"/><rect x="34" y="40" width="32" height="9" fill="${A.a}"/>`,
-  pwr:A=>`<path d="M50 6 C26 6 12 24 14 46 C15 58 22 62 28 66 L28 84 L72 84 L72 66 C78 62 85 58 86 46 C88 24 74 6 50 6 Z" ${A.l}/><circle cx="36" cy="46" r="9" fill="${A.a}" stroke="${A.s}" stroke-width="3"/><circle cx="64" cy="46" r="9" fill="${A.a}" stroke="${A.s}" stroke-width="3"/><polygon points="50,56 44,68 56,68" fill="${A.s}"/>`}
-};
-const VAR={
- gelo:A=>`<g stroke="${A.s}" stroke-width="9" stroke-linecap="round">${[0,60,120].map(r=>`<line x1="50" y1="8" x2="50" y2="92" transform="rotate(${r} 50 50)"/>`).join('')}</g><g stroke="${A.f}" stroke-width="4" stroke-linecap="round">${[0,60,120].map(r=>`<line x1="50" y1="8" x2="50" y2="92" transform="rotate(${r} 50 50)"/>`).join('')}</g><circle cx="50" cy="50" r="9" fill="${A.a}" stroke="${A.s}" stroke-width="3"/>`,
- marca:A=>`<circle cx="50" cy="50" r="34" fill="none" stroke="${A.s}" stroke-width="9"/><circle cx="50" cy="50" r="34" fill="none" stroke="${A.f}" stroke-width="4"/><g stroke="${A.s}" stroke-width="8" stroke-linecap="round"><line x1="50" y1="4" x2="50" y2="30"/><line x1="50" y1="70" x2="50" y2="96"/><line x1="4" y1="50" x2="30" y2="50"/><line x1="70" y1="50" x2="96" y2="50"/></g><circle cx="50" cy="50" r="7" fill="${A.a}" stroke="${A.s}" stroke-width="3"/>`,
- gota:A=>`<path d="M50 6 C66 30 82 46 82 64 C82 82 68 94 50 94 C32 94 18 82 18 64 C18 46 34 30 50 6 Z" fill="${A.a}" stroke="${A.s}" stroke-width="3" stroke-linejoin="round"/><path d="M36 66 C36 76 42 82 50 84" fill="none" stroke="${A.f}" stroke-width="5" stroke-linecap="round"/>`,
- cura:A=>`<path d="M50 90 C14 62 8 38 22 24 C34 12 48 20 50 32 C52 20 66 12 78 24 C92 38 86 62 50 90 Z" ${A.l}/><rect x="45" y="34" width="10" height="30" fill="${A.a}"/><rect x="35" y="44" width="30" height="10" fill="${A.a}"/>`,
- espinho:A=>`<polygon points="50,4 60,36 94,30 68,52 90,80 56,68 50,96 44,68 10,80 32,52 6,30 40,36" ${A.l}/><circle cx="50" cy="50" r="9" fill="${A.a}"/>`,
- osso:A=>`<g ${A.l}><rect x="18" y="42" width="64" height="16" rx="6" transform="rotate(-35 50 50)"/><circle cx="20" cy="30" r="9"/><circle cx="32" cy="18" r="9"/><circle cx="80" cy="70" r="9"/><circle cx="68" cy="82" r="9"/></g>`
-};
-function cVar(cl,d,v){
- const s=(d.n+' '+(d.x?d.x(v):'')).toLowerCase();
- if(/gelo|congel|neve|nevasca/.test(s)&&cl==='mag')return'gelo';
- if(/marca/.test(s)&&cl==='cac')return'marca';
- if(/sangr|sangue/.test(s))return'gota';
- if(/veneno|peçonha|praga/.test(s))return'gota';
- if(/\bcure\b|\bcura\b|vida|regener/.test(s)&&d.t!=='atk')return'cura';
- if(/espinho/.test(s))return'espinho';
- if(/osso|ossada/.test(d.n.toLowerCase())&&cl==='nec')return'osso';
- return null;
-}
-function cIcon(cl,t,vr){
- const c=CT[cl]||CT.cav,ic=IC[cl]||IC.cav;
- const A={f:'#f6eeda',s:'#1a1208',a:cl==='nec'?'#3dbb6a':cl==='mag'?'#7a52e0':cl==='cac'?'#2f8a4f':cl==='tan'?'#c9892a':cl==='any'?'#1e90c0':'#a3231f'};
- A.l=`fill="${A.f}" stroke="${A.s}" stroke-width="3" stroke-linejoin="round"`;
- if(vr&&VAR[vr])return VAR[vr](A);
- let g=(ic[t]||null);
- if(g)return g(A);
- if(t==='crs')return `<path d="M50 6 C26 6 12 24 14 46 C15 58 22 62 28 66 L28 84 L72 84 L72 66 C78 62 85 58 86 46 C88 24 74 6 50 6 Z" fill="#cdb6e0" stroke="${A.s}" stroke-width="3"/><circle cx="36" cy="46" r="9" fill="#4a2e57"/><circle cx="64" cy="46" r="9" fill="#4a2e57"/><polygon points="50,56 44,68 56,68" fill="#4a2e57"/>`;
- return `<polygon points="50,8 88,30 88,70 50,92 12,70 12,30" ${A.l}/><text x="50" y="66" text-anchor="middle" font-size="52" font-family="serif" font-weight="700" fill="${A.s}">?</text>`;
-}
-function cArt(cl,t,vr){
- const ty=(t==='atk'||t==='skl'||t==='pwr'||t==='crs')?t:'sts';
- return `<svg viewBox="0 0 170 100" preserveAspectRatio="xMidYMid slice" aria-hidden="true">${cScene(cl)}<g transform="translate(47,6) scale(.88)">${cIcon(cl,ty,vr)}</g></svg>`;
-}
 function cardHTML(card,{cls='',inCombat=false}={}){
   const d=CARDS[card.id],v=vals(card),cost=cardCost(card);
-  const cl=d.cl||(d.r==='lend'?'any':'cav');
   const playable=!inCombat||canPlay(card)[0];
   const kws=[d.inn&&'Inata',d.ret&&'Reter',d.eph&&'Efêmera',d.ex&&'Exaurir'].filter(Boolean);
   const tip=kws.map(k=>`<b>${k}</b>${KW[k]}`).join('');
-  const gems=Array.from({length:RG[d.r]||0},()=>'<span class="rg"></span>').join('');
-  return`<div class="card cl-${cl} t-${d.t} r-${d.r} ${card.up?'upg':''} ${cls} ${!playable?'unplayable':''}" data-cuid="${card.uid}" data-cid="${card.id}" ${tip?`data-tip="${tip}"`:''}>
+  return`<div class="card t-${d.t} r-${d.r} ${card.up?'upg':''} ${cls} ${!playable?'unplayable':''}" data-cuid="${card.uid}" data-cid="${card.id}" ${tip?`data-tip="${tip}"`:''}>
     ${d.unp?'':`<div class="cost ${card.free?'free':''}">${cost}</div>`}
-    <div class="cname ${d.n.length>15?'nl2':d.n.length>12?'nl':''}">${d.n}${card.up?'+':''}</div>
-    <div class="cart">${cArt(cl,d.t,cVar(cl,d,v))}</div>
-    <div class="ctype"><span>${d.r==='lend'?'Lendária · ':d.r==='arma'?'Arma · ':''}${TYPE_N[d.t]}</span><span class="rgs">${gems}</span></div>
+    <div class="cname">${d.n}${card.up?'+':''}</div>
+    <div class="cart">${SVG[d.t]}</div>
+    <div class="ctype">${d.r==='lend'?'Lendária · ':d.r==='arma'?'Arma · ':''}${TYPE_N[d.t]}</div>
     <div class="ctext"><span>${kws.filter(k=>k==='Inata'||k==='Reter').map(k=>`<i>${k}.</i> `).join('')}${d.x(v)}${kws.filter(k=>k==='Efêmera'||k==='Exaurir').map(k=>` <i>${k}.</i>`).join('')}</span></div></div>`;
 }
 const sealHTML=k=>`<span class="seal" style="--c:${RELICS[k].c}" data-tip="<b>${RELICS[k].n}</b>${RELICS[k].d}">${RELICS[k].n.replace(/^(O |A )/,'')[0]}</span>`;
@@ -2077,7 +2055,7 @@ function endHTML(){
    <div class="row"><button class="btn primary" data-act="new">Nova jornada</button><button class="btn" data-act="menu">Menu</button></div></div>`;
 }
 function render(){
-  const s=G?G.screen:'title',top=$('#top');setTimeout(sfxAmb,0);
+  const s=G?G.screen:'title',top=$('#top');setTimeout(sfxAmb,0);setTimeout(screenTips,0);
   top.hidden=!G||s==='title';
   top.innerHTML=G&&s!=='title'?topHTML():'';
   if(s==='combat'){patchCombat();layoutHand();fitField()}
@@ -2397,13 +2375,10 @@ const ACT={
      <div class="optrow"><b>Falas na luta</b><span>Heróis e inimigos comentam durante o combate.</span><div>${r('falasLuta',true,'Ligadas')}${r('falasLuta',false,'Desligadas')}</div></div>
      <div class="optrow"><b>Vibração</b><span>Vibra ao levar dano (nos aparelhos que permitem).</span><div>${r('vib',true,'Ligada')}${r('vib',false,'Desligada')}</div></div>
      <div class="optrow"><b>Cenas já vistas</b><span>Volta a mostrar as cenas como na primeira vez.</span><div><button class="optb" data-act="optreset">Esquecer cenas vistas</button></div></div>
-     ${G&&G.screen!=='end'?`<div class="optrow"><b>Abandonar jornada</b><span>Desiste da partida atual e volta ao menu. A jornada salva é apagada.</span><div><button class="optb danger" data-act="abandonar">Abandonar partida</button></div></div>`:''}
+     <div class="optrow"><b>Tutorial e dicas</b><span>A Marta explica de novo a primeira luta e as dicas de cada lugar.</span><div><button class="optb" data-act="tutreset">Rever tutorial e dicas</button></div></div>
     </div><div class="mfoot"><button class="btn small" data-act="mclose">Fechar</button></div></div>`;m.hidden=false;m.scrollTop=0},
-  abandonar:()=>{const m=$('#modal');
-    m.innerHTML=`<div class="mbox" style="max-width:460px"><h2 class="h2">Abandonar a jornada?</h2><div class="panel"><p class="sub">Você perde esta partida e volta ao menu. Não dá para desfazer.</p></div>
-     <div class="mfoot"><button class="btn small" data-act="mclose">Continuar jogando</button><button class="btn primary" data-act="abandonar2">Sim, abandonar</button></div></div>`;m.hidden=false;m.scrollTop=0},
-  abandonar2:()=>{if(G&&G.combat)G.combat.over=true;UI.lock=false;UI.choose=false;clearSave();G=null;closeModal();render()},
   optset:el=>{const k=el.dataset.k,v=el.dataset.v;OPT[k]=v==='true'?true:v==='false'?false:v;saveOpt();if(k==='musica'){MUS.unlocked=true;musApply()}if(k==='efeitos'){sfxInit();SFX.loopK=null;sfxAmb();setTimeout(()=>sfx('moedas'),60)}if(k==='vib'&&OPT.vib)vib(40);ACT.opcoes();if(G)render()},
+  tutreset:()=>{try{localStorage.removeItem('trc-tut');localStorage.removeItem('trc-tips')}catch(e){}toast('Na próxima luta a Marta explica de novo.')},
   optreset:()=>{try{localStorage.removeItem('trc-seen')}catch(e){}toast('Cenas esquecidas.')},
   rotok:()=>{document.body.classList.add('rotok')},
   wnext:()=>{G.war.step++;render()},

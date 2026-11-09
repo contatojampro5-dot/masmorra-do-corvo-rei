@@ -10,8 +10,8 @@ Versão em PDF: [Plano-Atlas-1.0.pdf](Plano-Atlas-1.0.pdf).
 | Etapa | Nome | Responsáveis (Olimpo) | Situação |
 |---|---|---|---|
 | 1 | Celular | Hermes, Hefesto, Hera | ✅ v2.1 |
-| 2 | Som | Apolo | ✅ músicas (v2.4) e 18 efeitos (v2.5) prontos — aguardando teste do Theo |
-| 3 | Primeira jornada | Atena, Apolo | ⬜ |
+| 2 | Som | Apolo | ✅ v2.4 (músicas) e v2.5 (efeitos) |
+| 3 | Primeira jornada | Atena, Apolo | ✅ v2.6 — aguardando teste do Theo |
 | 4 | Leveza e bateria | Hélio, Hefesto | ⬜ |
 | 5 | O app | Hefesto | ⬜ |
 | 6 | A loja | Hermes, Afrodite | ⬜ |
