@@ -169,6 +169,12 @@ button:focus-visible,[data-act]:focus-visible{outline:2px solid var(--gold);outl
 .rg{width:calc(var(--cw)*.036);height:calc(var(--cw)*.036);background:var(--rim);transform:rotate(45deg);display:block;box-shadow:0 0 0 1px #0006}
 .card[class*="cl-"] .ctext{flex:1;width:100%;box-sizing:border-box;background:var(--paper);border:1px solid var(--gold);border-radius:calc(var(--cw)*.03);padding:calc(var(--cw)*.02) calc(var(--cw)*.03);min-height:0;color:var(--cink);line-height:1.1}
 .card[class*="cl-"] .cost{border-color:var(--gold)}
+/* v2.9: cor do tipo só nos detalhes (vermelho ataque, azul defesa, verde cura, roxo magia) */
+.k-atk{--kc:#e0503f;--kl:#ff9a8a}.k-def{--kc:#3f8fe0;--kl:#9cc8ff}.k-cura{--kc:#3fbf6a;--kl:#9ee8b4}.k-mag{--kc:#9a5ae0;--kl:#cfa8ff}
+.card[class*="k-"] .cart{border-color:var(--kc)!important;box-shadow:inset 0 0 0 1px #0008,0 0 0 1px var(--kc)}
+.card[class*="k-"] .ctype>span:first-child{color:var(--kl);display:inline-flex;align-items:center;gap:calc(var(--cw)*.025)}
+.card[class*="k-"] .ctype>span:first-child::before{content:"";width:calc(var(--cw)*.045);height:calc(var(--cw)*.045);background:var(--kc);transform:rotate(45deg);box-shadow:0 0 0 1px #0008}
+.card[class*="k-"] .cost{border-color:var(--kc)!important}
 
 /* ---------- combate ---------- */
 .combat{height:100%;display:grid;grid-template-rows:1fr auto;position:relative}
@@ -1812,11 +1818,12 @@ function cArt(cl,t,vr){
 function cardHTML(card,{cls='',inCombat=false}={}){
   const d=CARDS[card.id],v=vals(card),cost=cardCost(card);
   const cl=d.cl||(d.r==='lend'?'any':'cav');
+  const tx=(d.x?d.x(v):'').toLowerCase(),kc=d.t==='atk'?'atk':/\bcure\b|\bcura\b|regenera|recupere/.test(tx)?'cura':/bloqueio|armadura|esquiva/.test(tx)?'def':(d.t==='skl'||d.t==='pwr')?'mag':'';
   const playable=!inCombat||canPlay(card)[0];
   const kws=[d.inn&&'Inata',d.ret&&'Reter',d.eph&&'Efêmera',d.ex&&'Exaurir'].filter(Boolean);
   const tip=kws.map(k=>`<b>${k}</b>${KW[k]}`).join('');
   const gems=Array.from({length:RG[d.r]||0},()=>'<span class="rg"></span>').join('');
-  return`<div class="card cl-${cl} t-${d.t} r-${d.r} ${card.up?'upg':''} ${cls} ${!playable?'unplayable':''}" data-cuid="${card.uid}" data-cid="${card.id}" ${tip?`data-tip="${tip}"`:''}>
+  return`<div class="card cl-${cl} ${kc?'k-'+kc:''} t-${d.t} r-${d.r} ${card.up?'upg':''} ${cls} ${!playable?'unplayable':''}" data-cuid="${card.uid}" data-cid="${card.id}" ${tip?`data-tip="${tip}"`:''}>
     ${d.unp?'':`<div class="cost ${card.free?'free':''}">${cost}</div>`}
     <div class="cname ${d.n.length>15?'nl2':d.n.length>12?'nl':''}">${d.n}${card.up?'+':''}</div>
     <div class="cart">${cArt(cl,d.t,cVar(cl,d,v))}</div>
