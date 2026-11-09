@@ -158,7 +158,7 @@ button:focus-visible,[data-act]:focus-visible{outline:2px solid var(--gold);outl
 .combat.boss .field{box-shadow:inset 0 0 80px #6a3a9a55}
 .side{display:flex;align-items:flex-end;gap:14px;position:relative;z-index:1}
 .side.foes{justify-content:flex-end;flex-wrap:nowrap}
-.unit{--s:1;--dir:-1;display:flex;flex-direction:column;align-items:center;gap:3px;position:relative;width:calc(118px*var(--s))}
+.unit{--s:1;--dir:-1;display:flex;flex-direction:column;align-items:center;gap:3px;position:relative;width:calc(118px*var(--s)*var(--fz,1))}
 .unit.hero{--dir:1}
 .unit .fig{width:100%;position:relative;transform-origin:50% 100%}
 .unit.targetable{cursor:crosshair}
@@ -403,7 +403,7 @@ button:focus-visible,[data-act]:focus-visible{outline:2px solid var(--gold);outl
 
 @media (max-width:760px){
   :root{--cw:86px;--ch:122px}
-  .unit{width:calc(80px*var(--s))}
+  .unit{width:calc(80px*var(--s)*var(--fz,1))}
   .energy{width:50px;height:50px;font-size:18px}
   .endturn{padding:8px 10px;font-size:14px}
   .pile{font-size:12px;padding:3px 6px}
@@ -415,17 +415,20 @@ button:focus-visible,[data-act]:focus-visible{outline:2px solid var(--gold);outl
   .side{gap:4px}
   .uname{font-size:12px}
 }
-@media (max-height:640px){:root{--cw:100px;--ch:140px}.unit{width:calc(96px*var(--s))}}
+@media (max-height:640px){:root{--cw:100px;--ch:140px}.unit{width:calc(96px*var(--s)*var(--fz,1))}}
 /* celular em pé: a mão ocupa a largura toda, energia e botões numa linha embaixo */
 @media (max-width:600px){
-  .dock{grid-template-columns:auto minmax(0,1fr) auto;grid-template-areas:"hand hand hand" "dl . dr";row-gap:4px}
+  .dock{grid-template-columns:auto minmax(0,1fr) auto;grid-template-areas:"hand hand hand" "dl . dr";row-gap:14px}
   .hand{grid-area:hand}.dl{grid-area:dl;flex-direction:row}.dr{grid-area:dr;flex-direction:row;align-items:center}
   .combat{grid-template-columns:minmax(0,1fr)}
+  :root{--cw:84px;--ch:118px}.hand{min-height:calc(var(--ch) + 22px)}
+  .top{gap:5px 6px;padding-block:4px}.top .hero{font-size:17px;white-space:nowrap}.top .pers{display:none}.top .stat{font-size:13px;padding:3px 7px;white-space:nowrap}.top .stat .ico{width:14px;height:14px}
+  .top .pot{width:32px;height:32px}.top .pot svg{width:20px;height:20px}.top .pots{padding:2px}.top .relics{padding:2px 4px}.top .seal,.top .gem{width:24px;height:24px;font-size:12px}.top .tbtn{padding:5px 9px;font-size:13px;white-space:nowrap}.top .sp{display:none}
 }
 /* celular deitado: tela baixa, tudo menor para as intenções dos inimigos caberem */
 @media (max-height:460px){
   :root{--cw:80px;--ch:112px}
-  .unit{width:calc(62px*var(--s))}
+  .unit{width:calc(62px*var(--s)*var(--fz,1))}
   .top{padding-block:3px}.top .hero{font-size:17px}
   .hint{display:none}
   .field{padding-top:4px;padding-bottom:22px}
@@ -1799,7 +1802,8 @@ function makeFrame(act){if(FRAME[act])return FRAME[act];const W=320,H=180,c=docu
   for(const side of [0,1])for(let k=0;k<7;k++){const rx=side?W-24-k*9-R()*6:24+k*9+R()*6,rw=6+R()*10,rh=3+R()*(9-k);x.fillStyle=k%2?P.m:P.d;x.beginPath();x.ellipse(rx,H-1,rw,rh,0,Math.PI,0);x.fill();f(rx-rw*.5,H-1-rh,rw*.5,1,P.h+'66')}
   if(act!==2){for(const tx of [33,W-33]){f(tx-1,52,3,9,'#2a1a10');f(tx-2,51,5,2,'#5a3a20');x.fillStyle='#e0601c';x.fillRect(tx-1,46,3,5);x.fillStyle='#ffd06a';x.fillRect(tx,47,1,3);const g=x.createRadialGradient(tx,48,0,tx,48,16);g.addColorStop(0,'rgba(255,150,60,.45)');g.addColorStop(1,'rgba(0,0,0,0)');x.fillStyle=g;x.fillRect(tx-16,32,32,32)}}
   return FRAME[act]=c.toDataURL()}
-function fitField(){const f=$('#field');if(!f||!f.classList.contains('scened'))return;const W=f.clientWidth,H=f.clientHeight;if(!W||!H)return;const bh=Math.max(H,W*180/320),fl=bh*142/180,want=H-Math.min(66,Math.max(58,H*.2));let off=Math.min(0,Math.max(H-bh,want-fl));f.style.setProperty('--by',Math.round(off)+'px');f.style.paddingBottom=Math.max(6,Math.round(H-(off+fl)))+'px'}
+function fitField(){const f=$('#field');if(!f||!f.classList.contains('scened'))return;const W=f.clientWidth,H=f.clientHeight;if(!W||!H)return;const bh=Math.max(H,W*180/320),fl=bh*142/180,want=H-Math.min(66,Math.max(58,H*.2));let off=Math.min(0,Math.max(H-bh,want-fl));f.style.setProperty('--by',Math.round(off)+'px');f.style.paddingBottom=Math.max(6,Math.round(H-(off+fl)))+'px';fitUnits(f)}
+function fitUnits(f){f.style.setProperty('--fz',1);for(let k=0;k<3;k++){const ft=f.getBoundingClientRect().top+4;let top=1e9;f.querySelectorAll('.unit,.unit .intent').forEach(e=>{const r=e.getBoundingClientRect();if(r.height)top=Math.min(top,r.top)});const u=f.querySelector('.unit.hero');if(!u||top>=ft)break;const over=ft-top,hh=u.getBoundingClientRect().height,z=+f.style.getPropertyValue('--fz')||1;f.style.setProperty('--fz',Math.max(.55,z*(1-over/Math.max(hh,40))).toFixed(3))}}
 const SCN_BY={rato:'esgoto',limo:'esgoto',goblin:'goblins',kobold:'goblins',reigoblin:'goblins',morcego:'mina',aranha:'aranhas',rainha:'aranhas',sapo:'pantano',bruxa:'pantano',orc:'orc',mimico:'carrasco',carrasco:'carrasco',golem:'ruinas',zumbi:'catacumbas',carnical:'catacumbas',fantasma:'catacumbas',cultista:'cripta',lich:'cripta',cavaleiro:'capela',gargula:'telhado',diabrete:'forja',elemental:'forja',cao:'forja',minotauro:'labirinto',olho:'olho',dragao:'dragao',reicorvo:'salao',corvo:'salao'};
 function sceneFor(c){const es=c.enemies.filter(e=>!e.minion),top=es.find(e=>ENEMIES[e.id].boss)||es.find(e=>ENEMIES[e.id].elite)||es[0]||c.enemies[0];if(!top)return null;
   if(top.id==='esqueleto'||top.id==='arqueiro')return G.act===2?'cripta':'mina';return SCN_BY[top.id]||null}
@@ -1842,7 +1846,7 @@ function patchCombat(){
 function layoutHand(){
   const h=$('#hand');if(!h)return;const cards=[...h.children],n=cards.length;if(!n)return;
   const W=h.clientWidth,cw=cards[0].offsetWidth;
-  const step=n>1?Math.min(cw*.9,(W-cw)/(n-1)):0,mid=(n-1)/2;
+  const pad=n>2?Math.min(14,W*.04):0,step=n>1?Math.min(cw*.9,(W-cw-2*pad)/(n-1)):0,mid=(n-1)/2;
   cards.forEach((el,i)=>{const o=i-mid;el.style.setProperty('--x',(W/2-cw/2+o*step)+'px');el.style.setProperty('--y',(o*o*1.6)+'px');el.style.setProperty('--r',(o*Math.min(4,26/n))+'deg');el.style.zIndex=i+1});
 }
 function rewardHTML(){

@@ -40,3 +40,4 @@ Arraste a carta até o inimigo (ou clique na carta e depois no alvo). **E** ence
 - **v2.2** — luta: personagens com os pés no chão do cenário em qualquer tela, moldura nas bordas (pilares, estalactites, pedras e tochas, por ato) e inimigos mais perto do herói.
 - **v2.3** — barra de cima mais encorpada: fundo de madeira escura, borda dourada, cada informação numa "pílula" própria e nome maior.
 - **v2.4** — Atlas 1.0, Etapa 2 (parte 1): 15 músicas celtas/medievais compostas para o jogo (menu, taverna, uma luta por ato, chefes, Corvo Rei, forja, tema de cada herói, vitória e derrota), com troca suave entre telas e volume nas Opções.
+- **v2.4.1** — Tela de luta no celular: com o celular deitado, o herói e o inimigo encolhem quando o campo fica baixo (a cabeça não é mais cortada); em pé, a barra de cima ficou mais enxuta, as cartas não saem da tela e não cobrem mais o Descarte.
