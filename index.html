@@ -674,7 +674,7 @@ const $=s=>document.querySelector(s);
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));
 let G=null;
 const DEVOK=/dev/.test(location.hash);
-const OPT=(()=>{const d={cenas:'primeira',fala:'normal',falasLuta:true,vib:true,musica:'media',efeitos:'media'};try{return Object.assign(d,JSON.parse(localStorage.getItem('trc-opt')||'{}'))}catch(e){return d}})();
+const OPT=(()=>{const d={cenas:'primeira',fala:'normal',falasLuta:true,vib:true,musica:'media',efeitos:'media',bateria:'economia'};try{return Object.assign(d,JSON.parse(localStorage.getItem('trc-opt')||'{}'))}catch(e){return d}})();
 function saveOpt(){try{localStorage.setItem('trc-opt',JSON.stringify(OPT))}catch(e){}}
 const FALA_K=()=>({lenta:1.45,normal:1,rapida:.7})[OPT.fala]||1;
 function seenCut(k){try{return JSON.parse(localStorage.getItem('trc-seen')||'[]').includes(k)}catch(e){return false}}
@@ -2492,6 +2492,7 @@ const ACT={
      <div class="optrow"><b>Cenas</b><span>Quando mostrar as cenas durante a jornada. Todas continuam no menu Cenas.</span><div>${r('cenas','sempre','Sempre')}${r('cenas','primeira','Só a primeira vez')}${r('cenas','nunca','Nunca')}</div></div>
      <div class="optrow"><b>Música</b><span>Volume da música do jogo.</span><div>${r('musica','desligada','Desligada')}${r('musica','baixa','Baixa')}${r('musica','media','Média')}${r('musica','alta','Alta')}</div></div>
      <div class="optrow"><b>Efeitos</b><span>Volume dos sons de golpes, cartas e moedas.</span><div>${r('efeitos','desligada','Desligados')}${r('efeitos','baixa','Baixo')}${r('efeitos','media','Médio')}${r('efeitos','alta','Alto')}</div></div>
+     <div class="optrow"><b>Bateria</b><span>Quanto o fundo se mexe. Menos movimento gasta menos bateria.</span><div>${r('bateria','normal','Fundo cheio')}${r('bateria','economia','Economia')}${r('bateria','maxima','Fundo parado')}</div></div>
      <div class="optrow"><b>Velocidade das falas</b><span>Quanto tempo cada legenda fica na tela.</span><div>${r('fala','lenta','Lenta')}${r('fala','normal','Normal')}${r('fala','rapida','Rápida')}</div></div>
      <div class="optrow"><b>Falas na luta</b><span>Heróis e inimigos comentam durante o combate.</span><div>${r('falasLuta',true,'Ligadas')}${r('falasLuta',false,'Desligadas')}</div></div>
      <div class="optrow"><b>Vibração</b><span>Vibra ao levar dano (nos aparelhos que permitem).</span><div>${r('vib',true,'Ligada')}${r('vib',false,'Desligada')}</div></div>
@@ -2503,7 +2504,7 @@ const ACT={
     m.innerHTML=`<div class="mbox" style="max-width:460px"><h2 class="h2">Abandonar a jornada?</h2><div class="panel"><p class="sub">Você perde esta partida e volta ao menu. Não dá para desfazer.</p></div>
      <div class="mfoot"><button class="btn small" data-act="mclose">Continuar jogando</button><button class="btn primary" data-act="abandonar2">Sim, abandonar</button></div></div>`;m.hidden=false;m.scrollTop=0},
   abandonar2:()=>{if(G&&G.combat)G.combat.over=true;UI.lock=false;UI.choose=false;clearSave();G=null;closeModal();render()},
-  optset:el=>{const k=el.dataset.k,v=el.dataset.v;OPT[k]=v==='true'?true:v==='false'?false:v;saveOpt();if(k==='musica'){MUS.unlocked=true;musApply()}if(k==='efeitos'){sfxInit();SFX.loopK=null;sfxAmb();setTimeout(()=>sfx('moedas'),60)}if(k==='vib'&&OPT.vib)vib(40);ACT.opcoes();if(G)render()},
+  optset:el=>{const k=el.dataset.k,v=el.dataset.v;OPT[k]=v==='true'?true:v==='false'?false:v;saveOpt();if(k==='musica'){MUS.unlocked=true;musApply()}if(k==='bateria')bgDraw(performance.now(),true);if(k==='efeitos'){sfxInit();SFX.loopK=null;sfxAmb();setTimeout(()=>sfx('moedas'),60)}if(k==='vib'&&OPT.vib)vib(40);ACT.opcoes();if(G)render()},
   tutreset:()=>{try{localStorage.removeItem('trc-tut');localStorage.removeItem('trc-tips')}catch(e){}toast('Na próxima luta a Marta explica de novo.')},
   optreset:()=>{try{localStorage.removeItem('trc-seen')}catch(e){}toast('Cenas esquecidas.')},
   rotok:()=>{document.body.classList.add('rotok')},
@@ -2624,7 +2625,8 @@ function bgInit(){
 }
 function bgResize(){if(!BG.cv)return;BG.W=BG.cv.width=Math.ceil(innerWidth/BGPX);BG.H=BG.cv.height=Math.ceil(innerHeight/BGPX);BG.wall=null;BG.stars=null}
 function bgSet(mode,act){if(!BG.cv)return;if(mode===BG.mode&&act===BG.act){if(BG.rm)requestAnimationFrame(()=>bgDraw(performance.now(),true));return}BG.mode=mode;BG.act=act;BG.wall=null;BG.embers.length=0;requestAnimationFrame(()=>bgDraw(performance.now(),true))}
-function bgLoop(t){requestAnimationFrame(bgLoop);if(document.hidden||BG.rm||!BG.mode)return;if(t-BG.last<33)return;BG.last=t;bgDraw(t)}
+const bgStep=()=>({normal:33,economia:66,maxima:0})[OPT.bateria]??66;
+function bgLoop(t){requestAnimationFrame(bgLoop);const st=bgStep();if(document.hidden||BG.rm||!BG.mode||!st||(typeof CUT!=='undefined'&&CUT.on))return;if(t-BG.last<st)return;BG.k=Math.min(3,(t-BG.last)/33);BG.last=t;bgDraw(t)}
 
 function buildWall(){
   const W=BG.W,H=BG.H,o=document.createElement('canvas');o.width=W;o.height=H;const x=o.getContext('2d');
@@ -2675,7 +2677,8 @@ function drawTorch(x,tx,ty,f){
   });
   x.fillStyle='#fff6d8';x.fillRect(tx,ty-2,1,1);
 }
-function glow(x,cx,cy,r,c0,c1){const g=x.createRadialGradient(cx,cy,0,cx,cy,r);g.addColorStop(0,c0);g.addColorStop(.45,c1);g.addColorStop(1,'rgba(0,0,0,0)');x.fillStyle=g;x.fillRect(cx-r,cy-r,r*2,r*2)}
+const GLOWC={};
+function glow(x,cx,cy,r,c0,c1){const key=c0+c1;let g=GLOWC[key];if(!g){g=document.createElement('canvas');g.width=g.height=128;const q=g.getContext('2d'),gr=q.createRadialGradient(64,64,0,64,64,64);gr.addColorStop(0,c0);gr.addColorStop(.45,c1);gr.addColorStop(1,'rgba(0,0,0,0)');q.fillStyle=gr;q.fillRect(0,0,128,128);GLOWC[key]=g}x.drawImage(g,cx-r,cy-r,r*2,r*2)}
 function crowShape(x,cx,cy,s,ph){
   const f=Math.sin(ph)*s*.55;
   x.beginPath();x.moveTo(cx-s,cy-f);
@@ -2733,14 +2736,15 @@ function bgDraw(t,force){
   spots.forEach(([tx,ty],i)=>{const f=BG.rm?0:flick(t,i);glow(x,tx,ty-4,Math.min(W,H)*.34*(1+f*.06),warm[0],warm[1])});
   x.globalCompositeOperation='source-over';
   spots.forEach(([tx,ty],i)=>{drawTorch(x,tx,ty,BG.rm?0:flick(t,i));
-    if(!BG.rm&&Math.random()<.35)BG.embers.push({x:tx+(Math.random()*4-2),y:ty-6,vx:Math.random()*.4-.2,vy:-(.3+Math.random()*.5),l:1})});
-  for(let i=BG.embers.length-1;i>=0;i--){const e=BG.embers[i];e.x+=e.vx+Math.sin((t+i*90)*.004)*.15;e.y+=e.vy;e.l-=.018;if(e.l<=0){BG.embers.splice(i,1);continue}x.fillStyle=`rgba(255,${150+e.l*80|0},70,${e.l})`;x.fillRect(Math.round(e.x),Math.round(e.y),1,1)}
+    if(!BG.rm&&Math.random()<.35*(BG.k||1))BG.embers.push({x:tx+(Math.random()*4-2),y:ty-6,vx:Math.random()*.4-.2,vy:-(.3+Math.random()*.5),l:1})});
+  for(let i=BG.embers.length-1;i>=0;i--){const e=BG.embers[i],kk=BG.k||1;e.x+=(e.vx+Math.sin((t+i*90)*.004)*.15)*kk;e.y+=e.vy*kk;e.l-=.018*kk;if(e.l<=0){BG.embers.splice(i,1);continue}x.fillStyle=`rgba(255,${150+e.l*80|0},70,${e.l})`;x.fillRect(Math.round(e.x),Math.round(e.y),1,1)}
   if(!BG.rm){for(let k=0;k<3;k++){const fx=((t*.006*(k+1)*.5+k*W*.45)%(W*1.6))-W*.3,fy=H*(.86+k*.05);x.globalCompositeOperation='lighter';glow(x,fx,fy,W*.32,'rgba(110,100,125,.06)','rgba(90,85,110,.03)');x.globalCompositeOperation='source-over'}}
   if(BG.mode==='title'&&!BG.rm){
-    if(!BG.big&&Math.random()<.004)BG.big={x:W+20,y:H*(.12+Math.random()*.3),s:6+Math.random()*4,ph:0,v:1.1+Math.random()*.6};
-    const b=BG.big;if(b){b.x-=b.v;b.y+=Math.sin(b.ph*.15)*.25;b.ph+=.32;x.fillStyle='#030304';crowShape(x,b.x,b.y,b.s,b.ph);if(b.x<-30)BG.big=null}
+    if(!BG.big&&Math.random()<.004*(BG.k||1))BG.big={x:W+20,y:H*(.12+Math.random()*.3),s:6+Math.random()*4,ph:0,v:1.1+Math.random()*.6};
+    const b=BG.big;if(b){const kk=BG.k||1;b.x-=b.v*kk;b.y+=Math.sin(b.ph*.15)*.25*kk;b.ph+=.32*kk;x.fillStyle='#030304';crowShape(x,b.x,b.y,b.s,b.ph);if(b.x<-30)BG.big=null}
   }
-  const v=x.createRadialGradient(W/2,H*.45,Math.min(W,H)*.25,W/2,H*.45,Math.max(W,H)*.72);v.addColorStop(0,'rgba(0,0,0,0)');v.addColorStop(1,'rgba(0,0,0,.78)');x.fillStyle=v;x.fillRect(0,0,W,H);
+  if(!BG.vig||BG.vig.width!==W||BG.vig.height!==H){const vc=document.createElement('canvas');vc.width=W;vc.height=H;const q=vc.getContext('2d'),v=q.createRadialGradient(W/2,H*.45,Math.min(W,H)*.25,W/2,H*.45,Math.max(W,H)*.72);v.addColorStop(0,'rgba(0,0,0,0)');v.addColorStop(1,'rgba(0,0,0,.78)');q.fillStyle=v;q.fillRect(0,0,W,H);BG.vig=vc}
+  x.drawImage(BG.vig,0,0);
   BG.drawn=true;
 }
 
@@ -3538,9 +3542,18 @@ function renderScene(name){if(SCN_CACHE[name])return SCN_CACHE[name];if(!SCENES[
   if(DARK){const dk=document.createElement('canvas');dk.width=W*S;dk.height=H*S;const x=dk.getContext('2d');x.fillStyle=`rgba(4,3,8,${DARK})`;x.fillRect(0,0,W*S,H*S);x.globalCompositeOperation='destination-out';for(const L of LIGHTS){const g=x.createRadialGradient(L.x*S,L.y*S,0,L.x*S,L.y*S,L.r*S);g.addColorStop(0,`rgba(0,0,0,${Math.min(1,L.i)})`);g.addColorStop(.5,`rgba(0,0,0,${Math.min(1,L.i)*.55})`);g.addColorStop(1,'rgba(0,0,0,0)');x.fillStyle=g;x.fillRect((L.x-L.r)*S,(L.y-L.r)*S,L.r*2*S,L.r*2*S)}out.drawImage(dk,0,0)}
   if(canBlur){const sn=document.createElement('canvas');sn.width=W*S;sn.height=H*S;sn.getContext('2d').drawImage(oc,0,0);out.globalCompositeOperation='lighter';out.filter='blur(14px)';out.globalAlpha=DARK?.45:.32;out.drawImage(sn,0,0);out.filter='none';out.globalAlpha=1}
   out.globalCompositeOperation='lighter';out.drawImage(hc,0,0);out.globalCompositeOperation='source-over';hi.clearRect(0,0,W*S,H*S);vignette();out.drawImage(hc,0,0);
-  return SCN_CACHE[name]=oc.toDataURL('image/jpeg',.88)}
+  const u=oc.toDataURL('image/jpeg',.88);SCN_CACHE[name]=u;scnSave(name,u);return u}
+/* v2.10: cenários prontos guardados no aparelho, para não redesenhar a cada vez que o jogo abre */
+const SCN_VER=(()=>{let h=0;const src=Object.keys(SCENES).map(k=>String(SCENES[k])).join('')+String(renderScene);for(let i=0;i<src.length;i+=7)h=(Math.imul(h,31)+src.charCodeAt(i))|0;return'c'+(h>>>0).toString(36)})();
+let SCN_DB=null;
+function scnDB(){if(SCN_DB)return SCN_DB;SCN_DB=new Promise(ok=>{try{const r=indexedDB.open('corvo-cenas',1);r.onupgradeneeded=()=>r.result.createObjectStore('c');r.onsuccess=()=>ok(r.result);r.onerror=()=>ok(null)}catch(e){ok(null)}});return SCN_DB}
+function scnSave(k,u){scnDB().then(db=>{if(!db)return;try{db.transaction('c','readwrite').objectStore('c').put(u,SCN_VER+':'+k)}catch(e){}})}
+function scnLoad(){return scnDB().then(db=>new Promise(ok=>{if(!db)return ok(0);try{const tx=db.transaction('c','readwrite'),st=tx.objectStore('c'),rq=st.openCursor();let n=0;
+  rq.onsuccess=()=>{const c=rq.result;if(!c)return ok(n);const[v,k]=String(c.key).split(':');if(v===SCN_VER){if(!SCN_CACHE[k]){SCN_CACHE[k]=c.value;n++}}else c.delete();c.continue()};rq.onerror=()=>ok(n)}catch(e){ok(0)}}))}
+function scnWarm(list){const todo=list.filter(k=>SCENES[k]&&!SCN_CACHE[k]);const idle=window.requestIdleCallback||(f=>setTimeout(()=>f({timeRemaining:()=>50}),200));
+  const go=()=>{if(!todo.length)return;idle(d=>{if(typeof CUT!=='undefined'&&CUT.on){setTimeout(go,1500);return}const k=todo.shift();if(!SCN_CACHE[k])renderScene(k);setTimeout(go,120)},{timeout:4000})};setTimeout(go,1500)}
 
-return{renderScene};})();
+return{renderScene,scnLoad,scnWarm,SCENES};})();
 const ARM=(function(){
 /* Armas evolutivas: 3 níveis por herói, pixel art 32x32 ampliado */
 const G=32,Z=10;let a,h,rr;
@@ -3692,7 +3705,7 @@ const HMAP={h_cav:'cav',h_cac:'cac',h_mag:'mag',h_tan:'tan',h_nec:'nec',hefesto:
 function grid(key,wk){const id=key+'|'+(wk||'0');if(GRID[id])return GRID[id];const hk=HMAP[key];return GRID[id]=hk?MAO.HAND[hk](wk||'0'):HDM.hdSprite(SPR[key]||SPR.rat)}
 const PCACHE={};
 function portrait(k){if(PCACHE[k])return PCACHE[k];if(!MAO.PORT[k])return null;const g=MAO.PORT[k](),cv=document.createElement('canvas');cv.width=64;cv.height=64;const x=cv.getContext('2d');MAO.drawM(x,g,0,0,1);return PCACHE[k]=cv.toDataURL()}
-return{grid,portrait,scene:SCN.renderScene,weaponIcon:ARM.weaponIcon,WTREE:ARM.WTREE};
+return{sceneLoad:SCN.scnLoad,sceneWarm:SCN.scnWarm,sceneNames:()=>Object.keys(SCN.SCENES),grid,portrait,scene:SCN.renderScene,weaponIcon:ARM.weaponIcon,WTREE:ARM.WTREE};
 })();
 
 /* =========================================================
@@ -3942,6 +3955,7 @@ window.claude?.hot?.snapshot?.(()=>({G,dev:UI.dev,devOpen:UI.devOpen}));
 function boot(data){
   if(data&&data.G&&data.G.act){G=data.G;UI.dev=!!data.dev;UI.devOpen=!!data.devOpen;UI.lock=false}
   bgInit();render();resumeCombat();
+  VIS.sceneLoad().then(()=>{const a=['entrada','taverna','mina','goblins','esgoto','aranhas','forjaHef','catacumbas','cripta','carrasco','pantano','salao','santuario'];VIS.sceneWarm(a.concat(VIS.sceneNames().filter(k=>!a.includes(k))))});
   let seen=false;try{seen=localStorage.getItem('trc-abertura')==='1'}catch(e){}
   if(!seen&&!(data&&data.G))openAbertura(false);
 }
