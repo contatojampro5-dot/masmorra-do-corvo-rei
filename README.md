@@ -5,6 +5,9 @@ Roguelike de cartas em pixel art. Escolha um herói, desça andar por andar pela
 **Jogar no navegador:** https://contatojampro5-dot.github.io/masmorra-do-corvo-rei/
 (ou baixe o `index.html` e abra no navegador)
 
+## Plano de desenvolvimento
+O caminho até a App Store está em [Plano Real de Desenvolvimento — Atlas 1.0](docs/plano-atlas-1.0.md).
+
 ## O que tem no jogo
 - **5 heróis:** Cavaleiro Errante, Caçadora das Brumas, Mago Arcano, Guardião de Ferro e Necromante.
 - **155 cartas**, mais 10 cartas especiais de arma.
@@ -19,7 +22,7 @@ Roguelike de cartas em pixel art. Escolha um herói, desça andar por andar pela
 - **Falas com legenda:** o herói ganha um temperamento sorteado (Corajoso, Sarcástico, Nervoso ou Sombrio) e os inimigos que pensam falam com o deles (Arrogante, Covarde, Furioso ou Debochado). Bichos não falam.
 
 ## Controles
-Arraste a carta até o inimigo (ou clique na carta e depois no alvo). **E** encerra o turno, **1 a 0** escolhem cartas, **F2** abre o painel DEV.
+Arraste a carta até o inimigo (ou clique na carta e depois no alvo). **E** encerra o turno, **1 a 0** escolhem cartas, **F2** abre o painel DEV (só com o endereço terminado em `#dev`). No celular, **segure o dedo** em qualquer coisa para ler a explicação.
 
 ## Versões
 - **v1.0** — primeira versão no GitHub: visual 32×32 desenhado à mão, Forja de Hefesto, armas evolutivas, ambientes por inimigo, guerreiros e abertura em vídeo.
@@ -33,3 +36,4 @@ Arraste a carta até o inimigo (ou clique na carta e depois no alvo). **E** ence
 - **v1.8** — botão **Heróis** no menu com a história de cada um (o cavaleiro sem bandeira, a irmã de Liora, o aluno expulso, o ferreiro de Pedra Funda e o necromante que está virando corvo).
 - **v1.9** — na Taverna, a Marta explica por que cada herói ganha D (ordem extinta, a irmã Liora, expulso da Academia, ferreiro sem luta, e o Necromante registrado como "sem nome").
 - **v2.0** — dê nome ao seu herói (com nomes sugeridos e sorteio). O Necromante começa "sem nome" e só diz o nome dele na cena da Classe S.
+- **v2.1** — Atlas 1.0, Etapa 1 (celular): dicas com toque longo, aviso para girar o celular na luta, botões maiores, barra de cima compacta no celular deitado, tela de Opções (cenas sempre/primeira vez/nunca, velocidade das falas, falas na luta, vibração), vibração ao levar dano, fontes dentro do jogo (funciona sem internet) e botão DEV escondido.
