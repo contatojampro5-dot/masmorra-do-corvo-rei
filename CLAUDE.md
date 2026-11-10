@@ -18,5 +18,8 @@ Deméter = cenário, Hélio = luz/efeitos). Responda sempre em português, simpl
 - **Classificação 9+:** nada de bebida alcoólica, apostas/jogos de azar ou palavrões em cartas, eventos, falas e cenas novas (ver `docs/classificacao-etaria.md`).
 - **Respeito à fé do Theo:** nos quadros do Olimpo e em qualquer texto sobre os deuses gregos, escrever **"deus"/"deuses" com d minúsculo**. "Deus" com D maiúsculo só para o Deus vivo, nunca para personagens, mitologia ou o Olimpo.
 
+## Lore
+`docs/lore.md` — "A Coroa de Cinco Juramentos" (aprovada pelo Theo em 10/11/2026). Falas, cenas, cartas e heróis novos seguem esse documento.
+
 ## Plano atual
 `docs/plano-atlas-1.0.md` e `docs/Plano-Atlas-1.0.pdf` — do navegador até a App Store em 6 etapas.
