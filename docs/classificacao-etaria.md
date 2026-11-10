@@ -22,7 +22,7 @@ O Google Play usa um questionário parecido (IARC); as mesmas respostas servem.
 | Contests | None | — |
 | Unrestricted Web Access | No | O jogo não abre a internet |
 | User-Generated Content / chat / mensagens | No | Só o nome do herói, que fica no aparelho |
-| In-App Purchases / Ads | No (por enquanto) | Muda se o Theo escolher anúncios ou parte paga |
+| In-App Purchases | **Yes** | Pacote das Trevas (R$ 9,90, compra única). Anúncios: No |
 | Age Assurance / Parental Controls | No | — |
 
 ## Resultado esperado

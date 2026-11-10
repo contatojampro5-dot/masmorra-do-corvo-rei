@@ -308,6 +308,10 @@ button:focus-visible,[data-act]:focus-visible{outline:2px solid var(--gold);outl
 .emblem{width:170px;max-width:45%}
 .seedin{background:#100d0a;border:1px solid var(--line);border-radius:6px;color:var(--text);padding:6px 8px;font:500 15px var(--f-num);width:150px}
 .chars{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;width:min(1100px,100%)}
+.charc.locked .ped,.charc.locked h3,.charc.locked .stat,.charc.locked p{filter:grayscale(.85) brightness(.55)}
+.charc.locked{border-color:#6a5230}
+.lockb{position:absolute;top:10px;right:10px;z-index:3;display:flex;align-items:center;gap:6px;padding:5px 10px 5px 8px;border-radius:999px;background:#1a120a;border:1px solid #d9b45c;color:#f3dfa8;font:600 12px var(--f-sc,serif);letter-spacing:.06em;box-shadow:0 2px 10px #000a}
+.lockb svg{width:16px;height:16px;fill:#d9b45c}
 .charc{position:relative;background:radial-gradient(ellipse 90% 55% at 50% 0%,#e0a23a1c,transparent 70%),linear-gradient(#1d1812f2,#110d0af2);border:1px solid var(--line);border-radius:6px;padding:18px 16px 16px;display:flex;flex-direction:column;align-items:center;gap:7px;text-align:center;box-shadow:inset 0 1px 0 #ffffff0d,0 10px 30px #0009;transition:transform .2s,border-color .2s,box-shadow .2s;animation:charIn .6s ease-out both;animation-delay:var(--d,0s)}
 .charc::after{content:"";position:absolute;left:12px;right:12px;top:0;height:2px;background:linear-gradient(90deg,transparent,var(--gold),transparent);opacity:.35;transition:opacity .2s}
 .charc:hover,.charc:focus-visible{border-color:#8a6a35;transform:translateY(-5px);box-shadow:inset 0 1px 0 #ffffff14,0 16px 40px #000c,0 0 34px #e0a23a26}
@@ -1849,12 +1853,19 @@ function topHTML(){
    <button class="tbtn" data-act="opcoes" aria-label="Opções">Opções</button>
    ${DEVOK?`<button class="tbtn dev ${UI.dev?'on':''}" data-act="dev" title="Modo desenvolvedor (F2)">DEV</button>`:''}`;
 }
+const FREE_HEROES=['cav','cac','mag'];
+const LOCK_SVG='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 10V7a5 5 0 0 1 10 0v3h1.5A1.5 1.5 0 0 1 20 11.5v9A1.5 1.5 0 0 1 18.5 22h-13A1.5 1.5 0 0 1 4 20.5v-9A1.5 1.5 0 0 1 5.5 10zm2 0h6V7a3 3 0 0 0-6 0z"/></svg>';
+/* v2.14: Pacote das Trevas (R$ 9,90). A tranca só liga no app da loja; no site fica tudo liberado.
+   Para ver a tranca no site: localStorage 'trc-tranca' = '1'. */
+const PACK_PRICE='R$ 9,90';
+function lockOn(){try{if(window.Capacitor&&Capacitor.isNativePlatform&&Capacitor.isNativePlatform())return true;return localStorage.getItem('trc-tranca')==='1'}catch(e){return false}}
+function heroLocked(k){if(!lockOn()||FREE_HEROES.includes(k))return false;try{if(localStorage.getItem('trc-pack')==='1')return false}catch(e){}return !(UI.dev)}
 function titleHTML(){
   const sv=loadSave();
   if(UI.choose)return`<div class="page" style="justify-content:safe center">
    <p class="t-kick" style="animation-delay:0s">Cinco almas na entrada</p>
    <h2 class="pick-h">Quem desce à masmorra?</h2>
-   <div class="chars">${Object.entries(CHARS).map(([k,ch],i)=>`<button class="charc" data-act="start" data-ch="${k}" style="--d:${(i*.08).toFixed(2)}s">
+   <div class="chars">${Object.entries(CHARS).map(([k,ch],i)=>`<button class="charc ${heroLocked(k)?'locked':''}" data-act="${heroLocked(k)?'lockedhero':'start'}" data-ch="${k}" style="--d:${(i*.08).toFixed(2)}s">${heroLocked(k)?`<span class="lockb">${LOCK_SVG}<b>Pacote das Trevas</b></span>`:''}
      <span class="ped">${sprHTML(ch.spr)}</span><h3>${ch.n}</h3>
      <span class="stat">${SVG.heart}${ch.hp} de vida</span>
      <p class="cmot">${LORE[k].ep}</p>
@@ -2507,6 +2518,12 @@ const ACT={
   abandonar2:()=>{if(G&&G.combat)G.combat.over=true;UI.lock=false;UI.choose=false;clearSave();G=null;closeModal();render()},
   optset:el=>{const k=el.dataset.k,v=el.dataset.v;OPT[k]=v==='true'?true:v==='false'?false:v;saveOpt();if(k==='musica'){MUS.unlocked=true;musApply()}if(k==='bateria')bgDraw(performance.now(),true);if(k==='efeitos'){sfxInit();SFX.loopK=null;sfxAmb();setTimeout(()=>sfx('moedas'),60)}if(k==='vib'&&OPT.vib)vib(40);ACT.opcoes();if(G)render()},
   tutreset:()=>{try{localStorage.removeItem('trc-tut');localStorage.removeItem('trc-tips')}catch(e){}toast('Na próxima luta a Marta explica de novo.')},
+  lockedhero:el=>{const m=$('#modal'),f=c=>`<div style="width:88px;height:88px;overflow:hidden;flex:none">${sprHTML(CHARS[c].spr)}</div>`;
+    m.innerHTML=`<div class="mbox" style="max-width:500px"><h2 class="h2">Pacote das Trevas</h2><div class="panel">
+     <div style="display:flex;flex-direction:row;gap:20px;justify-content:center;align-items:flex-end">${f('tan')}${f('nec')}</div>
+     <p class="sub">O <b>Guardião de Ferro</b> e o <b>Necromante</b> vêm juntos no Pacote das Trevas por <b>${PACK_PRICE}</b>: uma compra só, para sempre, com as histórias, cenas e armas deles.</p>
+     <p class="sub" style="color:var(--muted)">A compra vai ficar disponível no app da App Store. Por enquanto, jogue com o Cavaleiro, a Caçadora e o Mago.</p></div>
+     <div class="mfoot"><button class="btn small" data-act="mclose">Entendi</button></div></div>`;m.hidden=false;m.scrollTop=0},
   optreset:()=>{try{localStorage.removeItem('trc-seen')}catch(e){}toast('Cenas esquecidas.')},
   rotok:()=>{document.body.classList.add('rotok')},
   wnext:()=>{G.war.step++;render()},
