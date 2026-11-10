@@ -3832,6 +3832,13 @@ function drawGem(x,cx,by,c,now){const P={O:'#160c06',H:'#ffffff',L:gemShade(c,.5
   for(let j=0;j<Ht;j++)for(let i=0;i<W;i++){const ch=GEM_ROWS[j][i];if(ch==='.')continue;x.fillStyle=P[ch];x.fillRect(x0+i,y0+j,1,1)}
   const t=(now%2400)/2400;if(t<.35){const a=Math.sin(t/.35*Math.PI),sx=x0+3,sy=y0+1;x.globalAlpha=a;x.fillStyle='#fffbe0';x.fillRect(sx,sy-2,1,5);x.fillRect(sx-2,sy,5,1);x.globalAlpha=a*.6;x.fillRect(sx-1,sy-1,3,3);x.globalAlpha=1}
   x.restore()}
+/* v2.20: a verdade, contada por Aldric quando vencemos */
+const VERDADE=[['Aldric','Escute... antes que eu vá. Não fui eu quem fez tudo isso.'],
+ ['Aldric','Morvane nunca me curou. Ele lançou um feitiço de vida eterna, e o feitiço precisava de um hospedeiro. A cura foi a isca. Eu caí.'],
+ ['Aldric','Garrel, Ysolda, Bram e Elowen juraram pela coroa achando que me protegiam. Também caíram. O juramento prendeu as famílias deles ao feitiço.'],
+ ['','Cada pessoa que morre nesta masmorra dá, sem saber, a própria vida em sacrifício. E essa vida sobe.'],
+ ['Aldric','Sobe para ele. Morvane está vivo. Hoje ele é o rei do Mundo de Cima... o rei que nunca envelhece.']];
+const VERDADE_HERO={cav:'O rei que a Ordem jurou proteger foi a primeira vítima. Agora eu sei contra quem é o meu juramento.',cac:'Quantas pessoas morreram aqui embaixo para ele não envelhecer? Liora, o mundo inteiro precisa saber.',mag:'"Eu ainda estou aqui." Ele nunca esteve na torre. Esteve lá em cima, o tempo todo.',tan:'As crianças da vila desciam e não voltavam... e ele vivia mais um dia. Isso acaba.',nec:'Vida eterna paga com a vida dos outros. Eu quase virei ele.'};
 const FIM_CHAR={
  cav:[[0,'A pedra de Garrel se solta da coroa e cai na mão do cavaleiro. Pela primeira vez em cem anos, o rei não está sozinho.'],[1,'Descanse, majestade. O juramento de Garrel está cumprido.']],
  cac:[[0,'Da escada do trono desce alguém correndo, com uma flecha em cada mão. É Liora. Ela arranca da coroa a pedra de Ysolda, e o corvo branco vira poeira de luz no ombro dela.'],[1,'Liora! Eu deixei flechas em todos os andares... Vamos pra casa.']],
@@ -3879,6 +3886,8 @@ async function CUT_EXTRA(which,T){
     if(F.how==='fall'){cut({x:200,y:CFL-30,z:1.6});await tween(A.boss,{rot:Math.PI/2.2,y:CFL+8},900,q=>q*q);if(id==='reigoblin'){S.parts=S.parts||[];for(let k=0;k<40;k++)S.parts.push({x:230+(Math.random()-.5)*30,y:CFL-10,vx:(Math.random()-.5)*60,vy:-30-Math.random()*40,g:140,life:2,t:-Math.random()*.3,c:Math.random()<.5?'#ffd04a':'#e0a020',s:1.5})}await tween(A.boss,{alpha:0},1600)}
     else{cut({x:222,y:CFL-34,z:1.9});await dissolve(S,A.boss,{mode:F.how,color:F.c,feathers:F.feathers,ms:2400});await cutSleep(800)}
     if(id==='reicorvo'&&FIM_CHAR[G.char]){const F2=FIM_CHAR[G.char];for(const [w2,l2] of F2){if(w2)  {cut({x:110,y:CFL-20,z:3.2});await say(hname,l2)}else{cut({x:165,y:90,z:1.3});await say('',l2,Math.max(3200,l2.length*55))}}
+      for(const [quem,l4] of VERDADE){if(quem){cut({x:165,y:90,z:1.3});await say('Aldric, o Rei Justo',l4,Math.max(3400,l4.length*55))}else{cut({x:165,y:90,z:1.1});await say('',l4,Math.max(3400,l4.length*55))}}
+      if(VERDADE_HERO[G.char]){cut({x:110,y:CFL-20,z:3.2});await say(hname,VERDADE_HERO[G.char])}
       if(pedras().length>=5){const l3='A última pedra cai. A coroa, vazia, vira pó junto com as penas. Aldric, o Rei Justo, fecha os olhos e, pela primeira vez em cem anos, descansa.';cut({x:165,y:90,z:1.1});await say('',l3,Math.max(3600,l3.length*55))}}
     else{cut({x:110,y:CFL-20,z:3.2});await say(hname,HERO_FALL[P])}
     cut({x:165,y:90,z:1.2});await cutSleep(900);return}
@@ -3979,6 +3988,7 @@ async function playIntro(done,which='intro'){
     cut({x:214,y:CFL-24,z:3.2});S.crown={x:192,y:CFL-26,c:(PEDRA[G.char]||PEDRA.cav).c};await tween(S.crown,{x:226,y:CFL-15},700,t=>t*t);
     await say('Marta, a Escrivã da Guilda','Isso é... uma pedra da coroa do Corvo Rei?!');
     if(G.char==='cac'){cut({x:240,y:CFL-26,z:3});await say('Marta, a Escrivã da Guilda','E essa aí do seu lado... Liora?! Ela também volta como Classe S!')}
+    cut({x:88,y:CFL-22,z:2.6});await say('Kael, o Mercenário','...Uma pedra da coroa. O rei lá de cima não vai gostar nada disso.')
     if(pedras().length>=5){cut({x:240,y:CFL-26,z:3});await say('Marta, a Escrivã da Guilda','Cinco pedras. Cinco famílias. A coroa acabou. Acabou mesmo.')}
     cut({x:184,y:CFL-20,z:3.4});await say(hname,pers.back);
     cut({x:96,y:CFL-26,z:2.1});await cutSleep(900);await say('Bruna, a Ferreira','...Retiro o que eu disse sobre as botas.');

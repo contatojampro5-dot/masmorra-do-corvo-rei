@@ -23,7 +23,14 @@ Há cem anos, cinco companheiros juraram proteger o Rei Justo e puseram um peda�
 
 - Quando Aldric adoeceu, Morvane propôs a cura: **um pacto com a revoada**. O pacto precisava de uma coroa nova, segura por cinco juramentos.
 - Os cinco juraram. O rei sobreviveu... e a cada dia ficou mais escuro, mais leve, mais pássaro. Virou **o Corvo Rei**, e esqueceu o próprio nome.
-- A coroa **prendeu os juramentos**: as famílias dos companheiros carregam essa marca até hoje. **Morvane sumiu** dentro da torre.
+- A coroa **prendeu os juramentos**: as famílias dos companheiros carregam essa marca até hoje. **Morvane sumiu** — o povo acha que ele morreu na torre.
+
+### A verdade (o jogador descobre quando vence o Corvo Rei — ideia do Theo, 10/11/2026)
+- A "cura" foi uma **isca**. Morvane lançou um **feitiço de vida eterna**, e o feitiço precisava de um **hospedeiro**: Aldric caiu sem saber.
+- Os outros quatro também caíram: juraram pela coroa achando que protegiam o rei, mas o juramento **prendeu as famílias deles ao feitiço** (por isso a torre chama os descendentes).
+- **Cada pessoa que morre na masmorra dá, sem saber, a própria vida em sacrifício**; a vida sobe para Morvane.
+- **Morvane está vivo: é o rei atual do Mundo de Cima, o rei que nunca envelhece.**
+- No jogo: depois de "Aldric... era esse o meu nome" e do final do herói, Aldric conta a verdade e cada herói reage. Na guilda, o Kael solta: "O rei lá de cima não vai gostar nada disso."
 
 ## 3. O mundo
 - **Pedra Funda**: a vila ao pé da torre. Tem a **Guilda dos Aventureiros** (a escrivã **Marta** dá as licenças) e a **Taverna do Javali Torto**.
@@ -74,7 +81,7 @@ Gente que já desceu antes de você (alguns ficaram presos lá embaixo, outros v
 | **Mira**, a Arqueira Cega | Ysolda — prima distante das gêmeas | Perdeu a visão olhando direto para o corvo branco; agora acerta pelo som |
 | **Bruna**, a Ferreira de Batalha | Bram — tia do Guardião | Vive na vila e desce às minas de Bram atrás de ferro antigo. Já tentou quebrar a coroa sozinha, sem o martelo da família, e quase não voltou |
 | **Frei Tobias**, o Monge Andarilho | Elowen — guarda os livros que ela escondeu | Procura a página do pacto que foi arrancada da biblioteca |
-| **Kael**, o Mercenário | Nenhuma família: foi **pago por Morvane** para vigiar quem desce | Fica na taverna zombando de quem chega. Ainda não decidiu de que lado está (bom para o Ato 4) |
+| **Kael**, o Mercenário | Nenhuma família: é **pago pelo rei do Mundo de Cima (Morvane)** para vigiar quem desce | Fica na taverna zombando de quem chega. Ainda não decidiu de que lado está (bom para o Ato 4) |
 | **Irmã Celeste**, a Templária | **Descendente do próprio Aldric** | Ora pelo rei todos os dias; quer que ele descanse em paz |
 
 ## 6. Como a história termina
@@ -98,4 +105,4 @@ Todo herói novo responde a quatro perguntas:
 3. ✅ (v2.18) **Cenas dos atos**: Ato 1, o Hefesto conta que ensinou o Bram (e reconhece o Guardião); Ato 2, o brasão de Garrel e o selo de Elowen; Ato 3, o corvo branco. Cada herói reage pela família. O Corvo Rei reconhece a família de cada herói antes da luta.
 4. ✅ (v2.18) **Aliados**: cada um conta a família; o aliado da mesma família do herói fala diferente (Sir Aldo/Cavaleiro, Mira/Caçadora, Bruna/Guardião, Frei Tobias/Necromante, Kael/Mago).
 5. ✅ (v2.18) **Final por herói**: depois de "Aldric... era esse o meu nome", cada herói tem o seu desfecho (juramento cumprido, Liora, Morvane, a coroa quebrada, o nome).
-6. **Ato 4 secreto (depois do 1.0)**: Morvane.
+6. **Ato 4 (depois do 1.0)**: subir ao **Mundo de Cima** e enfrentar **Morvane, o rei que nunca envelhece**.
