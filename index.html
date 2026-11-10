@@ -2263,11 +2263,11 @@ function banner(t,small){const d=document.createElement('div');d.className='bann
 function cinematic(name,sub){const d=document.createElement('div');d.className='cine';d.innerHTML=`<div class="cn"></div><div class="cs"></div>`;d.querySelector('.cn').textContent=name;d.querySelector('.cs').textContent=sub;$('#fxlayer').appendChild(d);setTimeout(()=>d.remove(),2900)}
 /* ---------- falas com legenda: personalidades sorteadas ---------- */
 const LORE={
- cav:{ep:'O último da Ordem do Vale Cinzento',mot:'Honra',txt:['Ele era cavaleiro da Ordem do Vale Cinzento. Quando os corvos tomaram o castelo do seu senhor, foi o único que não fugiu, e o único que sobreviveu.','Sem senhor, sem ordem e sem bandeira, passou a vender a espada de vila em vila. Na taverna, chamam ele de errante. Ele odeia o apelido.','Desce a masmorra para provar que um cavaleiro sem bandeira ainda é um cavaleiro.'],q:'Um juramento não morre com quem o recebeu.'},
- cac:{ep:'A irmã que ficou para trás',mot:'Encontrar Liora',txt:['Cresceu nas florestas enevoadas ao pé da torre, caçando ao lado da irmã gêmea, Liora.','Num inverno, Liora seguiu um corvo branco até a entrada da masmorra e nunca mais voltou. A Caçadora achou só o arco dela, quebrado, na porta.','Desde então, crava uma flecha na parede de cada andar que desce, para a irmã saber o caminho de volta.'],q:'Toda trilha tem um fim. Eu vou até o da minha irmã.'},
- mag:{ep:'O aluno que abriu o livro errado',mot:'O diário do mago dos corvos',txt:['Foi o melhor aluno da Academia de Pedra Funda até abrir um livro trancado: o diário do mago que fez o pacto de Aldric.','Expulso, sem título e sem cajado de mestre, descobriu nas últimas páginas que todo pacto tem uma cláusula de saída, escrita no próprio trono.','Desce em busca do conhecimento que a academia teve medo de estudar.'],q:'Proibido é só o que ninguém entendeu ainda.'},
- tan:{ep:'O ferreiro que virou muralha',mot:'Proteger Pedra Funda',txt:['Foi o ferreiro da vila por vinte anos. Nunca quis ser herói.','Quando os corvos começaram a levar as crianças das plantações, vestiu a armadura que ele mesmo tinha forjado e pegou o escudo maior da oficina.','Não sabe lutar bonito, mas ninguém passa por ele. Jurou que Pedra Funda não vai virar a próxima torre.'],q:'Eu não preciso ganhar. Eu preciso ficar de pé.'},
- nec:{ep:'O que está virando outra coisa',mot:'Quebrar o próprio pacto',txt:['Ninguém na vila sabe o nome dele, e ele prefere assim.','Fez um pacto parecido com o de Aldric: trocou o calor do próprio corpo pelo poder de erguer os mortos. Todo dia sente o frio subir um pouco mais.','Desce para olhar nos olhos do Corvo Rei e descobrir como termina um pacto desses, e se ainda dá tempo de quebrar o dele.'],q:'Eu sei o que ele virou. Eu estou virando também.'},
+ cav:{ep:'O último da Ordem do Vale Cinzento',mot:'Cumprir o juramento de Garrel',txt:['Descende de Sir Garrel, o cavaleiro que fundou a Ordem do Vale Cinzento para guardar o Rei Justo Aldric. Há cem anos, Garrel jurou: “Enquanto houver um Garrel, o rei não estará só.”','Quando os corvos tomaram o castelo do seu senhor, foi o único da Ordem que não fugiu, e o único que sobreviveu. Na taverna, chamam ele de errante. Ele odeia o apelido.','Sobe a torre para cumprir o juramento da família, mesmo que isso signifique libertar o rei que jurou proteger.'],q:'Um juramento não morre com quem o recebeu.'},
+ cac:{ep:'A irmã que ficou para trás',mot:'Encontrar Liora',txt:['Descende de Ysolda das Brumas, a caçadora real que guiava Aldric pela floresta. Ysolda jurou: “Eu sempre vou achar o caminho até ele.”','Num inverno, a irmã gêmea, Liora, seguiu um corvo branco até a entrada da masmorra e nunca mais voltou. A Caçadora achou só o arco dela, quebrado, na porta.','Desde então, crava uma flecha na parede de cada andar, para a irmã saber o caminho de volta. Os olhos da família veem coisas que os outros não veem.'],q:'Toda trilha tem um fim. Eu vou até o da minha irmã.'},
+ mag:{ep:'O aluno que abriu o livro errado',mot:'O diário de Morvane',txt:['Foi o melhor aluno da Academia de Pedra Funda, fundada com os livros que Elowen salvou da biblioteca real. Até abrir um livro trancado: o diário de Morvane, o mago dos corvos que escreveu o pacto de Aldric.','Expulso, sem título e sem cajado de mestre, descobriu nas últimas páginas que todo pacto tem uma cláusula de saída, escrita no próprio trono.','Desce porque o diário não larga dele. Às vezes, as páginas viram sozinhas, como se alguém quisesse ensinar.'],q:'Proibido é só o que ninguém entendeu ainda.'},
+ tan:{ep:'O ferreiro que virou muralha',mot:'Proteger Pedra Funda',txt:['Foi o ferreiro da vila por vinte anos, na mesma forja que Bram ergueu há cem anos. Bram foi o ferreiro que forjou a coroa de Aldric com as próprias mãos.','Quando os corvos começaram a levar as crianças das plantações, vestiu a armadura que ele mesmo forjou e pegou o escudo maior da oficina. Dizem que a coroa cobra o ferro da família dele.','Não sabe lutar bonito, mas ninguém passa por ele. O que a família dele forjou, ele vai desfazer.'],q:'Eu não preciso ganhar. Eu preciso ficar de pé.'},
+ nec:{ep:'O que está virando outra coisa',mot:'Recuperar o próprio nome',txt:['Ninguém sabe o nome dele, nem ele mesmo. Descende de Elowen, a Guardiã dos Livros, que assinou o pacto de Aldric como testemunha e pagou com o próprio nome. A cada geração, a família lembra um pouco menos de si.','Tentou entender o pacto e acabou fazendo um parecido: trocou o calor do próprio corpo pelo poder de erguer os mortos. Todo dia sente o frio subir um pouco mais.','Sobe para olhar nos olhos do Corvo Rei e descobrir como termina um pacto desses, e se ainda dá tempo de quebrar o dele.'],q:'Eu sei o que ele virou. Eu estou virando também.'},
 };
 const HERO_PERS={
  corajoso:{n:'Corajoso',c:'#f0c46a',
@@ -2483,7 +2483,7 @@ const ACT={
       <button class="choice" data-act="cenaplay" data-k="ending"><b>O Retorno: Classe S</b><span>Depois de derrotar o Corvo Rei, a coroa no balcão. Contém o final do jogo.</span></button>
      </div><div class="mfoot"><button class="btn small" data-act="mclose">Fechar</button></div></div>`;m.hidden=false;m.scrollTop=0},
   herois:()=>{const m=$('#modal');
-    m.innerHTML=`<div class="mbox" style="max-width:860px"><h2 class="h2">Os Heróis</h2><p class="sub">Cinco almas, cinco motivos para descer.</p>
+    m.innerHTML=`<div class="mbox" style="max-width:860px"><h2 class="h2">Os Heróis</h2><p class="sub">Cinco famílias, cinco juramentos, uma coroa.</p>
      <div class="hlist">${Object.entries(CHARS).map(([k,c])=>{const L=LORE[k];return`<article class="hcard">
        <div class="hfig">${sprHTML(c.spr)}<span class="stat">${SVG.heart}${c.hp}</span></div>
        <div class="htxt"><h3>${c.n}</h3><p class="hep">${L.ep}</p>${L.txt.map(t=>`<p>${t}</p>`).join('')}
@@ -3768,11 +3768,11 @@ const CUT={on:false,skip:false,raf:0};
 const DEF_NAMES={cav:['Edran','Galvão','Rodrigo','Tristão','Aldo'],cac:['Sela','Íris','Maya','Luna','Raia'],mag:['Caio','Teodoro','Benedito','Fausto','Ícaro'],tan:['Bortolo','Gaspar','Otávio','Bento','Moisés'],nec:[]};
 function heroName(){return(G&&G.name)||CHARS[G.char].n}
 const MARTA_D={
- cav:['Nome? NM, cavaleiro da Ordem do Vale Cinzento? Hm.','Essa ordem acabou faz dez anos. Sem ordem, sem título.'],
- cac:['Nome? NM... Espera. Você é a irmã da Liora, né?','Ela também era D. E não voltou.'],
- mag:['Nome? NM. Aqui na carta diz: "expulso da Academia".','Sem diploma, sem cajado de mestre. Hm.'],
- tan:['Nome? NM... Peraí. Você não é o ferreiro da rua de baixo?','Lutou alguma vez na vida? Armadura bonita não conta.'],
- nec:['Nome?','... Nada? Tá. Vou escrever "sem nome".'],
+ cav:['Nome? NM, da Ordem do Vale Cinzento? Sangue de Garrel, então.','Essa ordem acabou faz dez anos. E nenhum Garrel que subiu aquela torre voltou.'],
+ cac:['Nome? NM... Espera. Você é a irmã da Liora, né? Família de Ysolda.','Ela também era D. E não voltou.'],
+ mag:['Nome? NM. Aqui na carta diz: "expulso da Academia". Por causa daquele diário, imagino.','Os velhos dizem que o diário escolhe quem lê. Hm.'],
+ tan:['Nome? NM... Peraí. Você é o ferreiro da rua de baixo. Da forja do velho Bram.','A torre leva as crianças, e agora quer o ferreiro também? Hm.'],
+ nec:['Nome?','... Nada? Igual a todos da família de Elowen. Vou escrever "sem nome".'],
 };
 const CUT_LINES={
  corajoso:{back:'Eu disse que ia trazer.',fin:'Agora sim. Qual é a próxima masmorra?',react:'D?! Eu enfrentei lobos sozinho no caminho até aqui!',vow:'Pois guardem essa letra. Eu vou descer até o fundo e trazer a coroa do Corvo Rei.',gate:'Classe D. Vamos ver quanto dura essa letra.'},
@@ -3811,6 +3811,7 @@ const BOSS_FALL={reigoblin:{line:'Meu ouro... ninguém toca... no meu ouro...',h
 const HERO_FALL={corajoso:'Acabou. Descanse.',sarcastico:'Bela saída. Pouco brilho.',nervoso:'Ele morreu? Morreu mesmo? Cutuca com a espada.',sombrio:'Pó volta ao pó.'};
 const HERO_DEAD={corajoso:'Eu... ainda... consigo...',sarcastico:'Tá... essa foi feia...',nervoso:'Eu morri? Eu tô no céu? Isso é a taverna?',sombrio:'A escuridão me devolveu. Que gentil.'};
 const MERC_HERO={corajoso:'Preciso de equipamento. Do bom.',sarcastico:'Uma loja. No meio da masmorra. Super normal.',nervoso:'Você vende... coragem? Em frasco?',sombrio:'Quanto custa sair vivo daqui?'};
+const LORE_CHAR={cav:'Garrel... o fundador da Ordem. Então o juramento também é meu.',cac:'Ysolda jurou achar o caminho até ele. Liora deve ter seguido o mesmo caminho.',mag:'Morvane. O dono do diário. Ele escreveu o pacto... e eu ando com o livro dele na mochila.',tan:'Bram forjou a coroa. Meu avô dizia que a nossa forja era a mais antiga da vila. Agora eu sei por quê.',nec:'Elowen assinou e perdeu o nome. Por isso eu não lembro o meu.'};
 const LORE_HERO={corajoso:'Então ele já foi um rei justo. Vou lembrar ele disso.',sarcastico:'Moral da história: nunca aceite remédio de quem conversa com pássaros.',nervoso:'Então eu vou lutar contra um rei amaldiçoado. Ótimo. Ótimo!',sombrio:'Todo monstro já foi alguém.'};
 function dissolve(S,a,{mode='dust',color=null,feathers=false,ms=2200}={}){
   const img=a.img,n=img.width,sz=a.sz||32,d=img.getContext('2d').getImageData(0,0,n,n).data;S.parts=S.parts||[];
@@ -3820,7 +3821,7 @@ function dissolve(S,a,{mode='dust',color=null,feathers=false,ms=2200}={}){
     S.parts.push({x:wx,y:wy,vx:mode==='crumble'?(Math.random()-.5)*8:4+Math.random()*10,vy:mode==='crumble'?-Math.random()*6:-8-Math.random()*14,g:mode==='crumble'?120:-4,life:1.6+Math.random()*1.2,t:-delay/1000,c,s:sz/n})}
   if(feathers)for(let f=0;f<26;f++)S.parts.push({x:a.x+(Math.random()-.5)*sz*.6,y:a.y-sz*Math.random(),vx:(Math.random()-.5)*40,vy:-20-Math.random()*30,g:6,life:2.5+Math.random(),t:-Math.random()*.6,c:'#0a0a12',s:2.5,feather:1});
   return tween(a,{alpha:0},ms,q=>q)}
-function cutScenesFor(which){const[t,a]=which.split(':');if(t==='bfall')return[BOSS_SCN[a]];if(t==='death')return['taverna'];if(t==='merc')return['mina'];if(t==='lore')return['salao','telhado','catacumbas'];if(t==='boss')return[BOSS_SCN[a]];if(t==='act')return[ACT_L[a].scn];if(t==='hefesto')return['forjaHef'];if(t==='war')return[G.war&&G.war.mode==='fight'?'mina':'santuario'];return['taverna','entrada']}
+function cutScenesFor(which){const[t,a]=which.split(':');if(t==='bfall')return[BOSS_SCN[a]];if(t==='death')return['taverna'];if(t==='merc')return['mina'];if(t==='lore')return['salao','telhado','catacumbas'];if(t==='boss')return[BOSS_SCN[a]];if(t==='act')return[ACT_L[a].scn];if(t==='hefesto')return['forjaHef'];if(t==='war')return[G.war&&G.war.mode==='fight'?'mina':'santuario'];return['salao','taverna','entrada']}
 async function CUT_EXTRA(which,T){
   const[t,arg]=which.split(':'),{A,S,say,cut,fade,loc,box}=T,hk=CHARS[G.char].spr,hname=heroName(),P=HERO_PERS[G.pers]?G.pers:'corajoso';
   const tint=n=>COLD_SCN.includes(n)?'rgba(10,20,60,.32)':'rgba(60,25,5,.2)';
@@ -3868,13 +3869,13 @@ async function CUT_EXTRA(which,T){
     S.scene='salao';A.king={img:actorCanvas('crowking','rgba(40,10,30,.25)'),x:280,y:CFL-12,flip:true,sz:48,alpha:0};S.cast=['king'];
     loc.innerHTML='<small>Uma história contada nas paredes</small>A Lenda do Corvo Rei';loc.classList.add('on');
     cut({x:170,y:70,z:1.5});tween(S.cam,{x:200,y:80,z:1.25},7000,q=>q);await nar('Há cem anos, esta torre tinha um rei de verdade: Aldric, o Rei Justo.');loc.classList.remove('on');
-    await nar('Seu conselheiro era um mago estranho, que falava com os corvos.');
+    await nar('Seu conselheiro, Morvane, era um mago estranho, que falava com os corvos. Ao lado do rei estavam também Garrel, Ysolda, Bram e Elowen.');
     S.scene='telhado';S.cast=[];cut({x:240,y:60,z:1.6});tween(S.cam,{x:160,y:90,z:1},7000,q=>q);
-    await nar('Quando o rei adoeceu, o mago ofereceu a cura: um pacto com a revoada.');
+    await nar('Quando o rei adoeceu, Morvane ofereceu a cura: um pacto com a revoada, preso numa coroa nova. Bram forjou a coroa, e os cinco juraram por ela.');
     await nar('O rei aceitou. Viveu. Mas a cada dia ficava mais escuro, mais leve... mais pássaro.');
     S.scene='salao';S.cast=['king'];cut({x:278,y:CFL-34,z:2.6});tween(A.king,{alpha:1},2500);
     await nar('Hoje, Aldric não lembra o próprio nome. Só da coroa. E de que todos que sobem, viram corvos.');
-    S.scene='catacumbas';A.hero={img:actorCanvas(hk,tint('catacumbas')),x:150,y:CFL,flip:false};S.cast=['hero'];cut({x:150,y:CFL-20,z:3.2});await say(hname,LORE_HERO[P]);return}
+    S.scene='catacumbas';A.hero={img:actorCanvas(hk,tint('catacumbas')),x:150,y:CFL,flip:false};S.cast=['hero'];cut({x:150,y:CFL-20,z:3.2});await say(hname,LORE_CHAR[G.char]||LORE_HERO[P]);return}
   if(t==='act'){const L=ACT_L[arg];S.scene=L.scn;A.hero={img:actorCanvas(hk,tint(L.scn)),x:20,y:CFL,flip:false};S.cast=['hero'];
     loc.innerHTML=`<small>${L.loc[0]}</small>${L.loc[1]}`;loc.classList.add('on');
     cut({x:60,y:96,z:1.3});await walkIn(150,{x:200,y:92,z:1.15},4600);loc.classList.remove('on');
@@ -3951,12 +3952,20 @@ async function playIntro(done,which='intro'){
     lic.hidden=false;await cutSleep(1300);lic.classList.add('stamped');sfx('carimbo',{rate:1});await cutSleep(1900);
     await say('Marta, a Escrivã da Guilda','Classificação: S. A primeira desta guilda.',2600);lic.classList.add('gone');await cutSleep(400);lic.hidden=true;
     cut({x:186,y:CFL-20,z:3.4});A.hero.hop=0;tween(A.hero,{hop:5},150).then(()=>tween(A.hero,{hop:0},200));await say(hname,pers.fin);
-    cut({x:140,y:CFL-30,z:1.6});A.kael.laugh=1;A.bruna.laugh=1;await say('Kael, o Mercenário','Uma rodada pro Classe S! Hoje quem paga sou eu!',2800);
+    cut({x:140,y:CFL-30,z:1.6});A.kael.laugh=1;A.bruna.laugh=1;await say('Kael, o Mercenário','Banquete pro Classe S! Hoje quem paga sou eu!',2800);
     tween(S.cam,{x:160,y:90,z:1},3000);await cutSleep(1600);fade.classList.add('in');fade.style.transition='opacity 1.4s';await cutSleep(1500);
     const tt=box.querySelector('.ctitle');tt.innerHTML='<small>Obrigado por jogar</small>Fim';tt.classList.add('on');await cutSleep(3200);
   }catch(e){}end();return}
   try{
     fade.classList.add('in');await cutSleep(60);fade.classList.remove('in');
+    {const sv={scene:S.scene,cast:S.cast,counter:S.counter},nar=t2=>say('',t2,Math.max(3400,t2.length*55));
+     A.king=A.king||{img:actorCanvas('crowking','rgba(40,10,30,.25)'),x:280,y:CFL-12,flip:true,sz:48,alpha:0};
+     S.scene='salao';S.cast=['king'];S.counter=false;loc.innerHTML='<small>Há cem anos</small>A Coroa de Cinco Juramentos';loc.classList.add('on');
+     cut({x:170,y:70,z:1.5});tween(S.cam,{x:200,y:80,z:1.25},8000,q=>q);
+     await nar('Cinco companheiros juraram proteger o Rei Justo Aldric: um cavaleiro, uma caçadora, um ferreiro, uma guardiã dos livros e um mago que falava com os corvos.');loc.classList.remove('on');
+     tween(A.king,{alpha:1},2500);cut({x:278,y:CFL-34,z:2.2});
+     await nar('Cada um pôs um pedaço de si na coroa do rei. A coroa virou a prisão dele. E hoje a torre chama as famílias dos cinco de volta.');
+     fade.classList.add('in');await cutSleep(700);S.scene=sv.scene;S.cast=sv.cast;S.counter=sv.counter;fade.classList.remove('in');}
     loc.innerHTML='<small>Vila de Pedra Funda</small>Taverna do Javali Torto';loc.classList.add('on');
     cut({x:60,y:90,z:1.25});A.hero.walk=1;tween(A.hero,{x:150},4200,t=>t);await tween(S.cam,{x:210,y:96,z:1.15},4200);A.hero.walk=0;loc.classList.remove('on');
     cut({x:88,y:CFL-22,z:2.6});A.kael.laugh=1;await say('Kael, o Mercenário','Olha só. Mais um que acha que vai voltar.');A.kael.laugh=0;

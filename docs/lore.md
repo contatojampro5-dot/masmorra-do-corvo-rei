@@ -66,15 +66,15 @@ Há cem anos, cinco companheiros juraram proteger o Rei Justo e puseram um peda�
 - Frase: *"Eu sei o que ele virou. Eu estou virando também."*
 
 ## 5. Os aliados do caminho
-Subiram antes de você e ficaram presos na torre. Cada um é de um ramo das mesmas famílias, ou tem ligação com elas:
+Gente que já desceu antes de você (alguns ficaram presos lá embaixo, outros vivem em Pedra Funda e ainda descem de vez em quando). Cada um é de um ramo das mesmas famílias, ou tem ligação com elas:
 
 | Aliado | Família / ligação | Por que está lá |
 |---|---|---|
 | **Sir Aldo**, o Velho Cavaleiro | Garrel — o último mestre da Ordem antes do Cavaleiro | Desceu há trinta anos para cumprir o juramento e não conseguiu subir mais |
 | **Mira**, a Arqueira Cega | Ysolda — prima distante das gêmeas | Perdeu a visão olhando direto para o corvo branco; agora acerta pelo som |
-| **Bruna**, a Ferreira de Batalha | Bram — tia do Guardião | Tentou quebrar a coroa sozinha, sem o martelo da família |
+| **Bruna**, a Ferreira de Batalha | Bram — tia do Guardião | Vive na vila e desce às minas de Bram atrás de ferro antigo. Já tentou quebrar a coroa sozinha, sem o martelo da família, e quase não voltou |
 | **Frei Tobias**, o Monge Andarilho | Elowen — guarda os livros que ela escondeu | Procura a página do pacto que foi arrancada da biblioteca |
-| **Kael**, o Mercenário | Nenhuma família: foi **pago por Morvane** para vigiar quem desce | Ainda não decidiu de que lado está (bom para o Ato 4) |
+| **Kael**, o Mercenário | Nenhuma família: foi **pago por Morvane** para vigiar quem desce | Fica na taverna zombando de quem chega. Ainda não decidiu de que lado está (bom para o Ato 4) |
 | **Irmã Celeste**, a Templária | **Descendente do próprio Aldric** | Ora pelo rei todos os dias; quer que ele descanse em paz |
 
 ## 6. Como a história termina
@@ -93,8 +93,8 @@ Todo herói novo responde a quatro perguntas:
 4. **O que ele descobre no topo?**
 
 ## 9. Onde a lore entra no jogo (proposta, por fases)
-1. **Tela de Lore / Heróis**: textos de cada herói com a família e o juramento.
-2. **Abertura**: duas falas novas da narração sobre os cinco companheiros e a coroa.
+1. ✅ (v2.17) **Tela de Heróis**: textos de cada herói com a família e o juramento; Marta reconhece as famílias na guilda.
+2. ✅ (v2.17) **Abertura**: prólogo "A Coroa de Cinco Juramentos" antes da taverna; a Lenda do Ato 2 cita os cinco e cada herói reage pela própria família.
 3. **Cenas dos atos**: uma pista por ato (Ato 1: a forja de Bram; Ato 2: o túmulo de Garrel e a biblioteca de Elowen; Ato 3: o corvo branco).
 4. **Aliados**: uma fala nova de cada um contando de qual família é.
 5. **Final por herói**: uma cena curta diferente para cada um, antes da guilda.
