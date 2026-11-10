@@ -681,6 +681,17 @@ const DEVOK=/dev/.test(location.hash);
 const OPT=(()=>{const d={cenas:'primeira',fala:'normal',falasLuta:true,vib:true,musica:'media',efeitos:'media',bateria:'economia'};try{return Object.assign(d,JSON.parse(localStorage.getItem('trc-opt')||'{}'))}catch(e){return d}})();
 function saveOpt(){try{localStorage.setItem('trc-opt',JSON.stringify(OPT))}catch(e){}}
 const FALA_K=()=>({lenta:1.45,normal:1,rapida:.7})[OPT.fala]||1;
+/* v2.19: as cinco pedras da coroa (uma por família). Ficam guardadas entre partidas. */
+const PEDRA={cav:{n:'a pedra de Garrel',c:'#d8423a',quem:'aquele cavaleiro teimoso, que me arrancou a pedra de Garrel'},cac:{n:'a pedra de Ysolda',c:'#3fbf6a',quem:'aquela caçadora, que levou a irmã e a pedra de Ysolda'},
+ mag:{n:'a pedra de Morvane',c:'#9a5ae0',quem:'aquele mago do livro de Morvane, que apagou a pedra do pacto'},tan:{n:'a pedra de Bram',c:'#e0a030',quem:'aquele ferreiro, que arrancou a pedra de Bram a marteladas'},
+ nec:{n:'a pedra de Elowen',c:'#9fd8ff',quem:'aquele sem nome, que recusou a minha coroa e levou a pedra de Elowen'}};
+function pedras(){try{return JSON.parse(localStorage.getItem('trc-pedras')||'[]').filter(k=>PEDRA[k])}catch(e){return[]}}
+function addPedra(k){try{const a=pedras();if(PEDRA[k]&&!a.includes(k)){a.push(k);localStorage.setItem('trc-pedras',JSON.stringify(a))}}catch(e){}}
+function listaE(a){return a.length<2?a.join(''):a.slice(0,-1).join(', ')+' e '+a[a.length-1]}
+function reiStart(){const ch=G.char,a=pedras(),prev=a.filter(k=>k!==ch),resta=5-a.length;
+  if(a.includes(ch))return`Você de novo? ${PEDRA[ch].n[0].toUpperCase()+PEDRA[ch].n.slice(1)} já é sua. Veio buscar o quê? Ainda me restam ${resta} pedras.`;
+  if(prev.length)return`Mais um de vocês? Já não bastava ${listaE(prev.map(k=>PEDRA[k].quem))}... Enquanto houver pedra nesta coroa, eu volto. Ainda me restam ${resta}.`;
+  return'Você subiu tudo isso só para cair aos meus pés?'}
 function seenCut(k){try{return JSON.parse(localStorage.getItem('trc-seen')||'[]').includes(k)}catch(e){return false}}
 function markCut(k){try{const a=JSON.parse(localStorage.getItem('trc-seen')||'[]');if(!a.includes(k)){a.push(k);localStorage.setItem('trc-seen',JSON.stringify(a))}}catch(e){}}
 /* ---------- música (Apolo) ---------- */
@@ -1673,7 +1684,7 @@ function winCombat(){
   if(hasRelic('brasao'))heal(6);
   G.combat=null;
   {const fr=kind==='boss'?2:kind==='elite'?1:0;if(fr)G.frags=(G.frags||0)+fr}
-  if(kind==='boss'){G.stats.bosses++;G.diamonds+=3;if(G.act>=3){G.screen='end';G.won=true;clearSave();render();playIntro(()=>playIntro(()=>render(),'ending'),'bfall:'+bid);return}}
+  if(kind==='boss'){G.stats.bosses++;G.diamonds+=3;if(G.act>=3){G.pedrasAntes=pedras();addPedra(G.char);G.screen='end';G.won=true;clearSave();render();playIntro(()=>playIntro(()=>render(),'ending'),'bfall:'+bid);return}}
   G.reward=makeReward(kind);G.screen='reward';
   if(G.war&&G.war.mode==='fight'&&G.war.phase==='after'&&kind!=='boss')G.screen='warrior';
   render();
@@ -2482,7 +2493,7 @@ const ACT={
       <button class="choice" data-act="cenaplay" data-k="lore"><b>A Lenda do Corvo Rei</b><span>Quem ele era antes da coroa. Conta um segredo da história.</span></button>
       <div class="cenab"><b>Queda dos chefes</b>${['reigoblin','golem','lich','rainha','reicorvo'].map(id=>`<button class="btn small" data-act="cenaplay" data-k="bfall:${id}">${ENEMIES[id].n}</button>`).join('')}</div>
       <button class="choice" data-act="cenaplay" data-k="death"><b>Você tombou</b><span>O que acontece quando o herói cai.</span></button>
-      <button class="choice" data-act="cenaplay" data-k="ending"><b>O Retorno: Classe S</b><span>Depois de derrotar o Corvo Rei, a coroa no balcão. Contém o final do jogo.</span></button>
+      <button class="choice" data-act="cenaplay" data-k="ending"><b>O Retorno: Classe S</b><span>Depois de derrotar o Corvo Rei, a pedra da coroa no balcão. Contém o final do jogo.</span></button>
      </div><div class="mfoot"><button class="btn small" data-act="mclose">Fechar</button></div></div>`;m.hidden=false;m.scrollTop=0},
   herois:()=>{const m=$('#modal');
     m.innerHTML=`<div class="mbox" style="max-width:860px"><h2 class="h2">Os Heróis</h2><p class="sub">Cinco famílias, cinco juramentos, uma coroa.</p>
@@ -3777,9 +3788,9 @@ const MARTA_D={
  nec:['Nome?','... Nada? Igual a todos da família de Elowen. Vou escrever "sem nome".'],
 };
 const CUT_LINES={
- corajoso:{back:'Eu disse que ia trazer.',fin:'Agora sim. Qual é a próxima masmorra?',react:'D?! Eu enfrentei lobos sozinho no caminho até aqui!',vow:'Pois guardem essa letra. Eu vou descer até o fundo e trazer a coroa do Corvo Rei.',gate:'Classe D. Vamos ver quanto dura essa letra.'},
- sarcastico:{back:'Pode conferir. Ainda tem pena grudada.',fin:'Eu falei que ia ser um A. Errei pra cima.',react:'D. De "deslumbrante", imagino.',vow:'Ótimo. Eu desço, pego a coroa do Corvo Rei, e vocês reimprimem isso com um A bem grande.',gate:'Lar doce lar. Cheira a mofo e a morte.'},
- nervoso:{back:'Eu trouxe! Eu trouxe mesmo! Alguém me belisca.',fin:'S? S de... sobrevivi?',react:'D? Isso é... isso é ruim? Isso parece ruim.',vow:'Eu vou provar! Vou descer lá e... e voltar. Com a coroa. Provavelmente.',gate:'Respira. Entra. Não olha pra trás. Tá. Tá bom.'},
+ corajoso:{back:'Eu disse que ia trazer.',fin:'Agora sim. Qual é a próxima masmorra?',react:'D?! Eu enfrentei lobos sozinho no caminho até aqui!',vow:'Pois guardem essa letra. Eu vou até o trono do Corvo Rei e volto com uma pedra da coroa dele.',gate:'Classe D. Vamos ver quanto dura essa letra.'},
+ sarcastico:{back:'Pode conferir. Ainda tem pena grudada.',fin:'Eu falei que ia ser um A. Errei pra cima.',react:'D. De "deslumbrante", imagino.',vow:'Ótimo. Eu subo, arranco uma pedra da coroa do Corvo Rei, e vocês reimprimem isso com um A bem grande.',gate:'Lar doce lar. Cheira a mofo e a morte.'},
+ nervoso:{back:'Eu trouxe! Eu trouxe mesmo! Alguém me belisca.',fin:'S? S de... sobrevivi?',react:'D? Isso é... isso é ruim? Isso parece ruim.',vow:'Eu vou provar! Vou lá e... e volto. Com uma pedra da coroa. Provavelmente.',gate:'Respira. Entra. Não olha pra trás. Tá. Tá bom.'},
  sombrio:{back:'A torre está em silêncio agora.',fin:'Uma letra. Mas essa eu guardo.',react:'Uma letra. Vocês medem a morte com letras.',vow:'A masmorra vai dizer quem eu sou. E o Corvo Rei vai ouvir primeiro.',gate:'Escuridão. Finalmente um lugar honesto.'},
 };
 function gridCanvas(g,tint){const n=g.length,c=document.createElement('canvas');c.width=n;c.height=n;const x=c.getContext('2d');
@@ -3813,12 +3824,20 @@ const HEF_HERO={corajoso:'Me disseram que você faz armas de lenda.',sarcastico:
 const COLD_SCN=['catacumbas','cripta','aranhas','ruinas','telhado','entrada','labirinto','esgoto'];
 /* ---------- cenas: queda dos chefes, morte do herói, Mercador e a lenda ---------- */
 const BOSS_FALL={reigoblin:{line:'Meu ouro... ninguém toca... no meu ouro...',how:'fall'},golem:{line:'ERRO... CLASSE D... ERRO... ERR...',how:'crumble'},lich:{line:'Eu volto... eu sempre... volto...',how:'dust',c:'#8affa0'},rainha:{line:'Minhas filhas... fujam...',how:'fall'},reicorvo:{line:'Aldric... era esse... o meu nome...',how:'dust',c:'#2a2434',feathers:1}};
+/* v2.19: joia lapidada (pedra da coroa), em pixels, com brilho e estrelinha */
+const GEM_ROWS=['...OOOOO...','..OHLLMLO..','.OLHLMMLDO.','OMLMMMMMDMO','.ODMMLMMDO.','..ODMLMDO..','...ODMDO...','....ODO....','.....O.....'];
+function gemShade(c,k){const n=parseInt(c.slice(1),16),r=n>>16,g=n>>8&255,b=n&255,f=v=>Math.round(k>0?v+(255-v)*k:v*(1+k));return`rgb(${f(r)},${f(g)},${f(b)})`}
+function drawGem(x,cx,by,c,now){const P={O:'#160c06',H:'#ffffff',L:gemShade(c,.5),M:c,D:gemShade(c,-.45)},W=11,Ht=GEM_ROWS.length,x0=cx-5,y0=by-Ht;
+  x.save();x.globalAlpha=.18+.1*Math.sin(now/320);x.fillStyle=c;x.beginPath();x.arc(cx,y0+4,9,0,Math.PI*2);x.fill();x.globalAlpha=1;
+  for(let j=0;j<Ht;j++)for(let i=0;i<W;i++){const ch=GEM_ROWS[j][i];if(ch==='.')continue;x.fillStyle=P[ch];x.fillRect(x0+i,y0+j,1,1)}
+  const t=(now%2400)/2400;if(t<.35){const a=Math.sin(t/.35*Math.PI),sx=x0+3,sy=y0+1;x.globalAlpha=a;x.fillStyle='#fffbe0';x.fillRect(sx,sy-2,1,5);x.fillRect(sx-2,sy,5,1);x.globalAlpha=a*.6;x.fillRect(sx-1,sy-1,3,3);x.globalAlpha=1}
+  x.restore()}
 const FIM_CHAR={
- cav:[[0,'A coroa cai no chão de pedra. Pela primeira vez em cem anos, o rei não está sozinho.'],[1,'Descanse, majestade. O juramento de Garrel está cumprido.']],
- cac:[[0,'Da escada do trono desce alguém correndo, com uma flecha em cada mão. É Liora. O corvo branco pousa no ombro dela e vira poeira de luz.'],[1,'Liora! Eu deixei flechas em todos os andares... Vamos pra casa.']],
- mag:[[0,'O diário se abre sozinho na última página. A cláusula de saída brilha, e o pacto se desfaz. Embaixo, uma frase nova se escreve: "Eu ainda estou aqui."'],[1,'Morvane... isso ainda não acabou.']],
- tan:[[0,'O martelo desce uma última vez. A coroa de Bram se parte em cinco pedaços. Lá embaixo, em Pedra Funda, as crianças voltam para casa.'],[1,'O que a minha família forjou, eu desfiz. Agora sim, posso ficar de pé.']],
- nec:[[0,'A coroa rola até os pés do Necromante e sussurra: "Ponha. Seja rei. Esqueça o resto." Ele dá um passo para trás.'],[1,'Não. Eu não quero a sua coroa. Eu quero o meu nome.']],
+ cav:[[0,'A pedra de Garrel se solta da coroa e cai na mão do cavaleiro. Pela primeira vez em cem anos, o rei não está sozinho.'],[1,'Descanse, majestade. O juramento de Garrel está cumprido.']],
+ cac:[[0,'Da escada do trono desce alguém correndo, com uma flecha em cada mão. É Liora. Ela arranca da coroa a pedra de Ysolda, e o corvo branco vira poeira de luz no ombro dela.'],[1,'Liora! Eu deixei flechas em todos os andares... Vamos pra casa.']],
+ mag:[[0,'A pedra de Morvane se apaga e cai da coroa. O diário se abre sozinho na última página e uma frase nova se escreve: "Eu ainda estou aqui."'],[1,'Morvane... isso ainda não acabou.']],
+ tan:[[0,'O martelo desce uma última vez. A pedra de Bram salta da coroa. Lá embaixo, em Pedra Funda, as crianças voltam para casa.'],[1,'O que a minha família forjou, eu desfiz. Agora sim, posso ficar de pé.']],
+ nec:[[0,'A coroa rola até os pés do Necromante e sussurra: "Ponha. Seja rei. Esqueça o resto." Ele não põe. Só arranca dela a pedra de Elowen.'],[1,'Não. Eu não quero a sua coroa. Eu quero o meu nome.']],
 };
 const HERO_FALL={corajoso:'Acabou. Descanse.',sarcastico:'Bela saída. Pouco brilho.',nervoso:'Ele morreu? Morreu mesmo? Cutuca com a espada.',sombrio:'Pó volta ao pó.'};
 const HERO_DEAD={corajoso:'Eu... ainda... consigo...',sarcastico:'Tá... essa foi feia...',nervoso:'Eu morri? Eu tô no céu? Isso é a taverna?',sombrio:'A escuridão me devolveu. Que gentil.'};
@@ -3850,7 +3869,7 @@ async function CUT_EXTRA(which,T){
     else if(id==='lich'){B.y=CFL+34;await tween(B,{y:CFL,alpha:1},1900)}
     else if(id==='golem'){await tween(B,{alpha:1},1800);await tween(B,{hop:6},180);await tween(B,{hop:0},160)}
     else{B.alpha=1;await tween(B,{hop:14},260);await tween(B,{hop:0},220)}
-    await say(E.n,BOSS_START[id]);cut({x:234,y:CFL-46,z:2.1});await say(E.n,id==='reicorvo'&&REI_CHAR[G.char]||BOSS_L2[id]);
+    await say(E.n,id==='reicorvo'?reiStart():BOSS_START[id]);cut({x:234,y:CFL-46,z:2.1});await say(E.n,id==='reicorvo'&&REI_CHAR[G.char]||BOSS_L2[id]);
     cut({x:96,y:CFL-20,z:3.2});await say(hname,HERO_BOSS[P]);
     cut({x:166,y:CFL-32,z:1.5});await tween(S.cam,{z:2},1300);return}
   if(t==='bfall'){const id=arg,E=ENEMIES[id],F=BOSS_FALL[id];S.scene=BOSS_SCN[id];const tn=tint(S.scene);
@@ -3859,7 +3878,8 @@ async function CUT_EXTRA(which,T){
     await say(E.n,F.line,2600);
     if(F.how==='fall'){cut({x:200,y:CFL-30,z:1.6});await tween(A.boss,{rot:Math.PI/2.2,y:CFL+8},900,q=>q*q);if(id==='reigoblin'){S.parts=S.parts||[];for(let k=0;k<40;k++)S.parts.push({x:230+(Math.random()-.5)*30,y:CFL-10,vx:(Math.random()-.5)*60,vy:-30-Math.random()*40,g:140,life:2,t:-Math.random()*.3,c:Math.random()<.5?'#ffd04a':'#e0a020',s:1.5})}await tween(A.boss,{alpha:0},1600)}
     else{cut({x:222,y:CFL-34,z:1.9});await dissolve(S,A.boss,{mode:F.how,color:F.c,feathers:F.feathers,ms:2400});await cutSleep(800)}
-    if(id==='reicorvo'&&FIM_CHAR[G.char]){const F2=FIM_CHAR[G.char];for(const [w2,l2] of F2){if(w2)  {cut({x:110,y:CFL-20,z:3.2});await say(hname,l2)}else{cut({x:165,y:90,z:1.3});await say('',l2,Math.max(3200,l2.length*55))}}}
+    if(id==='reicorvo'&&FIM_CHAR[G.char]){const F2=FIM_CHAR[G.char];for(const [w2,l2] of F2){if(w2)  {cut({x:110,y:CFL-20,z:3.2});await say(hname,l2)}else{cut({x:165,y:90,z:1.3});await say('',l2,Math.max(3200,l2.length*55))}}
+      if(pedras().length>=5){const l3='A última pedra cai. A coroa, vazia, vira pó junto com as penas. Aldric, o Rei Justo, fecha os olhos e, pela primeira vez em cem anos, descansa.';cut({x:165,y:90,z:1.1});await say('',l3,Math.max(3600,l3.length*55))}}
     else{cut({x:110,y:CFL-20,z:3.2});await say(hname,HERO_FALL[P])}
     cut({x:165,y:90,z:1.2});await cutSleep(900);return}
   if(t==='death'){S.scene='taverna';const tn=tint('taverna');S.counter=true;
@@ -3918,7 +3938,7 @@ function askName(box,label){return new Promise(res=>{if(CUT.skip){res(null);retu
   const fin=v=>{d.remove();res(v)};d.onsubmit=e=>{e.preventDefault();const v=i.value.trim().slice(0,14);if(v)fin(v)};const chk=()=>{if(!d.isConnected)return;if(CUT.skip)fin(null);else requestAnimationFrame(chk)};chk()})}
 async function playIntro(done,which='intro'){
   const forced=UI.forceCut;UI.forceCut=false;
-  if(!forced){const key=which.startsWith('war:')?'war':which;if(OPT.cenas==='nunca'||(OPT.cenas==='primeira'&&seenCut(key))){done&&done(true);return}markCut(key)}
+  if(!forced){const PC=['intro','ending','act:2','act:3','lore','hefesto','bfall:reicorvo'],key=which.startsWith('war:')?'war':which==='boss:reicorvo'?which+'@'+G.char+'#'+pedras().length:PC.includes(which)?which+'@'+G.char:which;if(OPT.cenas==='nunca'||(OPT.cenas==='primeira'&&seenCut(key))){done&&done(true);return}markCut(key)}
   if(CUT.on)return;CUT.on=true;CUT.skip=false;CUT.tw=[];musOver(CUT_MUS(which));
   const box=document.createElement('div');box.id='cut';box.innerHTML=`<canvas width="1280" height="720"></canvas><div class="cbar t"></div><div class="cbar b"></div><div class="cloc"></div><div class="csub"><b></b><span></span></div><div class="clic" hidden></div><div class="ctitle"></div><div class="cfade"></div><button class="cskip" type="button">Pular ›</button>`;document.body.appendChild(box);
   const cv=box.querySelector('canvas'),x=cv.getContext('2d');x.imageSmoothingEnabled=false;
@@ -3943,7 +3963,7 @@ async function playIntro(done,which='intro'){
       x.save();x.globalAlpha=a.alpha??1;x.translate(Math.round(a.x),a.y+bob-(a.hop||0));if(a.rot)x.rotate(a.rot);if(a.flip)x.scale(-1,1);const sz=a.sz||32;x.fillStyle='rgba(0,0,0,.45)';x.beginPath();x.ellipse(0,0,sz*.32,2,0,0,7);x.fill();x.drawImage(a.walk&&a.img.frames?a.img.frames[step]:a.img,-sz/2,-sz,sz,sz);x.restore()}
     if(S.counter&&S.scene==='taverna'){x.fillStyle='#4a2a14';x.fillRect(206,CFL-13,62,13);x.fillStyle='#7a4a24';x.fillRect(204,CFL-15,66,3);x.fillStyle='#2a160a';for(let i=210;i<266;i+=10)x.fillRect(i,CFL-12,1,12);x.fillStyle='#c09040';x.fillRect(214,CFL-19,4,4);x.fillStyle='#e8dcc0';x.fillRect(222,CFL-17,8,2)}
     if(S.parts&&S.parts.length){const dt=Math.min(.05,(now-(S.pt||now))/1000);S.pt=now;S.parts=S.parts.filter(q=>{q.t+=dt;if(q.t<0){x.fillStyle=q.c;x.fillRect(q.x,q.y,q.s,q.s);return true}q.vy+=q.g*dt;q.x+=q.vx*dt+(q.feather?Math.sin(now/200+q.x)*.3:0);q.y+=q.vy*dt;const al=Math.max(0,1-q.t/q.life);if(al<=0)return false;x.globalAlpha=al;x.fillStyle=q.c;if(q.feather){x.fillRect(q.x,q.y,q.s*1.6,q.s*.6)}else x.fillRect(q.x,q.y,q.s,q.s);x.globalAlpha=1;return true})}
-    if(S.crown){const q=S.crown;x.save();x.translate(q.x,q.y);x.fillStyle='#e8b23a';x.fillRect(-5,-2,10,3);for(const d of [-5,-1,3])x.fillRect(d,-5,2,3);x.fillStyle='#fff0a0';x.fillRect(-5,-2,10,1);x.fillStyle='#e02a3a';x.fillRect(-1,-1,2,1);x.fillStyle='#3ad0ff';x.fillRect(-4,-1,1,1);x.fillRect(3,-1,1,1);x.restore()}
+    if(S.crown){const q=S.crown;drawGem(x,Math.round(q.x),Math.round(q.y)+1,q.c||'#d8423a',now)}
     CUT.raf=requestAnimationFrame(draw)};
   CUT.raf=requestAnimationFrame(draw);
   const sub=box.querySelector('.csub'),loc=box.querySelector('.cloc'),fade=box.querySelector('.cfade');
@@ -3954,10 +3974,12 @@ async function playIntro(done,which='intro'){
     const st=G.stats||{};fade.classList.add('in');await cutSleep(60);fade.classList.remove('in');
     loc.innerHTML='<small>Vila de Pedra Funda, três dias depois</small>Taverna do Javali Torto';loc.classList.add('on');
     cut({x:60,y:90,z:1.25});A.hero.walk=1;tween(A.hero,{x:130},5200,t=>t);await tween(S.cam,{x:170,y:96,z:1.15},5200);A.hero.walk=0;loc.classList.remove('on');
-    cut({x:88,y:CFL-22,z:2.6});await say('Kael, o Mercenário','Olha quem voltou... Ué. Ele voltou?');
+    cut({x:88,y:CFL-22,z:2.6});await say('Kael, o Mercenário','Olha quem voltou... Ué. Voltou mesmo?');
     cut({x:160,y:CFL-24,z:2.2});A.hero.walk=1;tween(A.hero,{x:186},1800,t=>t);await cutSleep(1800);A.hero.walk=0;
-    cut({x:214,y:CFL-24,z:3.2});S.crown={x:192,y:CFL-26};await tween(S.crown,{x:226,y:CFL-15},700,t=>t*t);
-    await say('Marta, a Escrivã da Guilda','Isso é... a coroa do Corvo Rei?!');
+    cut({x:214,y:CFL-24,z:3.2});S.crown={x:192,y:CFL-26,c:(PEDRA[G.char]||PEDRA.cav).c};await tween(S.crown,{x:226,y:CFL-15},700,t=>t*t);
+    await say('Marta, a Escrivã da Guilda','Isso é... uma pedra da coroa do Corvo Rei?!');
+    if(G.char==='cac'){cut({x:240,y:CFL-26,z:3});await say('Marta, a Escrivã da Guilda','E essa aí do seu lado... Liora?! Ela também volta como Classe S!')}
+    if(pedras().length>=5){cut({x:240,y:CFL-26,z:3});await say('Marta, a Escrivã da Guilda','Cinco pedras. Cinco famílias. A coroa acabou. Acabou mesmo.')}
     cut({x:184,y:CFL-20,z:3.4});await say(hname,pers.back);
     cut({x:96,y:CFL-26,z:2.1});await cutSleep(900);await say('Bruna, a Ferreira','...Retiro o que eu disse sobre as botas.');
     if(G.char==='nec'&&!G.name){cut({x:240,y:CFL-26,z:3});await say('Marta, a Escrivã da Guilda','Agora que você é Classe S... vai me dizer o seu nome?');cut({x:186,y:CFL-20,z:3.4});
@@ -3965,7 +3987,7 @@ async function playIntro(done,which='intro'){
     cut({x:240,y:CFL-26,z:3});tween(S.cam,{z:3.3},3200);await say('Marta, a Escrivã da Guilda',`Andares: ${st.floors||0}. Chefes: ${st.bosses||3}. A guilda só tem uma letra pra isso.`);
     const lic=box.querySelector('.clic');lic.classList.add('gold');lic.innerHTML=`<div class="lp"><small>Guilda dos Aventureiros de Pedra Funda</small><h3>Licença de Aventureiro</h3><dl><dt>Nome</dt><dd>${hname}</dd><dt>Temperamento</dt><dd>${heroPers().n}</dd><dt>Andares concluídos</dt><dd>${st.floors||0}</dd><dt>Feito</dt><dd>Derrotou o Corvo Rei</dd></dl><div class="rank"><span>Classe</span><b class="old">D</b></div><div class="stamp">S</div></div>`;
     lic.hidden=false;await cutSleep(1300);lic.classList.add('stamped');sfx('carimbo',{rate:1});await cutSleep(1900);
-    await say('Marta, a Escrivã da Guilda','Classificação: S. A primeira desta guilda.',2600);lic.classList.add('gone');await cutSleep(400);lic.hidden=true;
+    await say('Marta, a Escrivã da Guilda',(G.pedrasAntes&&G.pedrasAntes.length)?'Classificação: S. Mais uma pedra para a parede da guilda.':'Classificação: S. A primeira desta guilda.',2600);lic.classList.add('gone');await cutSleep(400);lic.hidden=true;
     cut({x:186,y:CFL-20,z:3.4});A.hero.hop=0;tween(A.hero,{hop:5},150).then(()=>tween(A.hero,{hop:0},200));await say(hname,pers.fin);
     cut({x:140,y:CFL-30,z:1.6});A.kael.laugh=1;A.bruna.laugh=1;await say('Kael, o Mercenário','Banquete pro Classe S! Hoje quem paga sou eu!',2800);
     tween(S.cam,{x:160,y:90,z:1},3000);await cutSleep(1600);fade.classList.add('in');fade.style.transition='opacity 1.4s';await cutSleep(1500);
