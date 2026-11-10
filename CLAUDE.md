@@ -16,6 +16,7 @@ Deméter = cenário, Hélio = luz/efeitos). Responda sempre em português, simpl
 - Se o Theo não responder uma pergunta de escolha em 2 minutos, decidir e avisar.
 - **Ponto de checagem (Plano Atlas 1.0):** ao terminar uma etapa testável, perguntar ao Theo se pode seguir para a próxima e esperar o OK. Coisas não testáveis (papelada, decisões) não precisam da pergunta.
 - **Classificação 9+:** nada de bebida alcoólica, apostas/jogos de azar ou palavrões em cartas, eventos, falas e cenas novas (ver `docs/classificacao-etaria.md`).
+- **Respeito à fé do Theo:** nos quadros do Olimpo e em qualquer texto sobre os deuses gregos, escrever **"deus"/"deuses" com d minúsculo**. "Deus" com D maiúsculo só para o Deus vivo, nunca para personagens, mitologia ou o Olimpo.
 
 ## Plano atual
 `docs/plano-atlas-1.0.md` e `docs/Plano-Atlas-1.0.pdf` — do navegador até a App Store em 6 etapas.
