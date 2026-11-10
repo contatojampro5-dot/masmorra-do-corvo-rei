@@ -12,9 +12,9 @@ Versão em PDF: [Plano-Atlas-1.0.pdf](Plano-Atlas-1.0.pdf).
 | 1 | Celular | Hermes, Hefesto, Hera | ✅ v2.1 |
 | 2 | Som | Apolo | ✅ v2.4 (músicas) e v2.5 (efeitos) |
 | 3 | Primeira jornada | Atena, Apolo | ✅ v2.8 |
-| 4 | Leveza e bateria | Hélio, Hefesto | ✅ v2.10 — aguardando teste do Theo |
-| 5 | O app | Hefesto | ⬜ |
-| 6 | A loja | Hermes, Afrodite | ⬜ |
+| 4 | Leveza e bateria | Hélio, Hefesto | ✅ v2.10 |
+| 5 | O app | Hefesto | ⏸ pulada por enquanto (pedido do Theo) — no lugar, o jogo já instala pelo site (v2.11) |
+| 6 | A loja | Hermes, Afrodite | 🔄 ícone pronto (B, v2.11); faltam fotos, descrição, privacidade e a decisão de venda |
 | — | Depois do 1.0: inglês e novidades | Apolo | ⬜ |
 
 ## Etapa 1 — Celular ✅ (v2.1)
