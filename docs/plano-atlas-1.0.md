@@ -14,7 +14,7 @@ Versão em PDF: [Plano-Atlas-1.0.pdf](Plano-Atlas-1.0.pdf).
 | 3 | Primeira jornada | Atena, Apolo | ✅ v2.8 |
 | 4 | Leveza e bateria | Hélio, Hefesto | ✅ v2.10 |
 | 5 | O app | Hefesto | ⏸ pulada por enquanto (pedido do Theo) — no lugar, o jogo já instala pelo site (v2.11) |
-| 6 | A loja | Hermes, Afrodite | 🔄 ícone pronto (B, v2.11); faltam fotos, descrição, privacidade e a decisão de venda |
+| 6 | A loja | Hermes, Afrodite | 🔄 ícone (v2.11), privacidade e classificação etária (v2.12) prontos; faltam fotos, descrição e a decisão de venda |
 | — | Depois do 1.0: inglês e novidades | Apolo | ⬜ |
 
 ## Etapa 1 — Celular ✅ (v2.1)

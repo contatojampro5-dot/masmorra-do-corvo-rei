@@ -2498,6 +2498,7 @@ const ACT={
      <div class="optrow"><b>Vibração</b><span>Vibra ao levar dano (nos aparelhos que permitem).</span><div>${r('vib',true,'Ligada')}${r('vib',false,'Desligada')}</div></div>
      <div class="optrow"><b>Cenas já vistas</b><span>Volta a mostrar as cenas como na primeira vez.</span><div><button class="optb" data-act="optreset">Esquecer cenas vistas</button></div></div>
      <div class="optrow"><b>Tutorial e dicas</b><span>A Marta explica de novo a primeira luta e as dicas de cada lugar.</span><div><button class="optb" data-act="tutreset">Rever tutorial e dicas</button></div></div>
+     <div class="optrow"><b>Privacidade</b><span>O jogo não coleta nenhum dado seu. Tudo fica só no seu aparelho.</span><div><a class="optb" href="https://contatojampro5-dot.github.io/masmorra-do-corvo-rei/privacidade.html" target="_blank" rel="noopener" style="text-decoration:none">Ler a política de privacidade</a></div></div>
      ${G&&G.screen!=='end'?`<div class="optrow"><b>Abandonar jornada</b><span>Desiste da partida atual e volta ao menu. A jornada salva é apagada.</span><div><button class="optb danger" data-act="abandonar">Abandonar partida</button></div></div>`:''}
     </div><div class="mfoot"><button class="btn small" data-act="mclose">Fechar</button></div></div>`;m.hidden=false;m.scrollTop=0},
   abandonar:()=>{const m=$('#modal');
