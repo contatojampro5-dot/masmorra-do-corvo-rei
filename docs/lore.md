@@ -95,7 +95,7 @@ Todo herói novo responde a quatro perguntas:
 ## 9. Onde a lore entra no jogo (proposta, por fases)
 1. ✅ (v2.17) **Tela de Heróis**: textos de cada herói com a família e o juramento; Marta reconhece as famílias na guilda.
 2. ✅ (v2.17) **Abertura**: prólogo "A Coroa de Cinco Juramentos" antes da taverna; a Lenda do Ato 2 cita os cinco e cada herói reage pela própria família.
-3. **Cenas dos atos**: uma pista por ato (Ato 1: a forja de Bram; Ato 2: o túmulo de Garrel e a biblioteca de Elowen; Ato 3: o corvo branco).
-4. **Aliados**: uma fala nova de cada um contando de qual família é.
-5. **Final por herói**: uma cena curta diferente para cada um, antes da guilda.
+3. ✅ (v2.18) **Cenas dos atos**: Ato 1, o Hefesto conta que ensinou o Bram (e reconhece o Guardião); Ato 2, o brasão de Garrel e o selo de Elowen; Ato 3, o corvo branco. Cada herói reage pela família. O Corvo Rei reconhece a família de cada herói antes da luta.
+4. ✅ (v2.18) **Aliados**: cada um conta a família; o aliado da mesma família do herói fala diferente (Sir Aldo/Cavaleiro, Mira/Caçadora, Bruna/Guardião, Frei Tobias/Necromante, Kael/Mago).
+5. ✅ (v2.18) **Final por herói**: depois de "Aldric... era esse o meu nome", cada herói tem o seu desfecho (juramento cumprido, Liora, Morvane, a coroa quebrada, o nome).
 6. **Ato 4 secreto (depois do 1.0)**: Morvane.
