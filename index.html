@@ -953,7 +953,7 @@ const CARDS={
  erguer:{n:'Erguer Escudo',t:'skl',r:'common',c:1,v:{b:8},u:{b:11},x:v=>`Ganhe ${B(v.b)} de Bloqueio.`,p:v=>gainBlock(v.b)},
  postura:{n:'Postura Firme',t:'skl',r:'common',c:1,v:{b:5},u:{b:8},x:v=>`Ganhe ${B(v.b)} de Bloqueio. Compre 1 carta.`,p:v=>{gainBlock(v.b);draw(1)}},
  bandagem:{n:'Bandagem',t:'skl',r:'common',c:1,ex:1,v:{h:5},u:{h:8},x:v=>`Cure ${v.h} de vida.`,p:v=>heal(v.h)},
- hidromel:{n:'Gole de Hidromel',t:'skl',r:'common',c:0,ex:1,v:{e:1},u:{e:2},x:v=>`Ganhe ${v.e} de Energia.`,p:v=>gainEnergy(v.e)},
+ hidromel:{n:'Gole de Chá de Ervas',t:'skl',r:'common',c:0,ex:1,v:{e:1},u:{e:2},x:v=>`Ganhe ${v.e} de Energia.`,p:v=>gainEnergy(v.e)},
  provocar:{n:'Provocação',t:'skl',r:'common',c:1,v:{w:1,b:4},u:{w:2,b:6},x:v=>`Ganhe ${B(v.b)} de Bloqueio. Aplica ${v.w} de Fraqueza a TODOS os inimigos.`,p:v=>{gainBlock(v.b);alive().forEach(e=>apply(e,'fraco',v.w))}},
  guarda:{n:'Guarda Alta',t:'skl',r:'common',c:1,ret:1,v:{b:7},u:{b:10},x:v=>`Ganhe ${B(v.b)} de Bloqueio.`,p:v=>gainBlock(v.b)},
  chamado:{n:'Chamado às Armas',t:'skl',r:'common',c:0,eph:1,v:{k:2},u:{k:3},x:v=>`Compre ${v.k} cartas.`,p:v=>draw(v.k)},
@@ -1116,7 +1116,7 @@ const CARDS={
  gosma:{n:'Gosma',t:'sts',r:'special',c:1,ex:1,v:{},u:{},x:()=>`Não faz nada.`,p:()=>{}},
  ferimento:{n:'Ferimento',t:'sts',r:'special',unp:1,v:{},u:{},x:()=>`Injogável.`},
  culpa:{n:'Culpa',t:'crs',r:'special',unp:1,v:{},u:{},x:()=>`Injogável. Só ocupa espaço.`},
- ressaca:{n:'Ressaca',t:'crs',r:'special',unp:1,v:{},u:{},x:()=>`Injogável. Se estiver na mão no fim do turno, perca 1 de vida.`},
+ ressaca:{n:'Indigestão',t:'crs',r:'special',unp:1,v:{},u:{},x:()=>`Injogável. Se estiver na mão no fim do turno, perca 1 de vida.`},
 };
 
 /* =========================================================
@@ -1280,8 +1280,8 @@ const EVENTS={
   {l:'Pedir algo novo',d:'Escolha 1 entre 3 cartas incomuns.',f:()=>{const ids=shuffle(Object.keys(CARDS).filter(k=>CARDS[k].r==='unc'&&clOf(k)===G.char)).slice(0,3);openPicker({title:'Obra do ferreiro',sub:'Escolha uma carta',cards:ids.map(id=>mk(id)),skip:'Recusar',onPick:k=>{addToDeck(k.id);render()}});return'Ele tira três peças de um saco de couro.'}},
   {l:'Recusar',d:'Nada acontece.',f:()=>'O anão dá de ombros e volta ao trabalho.'}]},
  taverna:{t:'Taverna do Javali Torto',txt:'Há uma taverna escavada na rocha. Mercenários cantam desafinados, e um dono de taverna caolho limpa a mesma caneca há horas.',ops:[
-  {l:'Beber com os mercenários',d:'Cure 18 de vida. Receba a maldição Ressaca.',f:()=>{heal(18);addToDeck('ressaca');return'A noite é longa e a cabeça, mais ainda.'}},
-  {l:'Apostar 30 de ouro nos dados',d:'50% de chance de ganhar 80 de ouro.',ok:()=>G.gold>=30,f:()=>{G.gold-=30;if(rnd()<.5){G.gold+=80;return'Seis e seis! Os mercenários resmungam enquanto você recolhe 80 de ouro.'}return'Um e dois. O dono da taverna sorri pela primeira vez.'}},
+  {l:'Banquete com os mercenários',d:'Cure 18 de vida. Receba a maldição Indigestão.',f:()=>{heal(18);addToDeck('ressaca');return'A comida é farta, e o estômago reclama a noite inteira.'}},
+  {l:'Queda de braço com o mercenário',d:'Inscrição de 30 de ouro. 50% de chance de vencer e levar 80 de ouro.',ok:()=>G.gold>=30,f:()=>{G.gold-=30;if(rnd()<.5){G.gold+=80;return'Braço na mesa! Os mercenários resmungam enquanto você recolhe 80 de ouro.'}return'Seu braço bate na mesa. O dono da taverna sorri pela primeira vez.'}},
   {l:'Sair',d:'Nada acontece.',f:()=>'Você sai antes que alguém puxe uma faca.'}]},
  moribundo:{t:'Aventureiro Moribundo',txt:'Encostado na parede, um aventureiro de outra guilda respira com dificuldade. A armadura foi rasgada por garras, e a bolsa de moedas está à vista.',ops:[
   {l:'Cuidar dos ferimentos',d:'Perca 10 de vida. Escolha 1 entre 3 cartas raras.',ok:()=>G.hp>10,f:()=>{loseHp(10);const ids=shuffle(Object.keys(CARDS).filter(k=>CARDS[k].r==='rare'&&clOf(k)===G.char)).slice(0,3);openPicker({title:'Ensinamento do aventureiro',sub:'Escolha uma técnica',cards:ids.map(id=>mk(id)),skip:'Recusar',onPick:k=>{addToDeck(k.id);render()}});return'Ele agradece e, antes de partir, te ensina uma técnica da sua guilda.'}},
