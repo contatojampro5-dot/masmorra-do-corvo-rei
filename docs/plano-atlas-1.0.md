@@ -14,7 +14,7 @@ Versão em PDF: [Plano-Atlas-1.0.pdf](Plano-Atlas-1.0.pdf).
 | 3 | Primeira jornada | Atena, Apolo | ✅ v2.8 |
 | 4 | Leveza e bateria | Hélio, Hefesto | ✅ v2.10 |
 | 5 | O app | Hefesto | ⏸ pulada por enquanto (pedido do Theo) — no lugar, o jogo já instala pelo site (v2.11) |
-| 6 | A loja | Hermes, Afrodite | 🔄 ícone (v2.11), privacidade (v2.12) e classificação 9+ (v2.13) prontos; venda decidida: grátis com 3 heróis + Pacote das Trevas R$ 9,90 (v2.14, `docs/loja.md`); faltam fotos e descrição |
+| 6 | A loja | Hermes, Afrodite | ✅ papéis prontos: ícone (v2.11), privacidade (v2.12), 9+ (v2.13), venda (v2.14), fotos e textos (v2.15). Falta só o que depende do app: TestFlight e envio |
 | — | Depois do 1.0: inglês e novidades | Apolo | ⬜ |
 
 ## Etapa 1 — Celular ✅ (v2.1)

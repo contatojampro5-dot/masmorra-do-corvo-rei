@@ -1,0 +1,16 @@
+const {chromium}=require('playwright');const fs=require('fs');
+const L=[[1,'Desça a masmorra. Derrote o Corvo Rei.'],[2,'Lute com cartas, turno a turno'],[3,'Escolha o seu caminho a cada andar'],[4,'Heróis com estilos de luta próprios'],[6,'Chefes que testam o seu baralho'],[5,'Evolua a sua arma na forja do Hefesto'],[7,'Uma história contada em cenas']];
+(async()=>{const b=await chromium.launch();const p=await b.newPage();await p.goto(process.argv[2]);await p.waitForTimeout(1500);
+const imgs=L.map(([n])=>'data:image/png;base64,'+fs.readFileSync(`loja/raw-${n}.png`).toString('base64'));
+const out=await p.evaluate(async([imgs,L])=>{await document.fonts.ready;const res=[];
+ for(let i=0;i<L.length;i++){const im=await new Promise(r=>{const x=new Image();x.onload=()=>r(x);x.src=imgs[i]});
+  const c=document.createElement('canvas');c.width=2868;c.height=1320;const x=c.getContext('2d');
+  const g=x.createLinearGradient(0,0,0,1320);g.addColorStop(0,'#2a1c10');g.addColorStop(1,'#0b0705');x.fillStyle=g;x.fillRect(0,0,2868,1320);
+  const gl=x.createRadialGradient(1434,120,10,1434,120,900);gl.addColorStop(0,'rgba(255,170,70,.18)');gl.addColorStop(1,'rgba(0,0,0,0)');x.fillStyle=gl;x.fillRect(0,0,2868,1320);
+  const H=1060,W=Math.round(H*im.width/im.height),X=(2868-W)/2,Y=230;
+  x.save();x.shadowColor='rgba(0,0,0,.7)';x.shadowBlur=60;x.fillStyle='#000';x.beginPath();x.roundRect(X,Y,W,H,36);x.fill();x.restore();
+  x.save();x.beginPath();x.roundRect(X,Y,W,H,36);x.clip();x.drawImage(im,X,Y,W,H);x.restore();
+  x.lineWidth=6;x.strokeStyle='#d9b45c';x.beginPath();x.roundRect(X,Y,W,H,36);x.stroke();
+  x.textAlign='center';x.textBaseline='middle';x.font='110px "IM Fell English SC", Georgia, serif';x.fillStyle='#f3dfa8';x.shadowColor='rgba(0,0,0,.8)';x.shadowBlur=18;x.fillText(L[i][1],1434,122);
+  res.push(c.toDataURL('image/png'))}return res},[imgs,L]);
+out.forEach((d,i)=>fs.writeFileSync(`loja/foto-${i+1}.png`,Buffer.from(d.split(',')[1],'base64')));await b.close()})();

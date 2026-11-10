@@ -1,0 +1,14 @@
+const {chromium}=require('playwright');const fs=require('fs');
+(async()=>{const b=await chromium.launch();const p=await b.newPage({viewport:{width:956,height:440},deviceScaleFactor:2.5,isMobile:true,hasTouch:true});const errs=[];p.on('pageerror',e=>errs.push(e.message));
+await p.addInitScript(()=>{localStorage.setItem('trc-tut','1');localStorage.setItem('trc-tips',JSON.stringify(['mapa','recompensa','forja','loja','evento','descanso','elite','chefe']));localStorage.setItem('trc-opt',JSON.stringify({cenas:'nunca',bateria:'normal'}));localStorage.setItem('trc-abertura','1')});
+await p.goto(process.argv[2]);await p.waitForTimeout(1500);await p.evaluate(()=>{document.querySelector('#abert')?.remove();document.body.classList.add('rotok')});
+const clean=()=>p.evaluate(()=>{document.querySelectorAll('.tipcard,.toast,.banner,#tip').forEach(x=>{if(x.id==='tip')x.hidden=true;else x.remove()})});
+const shot=async n=>{await clean();await p.screenshot({path:`loja/raw-${n}.png`})};
+await p.waitForTimeout(1500);await shot(1);
+await p.evaluate(()=>{UI.choose=true;render()});await p.waitForTimeout(1200);await shot(4);
+await p.evaluate(()=>document.querySelector('[data-ch=cav]').click());await p.waitForTimeout(400);await p.evaluate(()=>document.querySelector('[data-act=namego]')?.click());await p.waitForTimeout(2500);await shot(3);
+await p.evaluate(()=>startCombat(['goblin','goblin'],'normal',true));await p.waitForTimeout(2500);await shot(2);
+await p.evaluate(()=>{G.combat=null;G.frags=4;G.screen='forge';render()});await p.waitForTimeout(2000);await shot(5);
+await p.evaluate(()=>{G.char='nec';G.act=3;G.combat=null;startCombat(['reicorvo'],'boss',true)});await p.waitForTimeout(3000);await shot(6);
+await p.evaluate(()=>{G.combat=null;G.screen='map';render();OPT.cenas='sempre';UI.forceCut=true;playIntro(null,'intro')});await p.waitForTimeout(9000);await shot(7);
+console.log(errs);await b.close()})();
