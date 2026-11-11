@@ -3917,7 +3917,13 @@ async function CUT_EXTRA(which,T){
     await nar('O rei aceitou. Viveu. Mas a cada dia ficava mais escuro, mais leve... mais pássaro.');
     S.scene='salao';S.cast=['king'];cut({x:278,y:CFL-34,z:2.6});tween(A.king,{alpha:1},2500);
     await nar('Hoje, Aldric não lembra o próprio nome. Só da coroa. E de que todos que sobem, viram corvos.');
-    S.scene='catacumbas';A.hero={img:actorCanvas(hk,tint('catacumbas')),x:150,y:CFL,flip:false};S.cast=['hero'];cut({x:150,y:CFL-20,z:3.2});await say(hname,LORE_CHAR[G.char]||LORE_HERO[P]);return}
+    S.scene='telhado';S.cast=[];cut({x:160,y:80,z:1.2});tween(S.cam,{x:170,y:90,z:1.05},9000,q=>q);
+    await nar('Garrel, Ysolda, Bram e Elowen subiram a torre para salvar o rei. Nenhum deles voltou. E Morvane sumiu na mesma noite. Ninguém nunca mais o viu.');
+    S.scene='salao';S.cast=['king'];cut({x:278,y:CFL-34,z:2.4});
+    await nar('Dizem que a coroa ainda guarda cinco pedras, uma para cada juramento. E que o rei só terá paz quando alguém das cinco famílias arrancar a sua.');
+    S.scene='catacumbas';A.hero={img:actorCanvas(hk,tint('catacumbas')),x:150,y:CFL,flip:false};S.cast=['hero'];cut({x:150,y:CFL-20,z:3.2});
+    {const hl=LORE_CHAR[G.char]||LORE_HERO[P];await say(hname,hl,Math.max(3800,hl.length*60))}
+    cut({x:160,y:90,z:1.1});await title('Continua no topo da torre','A Lenda do Corvo Rei',3000);return}
   if(t==='act'){const L=ACT_L[arg];S.scene=L.scn;A.hero={img:actorCanvas(hk,tint(L.scn)),x:20,y:CFL,flip:false};S.cast=['hero'];
     loc.innerHTML=`<small>${L.loc[0]}</small>${L.loc[1]}`;loc.classList.add('on');
     cut({x:60,y:96,z:1.3});await walkIn(150,{x:200,y:92,z:1.15},4600);loc.classList.remove('on');
