@@ -1,6 +1,6 @@
 """Efeitos sonoros do Masmorra do Corvo Rei, sintetizados em código."""
 import sys, os
-sys.path.insert(0, os.path.dirname(__file__))
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'musica'))
 from celta import *
 R = np.random.default_rng(3)
 def T(sec): return np.arange(int(sec*SR)) / SR

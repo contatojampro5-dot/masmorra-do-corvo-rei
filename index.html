@@ -385,7 +385,6 @@ button:focus-visible,[data-act]:focus-visible{outline:2px solid var(--gold);outl
 .wtalk{width:min(620px,100%)}
 .wl{margin:0;font-size:18px;line-height:1.5}.wl.nar{font-style:italic;color:var(--muted)}.wl.say{color:var(--text)}
 .wl.new{animation:fadeUp .5s ease-out both}
-.wname small{display:block;font-size:.6em;color:var(--muted);margin-top:2px}
 .wgot{margin:0;color:var(--muted);font-size:17px}.wgot b{color:var(--gold);font-family:var(--f-sc);font-weight:400}
 .wscene .fire{width:80px;height:80px}
 .unit.ally{--s:.9}
@@ -2477,7 +2476,6 @@ const ACT={
   namego:()=>{UI.musLock=false;const i=$('#heroname'),nm=i?i.value.trim().slice(0,14):'',v=UI.seedV;closeModal();clearSave();UI.choose=false;newRun(isNaN(v)?0:v,UI.pickCh);G.name=nm||null;heroPers();save();render();playIntro(()=>banner(ACTS[G.act].n))},
   cont:()=>{G=loadSave();if(G){UI.lock=false;render();resumeCombat()}},
   menu:()=>{G=null;UI.choose=false;render()},
-  abertura:()=>openAbertura(true),
   cenas:()=>{const h=UI.cenaHero||'cav',m=$('#modal');
     m.innerHTML=`<div class="mbox" style="max-width:760px"><h2 class="h2">Cenas</h2><p class="sub">Escolha o herói e a cena que quer assistir.</p>
      <div class="cenah">${Object.entries(CHARS).map(([k,c])=>`<button class="cenahb ${k===h?'on':''}" data-act="cenah" data-ch="${k}" aria-pressed="${k===h}">${sprHTML(c.spr)}<span>${c.n}</span></button>`).join('')}</div>
@@ -2843,7 +2841,6 @@ function hdSprite(rows){
     else if((x+y)%7===0&&at(o,x+1,y,32)===v&&at(o,x,y+1,32)===v)s[y][x]=mul(v,.93)}
   return s;
 }
-function drawGrid(ctx,G,x0,y0,px,flip){const n=G.length;for(let y=0;y<n;y++)for(let x=0;x<n;x++){const v=G[y][x];if(!v)continue;ctx.fillStyle=v;ctx.fillRect(x0+(flip?n-1-x:x)*px,y0+y*px,px,px)}}
 
 
 return{hdSprite};})();
@@ -3238,7 +3235,6 @@ function crystal(x,by,h,c,flip){
     P(xx,by-hh+2,1,hh-2,shade(c,1.5))}
   glow(x,by-h*.5,h*1.5,c,.55);
 }
-function torch(x,y){P(x-1,y,3,10,'#2a1a10');P(x-2,y-1,5,2,'#5a3a20');[[-2,3],[-1,6],[0,8],[1,6],[2,3]].forEach(([d,h])=>{P(x+d,y-1-h,1,h,'#d4501c');if(Math.abs(d)<2)P(x+d,y-1-h*.65,1,h*.65,'#f59a2a');if(!d)P(x,y-4,1,3,'#ffe38a')});glow(x,y-4,46,'rgba(255,140,50,.55)');glow(x,y-4,10,'rgba(255,220,140,.7)');for(let k=0;k<6;k++)P(x+R()*8-4,y-10-R()*22,1,1,'#ffb35a')}
 function fireflies(n,c,y0,y1){for(let k=0;k<n;k++){const x=R()*W,y=y0+R()*(y1-y0);P(x,y,1,1,c);glow(x,y,5,c,.5)}}
 function bones(x,y){P(x,y,6,1,'#cfc6b0');P(x-1,y-1,2,1,'#cfc6b0');P(x-1,y+1,2,1,'#cfc6b0');P(x+5,y-1,2,1,'#cfc6b0');P(x+5,y+1,2,1,'#cfc6b0')}
 function skull(x,y,c='#e9e1c8'){['.###.','#####','#.#.#','#####','.#.#.'].forEach((r,j)=>[...r].forEach((ch,i)=>{if(ch==='#')P(x+i,y+j,1,1,c)}))}
@@ -3292,7 +3288,6 @@ function salao(){
   bricks(0,0,W,FL,'#3a1e2a',{bw:16,bh:8,var:.3});
   const cx=160,ww=64,wy=14,wb=104;P(cx-ww/2-4,wy+20,ww+8,wb-wy-16,'#5a3a40');
   for(let j=0;j<34;j++){const t=j/34,half=(ww/2+4)*Math.sqrt(1-(1-t)**2);P(cx-half,wy+20-34+j+14,half*2,1,'#5a3a40')}
-  const pane=['#8a1830','#4a2a8a','#c0902a','#2a3a8a','#a02a50'];
   for(let y=wy;y<wb;y+=6)for(let x=cx-ww/2;x<cx+ww/2;x+=6){const t=(y-wy)/40,lim=y<wy+40?(ww/2)*Math.sqrt(Math.max(0,1-(1-t)**2)):ww/2;if(Math.abs(x+3-cx)>lim)continue;{const d=Math.hypot(x+3-cx,(y+3-(wy+30))*1.1);P(x,y,5,5,shade(d<16?'#e0b04a':d<26?'#8a1830':d<36?'#4a2a8a':(Math.floor(y/6)%2?'#2a3a8a':'#6a1838'),.75+R()*.2))}}
   P(cx-12,wy+18,24,24,'#1a0a10');for(let a=0;a<12;a++){const an=a/12*6.283;P(cx+Math.cos(an)*9-1,wy+30+Math.sin(an)*9-1,3,3,'#e0b04a')}
   sprite('crow',cx-8,wy+22);
