@@ -125,6 +125,15 @@ button:focus-visible,[data-act]:focus-visible{outline:2px solid var(--gold);outl
 .optpanel{gap:4px;width:100%}.optrow{display:flex;flex-direction:column;gap:4px;padding:10px 4px;border-bottom:1px solid var(--line)}.optrow:last-child{border-bottom:0}
 .optrow b{font-family:var(--f-sc);font-weight:400;font-size:19px;color:var(--text)}.optrow span{color:var(--muted);font-size:14px}.optrow div{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px}
 .optb{background:#14100c;border:1px solid var(--line);border-radius:6px;padding:7px 12px;font-family:var(--f-sc);font-size:15px;color:var(--muted)}
+.optrow .volrow{display:flex;flex-wrap:nowrap;align-items:center;gap:12px}
+.vol{-webkit-appearance:none;appearance:none;flex:1;min-width:0;height:28px;background:transparent;cursor:pointer;margin:0;touch-action:none}
+.vol:focus-visible{outline:2px solid var(--gold);outline-offset:3px;border-radius:6px}
+.vol::-webkit-slider-runnable-track{height:10px;border-radius:5px;border:1px solid var(--line);background:linear-gradient(90deg,var(--gold) var(--p,50%),#14100c var(--p,50%))}
+.vol::-moz-range-track{height:10px;border-radius:5px;border:1px solid var(--line);background:#14100c}
+.vol::-moz-range-progress{height:10px;border-radius:5px;background:var(--gold)}
+.vol::-webkit-slider-thumb{-webkit-appearance:none;width:24px;height:24px;margin-top:-8px;border-radius:50%;background:radial-gradient(circle at 40% 35%,#ffe7a0,var(--gold) 55%,#7a5a1c);border:2px solid #2a2016;box-shadow:0 1px 4px #000a}
+.vol::-moz-range-thumb{width:22px;height:22px;border-radius:50%;background:radial-gradient(circle at 40% 35%,#ffe7a0,var(--gold) 55%,#7a5a1c);border:2px solid #2a2016;box-shadow:0 1px 4px #000a}
+.volpct{min-width:52px;text-align:right;font-family:var(--f-sc);font-size:18px;color:var(--gold);font-variant-numeric:tabular-nums}
 .optb.danger{border-color:#8e2f26;color:#f0b3a8}.optb.danger:hover{border-color:#e0503f;background:#3a1612;color:#fff}
 .optb:hover{border-color:#8a6a35}.optb.on{border-color:var(--gold);color:#fff3d6;background:#2a2014}
 
@@ -678,6 +687,12 @@ const sleep=ms=>new Promise(r=>setTimeout(r,ms));
 let G=null;
 const DEVOK=/dev/.test(location.hash);
 const OPT=(()=>{const d={cenas:'primeira',fala:'normal',falasLuta:true,vib:true,musica:'media',efeitos:'media',bateria:'economia'};try{return Object.assign(d,JSON.parse(localStorage.getItem('trc-opt')||'{}'))}catch(e){return d}})();
+/* v2.23: volumes em porcentagem (0 a 100) com barrinha. Converte as opções antigas (Desligada/Baixa/Média/Alta) sem mudar o som. */
+(()=>{const old={musica:{desligada:0,baixa:25,media:50,alta:85},efeitos:{desligada:0,baixa:30,media:60,alta:100}},cl=v=>Math.max(0,Math.min(100,Math.round(+v)||0));
+  if(OPT.volMusica==null)OPT.volMusica=old.musica[OPT.musica]??50;if(OPT.volEfeitos==null)OPT.volEfeitos=old.efeitos[OPT.efeitos]??60;
+  if(OPT.volGeral==null)OPT.volGeral=100;if(OPT.volVideo==null)OPT.volVideo=100;delete OPT.musica;delete OPT.efeitos;
+  ['volGeral','volMusica','volEfeitos','volVideo'].forEach(k=>OPT[k]=cl(OPT[k]))})();
+const volPct=k=>(OPT[k]/100)*(OPT.volGeral/100);
 function saveOpt(){try{localStorage.setItem('trc-opt',JSON.stringify(OPT))}catch(e){}}
 const FALA_K=()=>({lenta:1.45,normal:1,rapida:.7})[OPT.fala]||1;
 /* v2.19: as cinco pedras da coroa (uma por família). Ficam guardadas entre partidas. */
@@ -698,7 +713,7 @@ const MUS={cur:null,want:null,el:{},unlocked:false,over:null,hold:false};
 const TRK={menu:'01-tema-principal',taverna:'02-taverna',a1:'03-luta-masmorra',a2:'04-luta-catacumbas',a3:'05-luta-torre',chefe:'06-chefe',corvo:'07-corvo-rei',forja:'08-forja-hefesto',
   cav:'09-tema-cavaleiro',cac:'10-tema-cacadora',mag:'11-tema-mago',tan:'12-tema-guardiao',nec:'13-tema-necromante',vitoria:'14-vitoria-classe-s',tombou:'15-voce-tombou'};
 const ONCE=['vitoria','tombou'];
-const musVol=()=>({desligada:0,baixa:.25,media:.5,alta:.85})[OPT.musica]??.5;
+const musVol=()=>volPct('volMusica');
 function musEl(k){if(!MUS.el[k]){const a=new Audio('musica/'+TRK[k]+'.mp3');a.loop=!ONCE.includes(k);a.preload='auto';a.volume=0;MUS.el[k]=a}return MUS.el[k]}
 function fadeTo(a,v,ms,done){const v0=a.volume,t0=performance.now();clearInterval(a._f);a._f=setInterval(()=>{const k=Math.min(1,(performance.now()-t0)/ms);a.volume=Math.max(0,Math.min(1,v0+(v-v0)*k));if(k>=1){clearInterval(a._f);done&&done()}},40)}
 function musApply(){const k=MUS.over||MUS.want;if(!MUS.unlocked||MUS.hold||document.hidden||musVol()===0||!k){for(const x in MUS.el)fadeTo(MUS.el[x],0,400,()=>MUS.el[x].pause());MUS.cur=null;return}
@@ -716,7 +731,16 @@ document.addEventListener('visibilitychange',musApply);
 /* Efeitos sonoros (v2.5): Web Audio, pouco atraso no celular */
 const SFX={ctx:null,buf:{},last:{},loop:null,loopK:null};
 const SFX_N=['carta-comprar','carta-jogar','golpe-espada','golpe-pesado','flecha','magia','bloqueio','dano-heroi','inimigo-morre','moedas','carimbo','martelo-hefesto','tocha','botao','pocao','forjar','cura','turno'];
-const sfxVol=()=>({desligada:0,baixa:.3,media:.6,alta:1})[OPT.efeitos]??.6;
+const sfxVol=()=>volPct('volEfeitos');
+const vidVol=()=>volPct('volVideo');
+/* barrinhas de volume (Opções) */
+const volRow=(k,t,d)=>`<div class="optrow"><b>${t}</b><span>${d}</span><div class="volrow"><input type="range" class="vol" min="0" max="100" step="1" value="${OPT[k]}" data-vol="${k}" aria-label="${t}" style="--p:${OPT[k]}%"><output class="volpct" data-volout="${k}">${OPT[k]}%</output></div></div>`;
+function volLive(inp,done){const k=inp.dataset.vol,v=Math.max(0,Math.min(100,Math.round(+inp.value)||0));OPT[k]=v;inp.style.setProperty('--p',v+'%');
+  const o=document.querySelector(`[data-volout="${k}"]`);if(o)o.textContent=v+'%';
+  if(k==='volGeral'||k==='volMusica'){MUS.unlocked=true;const a=MUS.cur&&MUS.el[MUS.cur];if(a&&musVol()>0&&!a.paused){clearInterval(a._f);a.volume=Math.min(1,musVol())}else musApply()}
+  if(k==='volGeral'||k==='volEfeitos'){sfxInit();if(SFX.loop&&SFX.ctx)SFX.loop.g.gain.setTargetAtTime(sfxVol()*.35,SFX.ctx.currentTime,.05);else{SFX.loopK=null;sfxAmb()}if(sfxVol()===0&&SFX.loop){SFX.loopK='x';sfxAmb()}}
+  const av=$('#abv');if(av){av.volume=Math.min(1,vidVol());av.muted=vidVol()===0}
+  if(done){saveOpt();if(k==='volEfeitos'||k==='volGeral')setTimeout(()=>sfx('moedas'),30)}}
 function sfxInit(){if(SFX.ctx)return;const AC=window.AudioContext||window.webkitAudioContext;if(!AC)return;try{SFX.ctx=new AC()}catch(e){return}
   SFX.out=SFX.ctx.createGain();SFX.out.connect(SFX.ctx.destination);
   SFX_N.forEach(k=>fetch('sfx/'+k+'.mp3').then(r=>r.arrayBuffer()).then(b=>new Promise((ok,no)=>SFX.ctx.decodeAudioData(b,ok,no))).then(d=>{SFX.buf[k]=d;if(k==='tocha')sfxAmb()}).catch(()=>{}))}
@@ -2545,8 +2569,10 @@ const ACT={
   opcoes:()=>{const m=$('#modal'),r=(k,v,l)=>`<button class="optb ${OPT[k]===v?'on':''}" data-act="optset" data-k="${k}" data-v="${v}" aria-pressed="${OPT[k]===v}">${l}</button>`;
     m.innerHTML=`<div class="mbox" style="max-width:560px"><h2 class="h2">Opções</h2><div class="panel optpanel">
      <div class="optrow"><b>Cenas</b><span>Quando mostrar as cenas durante a jornada. Todas continuam no menu Cenas.</span><div>${r('cenas','sempre','Sempre')}${r('cenas','primeira','Só a primeira vez')}${r('cenas','nunca','Nunca')}</div></div>
-     <div class="optrow"><b>Música</b><span>Volume da música do jogo.</span><div>${r('musica','desligada','Desligada')}${r('musica','baixa','Baixa')}${r('musica','media','Média')}${r('musica','alta','Alta')}</div></div>
-     <div class="optrow"><b>Efeitos</b><span>Volume dos sons de golpes, cartas e moedas.</span><div>${r('efeitos','desligada','Desligados')}${r('efeitos','baixa','Baixo')}${r('efeitos','media','Médio')}${r('efeitos','alta','Alto')}</div></div>
+     ${volRow('volGeral','Volume geral','Controla todos os sons do jogo de uma vez.')}
+     ${volRow('volMusica','Música','Volume das músicas do jogo.')}
+     ${volRow('volEfeitos','Efeitos','Volume dos sons de golpes, cartas, moedas e tochas.')}
+     ${volRow('volVideo','Vídeo de abertura','Volume do som do vídeo de abertura.')}
      <div class="optrow"><b>Bateria</b><span>Quanto o fundo se mexe. Menos movimento gasta menos bateria.</span><div>${r('bateria','normal','Fundo cheio')}${r('bateria','economia','Economia')}${r('bateria','maxima','Fundo parado')}</div></div>
      <div class="optrow"><b>Velocidade das falas</b><span>Quanto tempo cada legenda fica na tela.</span><div>${r('fala','lenta','Lenta')}${r('fala','normal','Normal')}${r('fala','rapida','Rápida')}</div></div>
      <div class="optrow"><b>Falas na luta</b><span>Heróis e inimigos comentam durante o combate.</span><div>${r('falasLuta',true,'Ligadas')}${r('falasLuta',false,'Desligadas')}</div></div>
@@ -2555,7 +2581,8 @@ const ACT={
      <div class="optrow"><b>Tutorial e dicas</b><span>A Marta explica de novo a primeira luta e as dicas de cada lugar.</span><div><button class="optb" data-act="tutreset">Rever tutorial e dicas</button></div></div>
      <div class="optrow"><b>Privacidade</b><span>O jogo não coleta nenhum dado seu. Tudo fica só no seu aparelho.</span><div><a class="optb" href="https://contatojampro5-dot.github.io/masmorra-do-corvo-rei/privacidade.html" target="_blank" rel="noopener" style="text-decoration:none">Ler a política de privacidade</a></div></div>
      ${G&&G.screen!=='end'?`<div class="optrow"><b>Abandonar jornada</b><span>Desiste da partida atual e volta ao menu. A jornada salva é apagada.</span><div><button class="optb danger" data-act="abandonar">Abandonar partida</button></div></div>`:''}
-    </div><div class="mfoot"><button class="btn small" data-act="mclose">Fechar</button></div></div>`;m.hidden=false;m.scrollTop=0},
+    </div><div class="mfoot"><button class="btn small" data-act="mclose">Fechar</button></div></div>`;m.hidden=false;m.scrollTop=0;
+    m.querySelectorAll('input[data-vol]').forEach(inp=>{inp.oninput=()=>volLive(inp,false);inp.onchange=()=>volLive(inp,true)})},
   abandonar:()=>{const m=$('#modal');
     m.innerHTML=`<div class="mbox" style="max-width:460px"><h2 class="h2">Abandonar a jornada?</h2><div class="panel"><p class="sub">Você perde esta partida e volta ao menu. Não dá para desfazer.</p></div>
      <div class="mfoot"><button class="btn small" data-act="mclose">Continuar jogando</button><button class="btn primary" data-act="abandonar2">Sim, abandonar</button></div></div>`;m.hidden=false;m.scrollTop=0},
@@ -4041,7 +4068,7 @@ async function playIntro(done,which='intro'){
 function openAbertura(play){
   const a=$('#abert'),v=$('#abv');if(!a||!v)return;
   a.hidden=false;a.classList.remove('out');$('#abstart').hidden=!!play;$('#abskip').hidden=!play;
-  try{v.currentTime=0}catch(e){}
+  try{v.currentTime=0}catch(e){}v.volume=vidVol();v.muted=vidVol()===0;
   MUS.hold=true;musApply();
   if(play)v.play().catch(()=>{$('#abstart').hidden=false;$('#abskip').hidden=true});
 }
@@ -4052,7 +4079,7 @@ function closeAbertura(){
 }
 (function(){
   const v=$('#abv');if(!v)return;
-  $('#abplay').onclick=()=>{$('#abstart').hidden=true;$('#abskip').hidden=false;v.play().catch(()=>closeAbertura())};
+  $('#abplay').onclick=()=>{v.volume=vidVol();v.muted=vidVol()===0;$('#abstart').hidden=true;$('#abskip').hidden=false;v.play().catch(()=>closeAbertura())};
   $('#abno').onclick=closeAbertura;$('#abskip').onclick=closeAbertura;
   v.addEventListener('ended',closeAbertura);v.addEventListener('error',closeAbertura);
   document.addEventListener('keydown',e=>{if(!$('#abert').hidden&&e.key==='Escape'){e.stopImmediatePropagation();closeAbertura()}},true);
