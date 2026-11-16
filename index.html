@@ -249,6 +249,8 @@ button:focus-visible,[data-act]:focus-visible{outline:2px solid var(--gold);outl
 .card.ferro .so-corner,.card.ferro .so-crest{filter:grayscale(1) brightness(1.55) drop-shadow(0 calc(var(--u)*1) calc(var(--u)*1.5) #000c)}
 .card.ferro .so-foil{filter:grayscale(1)}
 .card.ferro .so-gem{background:linear-gradient(135deg,#fff 0%,#cfd9e3 22%,#7d8a98 55%,#3d4753 100%);box-shadow:0 0 0 calc(var(--u)*1.5) #161b21,0 0 calc(var(--u)*10) #9fb3c8}
+.card.ferro .so-body{gap:calc(var(--u)*14)}.card.ferro .so-name{line-height:1.25;padding-bottom:calc(var(--u)*2)}
+.card.ferro .so-name.nl{font-size:calc(var(--u)*21);white-space:nowrap}.card.ferro .so-name.nl2{font-size:calc(var(--u)*18);white-space:nowrap}
 .card.ferro .so-rule{border-color:#5f6b78;background:linear-gradient(180deg,#1b2128d9,#0c1014e6);color:#eef3f7}
 .card.ferro .so-rule b{color:#dbe4ec}
 .card.ferro .cost{top:calc(var(--u)*8);left:calc(var(--u)*8);width:calc(var(--u)*46);height:calc(var(--u)*46);z-index:7;font:400 calc(var(--u)*27)/1 var(--f-sc);color:#14191f;text-shadow:0 1px 0 #ffffff99;
@@ -1960,7 +1962,7 @@ function cardHTML(card,{cls='',inCombat=false}={}){
   const gems=Array.from({length:RG[d.r]||0},()=>'<span class="rg"></span>').join('');
   if(d.r==='basic'&&d.img)return`<div class="card cl-${cl} t-${d.t} r-basic ferro ${card.up?'upg':''} ${cls} ${!playable?'unplayable':''}" data-cuid="${card.uid}" data-cid="${card.id}" ${tip?`data-tip="${tip}"`:''}>
     <div class="so-in"><div class="so-face"><img src="cartas/ferro/${d.img}.webp" alt="" draggable="false"><div class="so-shade"></div>
-      <div class="so-body"><div class="so-name">${d.n}${card.up?'+':''}</div><div class="so-kind"><i></i>Ferro · ${TYPE_N[d.t]}<i></i></div><div class="so-rule">${d.x(v)}</div></div>
+      <div class="so-body"><div class="so-name ${d.n.length>=15?'nl2':d.n.length>=12?'nl':''}">${d.n}${card.up?'+':''}</div><div class="so-kind"><i></i>Ferro · ${TYPE_N[d.t]}<i></i></div><div class="so-rule">${d.x(v)}</div></div>
       <div class="so-foil"></div><div class="so-sweep"></div></div>
       <svg class="so-corner tl"><use href="#so-corner"/></svg><svg class="so-corner tr"><use href="#so-corner"/></svg><svg class="so-corner bl"><use href="#so-corner"/></svg><svg class="so-corner br"><use href="#so-corner"/></svg>
       <svg class="so-crest"><use href="#so-crest"/></svg><div class="so-gem"></div>

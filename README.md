@@ -67,3 +67,4 @@ Arraste a carta até o inimigo (ou clique na carta e depois no alvo). **E** ence
 - **v2.27** — Cavaleiro tombado redesenhado: em vez do boneco só virado de lado, agora ele leva o golpe, cai de joelho e fica deitado no chão, com a espada cravada atrás da cabeça, o escudo encostado nas pernas e o penacho caído.
 - **v2.28** — Cartas da mão não deslizam mais da esquerda a cada clique: as cartas refeitas aparecem direto na posição.
 - **v2.29** — **Cartas de Ferro** (básicas, 16): cada uma ganhou arte pintada e a mesma moldura das Super Cartas Douradas, em aço escovado. A arte está em `cartas/ferro/`.
+- **v2.30** — Nomes longos das cartas de Ferro (como "Bater no Escudo") diminuem e não encostam mais na linha do tipo.
