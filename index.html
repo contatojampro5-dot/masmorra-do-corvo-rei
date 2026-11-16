@@ -2248,7 +2248,7 @@ function layoutHand(){
   const h=$('#hand');if(!h)return;const cards=[...h.children],n=cards.length;if(!n)return;
   const W=h.clientWidth,cw=cards[0].offsetWidth;
   const pad=n>2?Math.min(14,W*.04):0,step=n>1?Math.min(cw*.9,(W-cw-2*pad)/(n-1)):0,mid=(n-1)/2;
-  cards.forEach((el,i)=>{const o=i-mid;el.style.setProperty('--x',(W/2-cw/2+o*step)+'px');el.style.setProperty('--y',(o*o*1.6)+'px');el.style.setProperty('--r',(o*Math.min(4,26/n))+'deg');el.style.zIndex=i+1});
+  cards.forEach((el,i)=>{const o=i-mid;const fresh=!el.dataset.laid;if(fresh)el.style.transition='none';el.style.setProperty('--x',(W/2-cw/2+o*step)+'px');el.style.setProperty('--y',(o*o*1.6)+'px');el.style.setProperty('--r',(o*Math.min(4,26/n))+'deg');el.style.zIndex=i+1;if(fresh){el.getBoundingClientRect();el.style.transition='';el.dataset.laid='1'}});
 }
 function rewardHTML(){
   const r=G.reward,t=r.taken;
