@@ -184,6 +184,25 @@ button:focus-visible,[data-act]:focus-visible{outline:2px solid var(--gold);outl
 .card[class*="k-"] .ctype>span:first-child{color:var(--kl);display:inline-flex;align-items:center;gap:calc(var(--cw)*.025)}
 .card[class*="k-"] .ctype>span:first-child::before{content:"";width:calc(var(--cw)*.045);height:calc(var(--cw)*.045);background:var(--kc);transform:rotate(45deg);box-shadow:0 0 0 1px #0008}
 .card[class*="k-"] .cost{border-color:var(--kc)!important}
+/* v2.24: Super Cartas Douradas (moldura de ouro, arte pintada e a pedra da família) */
+.card.r-ouro[class*="cl-"]{--gemc:#e0483f;--gold:#f6d977;--nameBg:#120c05;--nameInk:#ffe9a0;--paper:#17100a;--cink:#f3e7cc;border-color:#3a2608;
+  background:linear-gradient(135deg,#fff3c0,#e2b84f 12%,#8a5f17 26%,#f6d977 40%,#b6821f 55%,#fbe89c 68%,#7a5212 82%,#e9c460);
+  box-shadow:0 0 16px #f6c94eaa,0 0 30px color-mix(in srgb,var(--gemc) 50%,transparent),0 4px 12px #000a,inset 0 0 0 calc(var(--cw)*.012) #fff6cf}
+.cl-cac.r-ouro{--gemc:#3fcf74}.cl-mag.r-ouro{--gemc:#a866f0}.cl-tan.r-ouro{--gemc:#f0a832}.cl-nec.r-ouro{--gemc:#9fd8ff}
+.card.r-ouro[class*="cl-"] .cart{height:44%;position:relative;clip-path:none;border:2px solid #3a2608!important;border-radius:calc(var(--cw)*.04);box-shadow:0 0 0 1px #fff6cf,inset 0 0 0 1px #000a!important;background:#120c05}
+.card.r-ouro .cart img{width:100%;height:100%;max-width:none;object-fit:cover;object-position:50% 12%;display:block;pointer-events:none;user-select:none}
+.card.r-ouro .cart::after{content:"";position:absolute;top:-20%;bottom:-20%;left:-70%;width:40%;transform:skewX(-18deg);background:linear-gradient(90deg,#0000,#fff3c466 45%,#ffffffaa 50%,#fff3c466 55%,#0000);animation:ourobrilho 5s ease-in-out infinite;pointer-events:none}
+@keyframes ourobrilho{0%,60%{left:-70%}100%{left:140%}}
+.card.r-ouro[class*="cl-"] .cname{border-color:#3a2608;box-shadow:0 0 0 1px #fff6cf88;text-shadow:0 1px 0 #000}
+.card.r-ouro[class*="cl-"] .ctype{color:#2a1b06}.card.r-ouro .ctype>span:first-child{color:#2a1b06!important;font-weight:700}
+.card.r-ouro .rg{background:var(--gemc);box-shadow:0 0 0 1px #3a2608,0 0 5px var(--gemc)}
+.card.r-ouro[class*="cl-"] .ctext{border-color:#3a2608;box-shadow:inset 0 0 0 1px #8a6a2a;font-size:.93em;line-height:1.06}
+.card.r-ouro .ctext b{color:#ffd86a}
+.card.r-ouro .cost{border-color:#3a2608!important;box-shadow:0 0 0 1px #fff6cf,0 0 8px #f6c94e}
+.ouroganho{display:flex;flex-direction:column;align-items:center;gap:10px;margin:6px 0 14px;text-align:center}
+.ouroganho b{font-family:var(--f-sc);font-weight:400;font-size:22px;color:#f6d977;text-shadow:0 0 12px #f6c94e88}
+.ouroganho span{color:var(--muted);max-width:34ch;font-size:15px}
+@media (prefers-reduced-motion:reduce){.card.r-ouro .cart::after{animation:none}}
 
 /* ---------- combate ---------- */
 .combat{height:100%;display:grid;grid-template-rows:1fr auto;position:relative}
@@ -952,6 +971,8 @@ const ST={
  retaliar:{n:'Retaliar',a:'Ret',d:'Quem atacar você recebe {n} de dano.',good:1},
  juggernaut:{n:'Rolo Compressor',a:'Rolo',d:'Ao ganhar Bloqueio de cartas, causa {n} de dano a um inimigo aleatório.',good:1},
  colosso:{n:'Colosso',a:'Col',d:'No início do turno, ganhe {n} de Armadura.',good:1},
+ colossoB:{n:'Parede de Bram',a:'Par',d:'No início do turno, ganhe {n} de Bloqueio.',good:1},
+ falcaoM:{n:'Garra do Falcão',a:'Gar',d:'O falcão aplica {n} de Marca no inimigo que atacar.',good:1},
  servos:{n:'Servos',a:'Servo',d:'Você tem {n} servo(s): as últimas criaturas que você derrotou. Cada um causa 1 de dano no fim do turno, morre no seu lugar quando você seria ferido e às vezes vira alvo dos inimigos.',good:1},
  ossos:{n:'Ossos Afiados',a:'Afiad',d:'Servos causam +{n} de dano.',good:1},
  sifao:{n:'Sifão de Almas',a:'Sifão',d:'Quando um servo morre, cure {n} de vida.',good:1},
@@ -1083,7 +1104,7 @@ const CARDS={
  meteoro:{n:'Meteoro',cl:'mag',t:'atk',r:'rare',c:3,tg:'e',fxk:'fire',v:{d:28,q:6},u:{d:36,q:8},x:v=>`Causa ${D(v.d)} de dano. Aplica ${FO(v.q)} de Queimadura.`,p:(v,t)=>{hit(t,v.d);burn(t,v.q)}},
  eco:{n:'Eco Arcano',cl:'mag',t:'pwr',r:'rare',c:2,uc:1,v:{},u:{},x:()=>`O primeiro Ataque de cada turno é jogado 2 vezes.`,p:()=>apply(P(),'eco',1)},
  eraGelo:{n:'Era do Gelo',cl:'mag',t:'skl',r:'rare',c:3,uc:2,ex:1,v:{},u:{},x:()=>`Congela TODOS os inimigos.`,p:()=>alive().forEach(freeze)},
- transmutar:{n:'Transmutação',cl:'mag',t:'skl',r:'rare',c:1,ex:1,v:{k:2},u:{k:3},x:v=>`Adicione ${v.k} cartas aleatórias de Mago à mão. Elas custam 0 neste combate.`,p:v=>{const pool=Object.keys(CARDS).filter(k=>clOf(k)==='mag'&&!['basic','special'].includes(CARDS[k].r)&&k!=='transmutar');for(let i=0;i<v.k;i++){const k=mk(pick(pool));k.free=1;if(G.combat.hand.length<10)G.combat.hand.push(k)}}},
+ transmutar:{n:'Transmutação',cl:'mag',t:'skl',r:'rare',c:1,ex:1,v:{k:2},u:{k:3},x:v=>`Adicione ${v.k} cartas aleatórias de Mago à mão. Elas custam 0 neste combate.`,p:v=>{const pool=Object.keys(CARDS).filter(k=>clOf(k)==='mag'&&!['basic','special','ouro'].includes(CARDS[k].r)&&k!=='transmutar');for(let i=0;i<v.k;i++){const k=mk(pick(pool));k.free=1;if(G.combat.hand.length<10)G.combat.hand.push(k)}}},
 
  /* ----- Guardião de Ferro (tanque) ----- */
  pancada:{n:'Pancada',cl:'tan',t:'atk',r:'basic',c:1,tg:'e',v:{d:6},u:{d:9},x:v=>`Causa ${D(v.d)} de dano.`,p:(v,t)=>hit(t,v.d)},
@@ -1140,6 +1161,12 @@ const CARDS={
  milagre:{n:'Milagre',cl:'any',t:'skl',r:'lend',c:1,ex:1,v:{h:15},u:{h:25},x:v=>`Cure ${v.h} de vida. Ganhe 2 de Energia e compre 2 cartas.`,p:v=>{heal(v.h);gainEnergy(2);draw(2)}},
  avatarC:{n:'Avatar Divino',cl:'any',t:'pwr',r:'lend',c:3,uc:2,v:{},u:{},x:()=>`No início de cada turno, ganhe 1 de Força e 1 de Destreza.`,p:()=>apply(P(),'avatar',1)},
  meteoros:{n:'Chuva de Meteoros',cl:'any',t:'atk',r:'lend',c:3,fxk:'fire',v:{d:10},u:{d:13},x:v=>`Causa ${D(v.d)} de dano a TODOS os inimigos 3 vezes.`,p:v=>hitAll(v.d,3)},
+ /* v2.24: Super Cartas Douradas. Uma por herói; entra no baralho inicial para sempre depois que o herói vence o Corvo Rei (ver OURO). Não aparecem em recompensas nem lojas. */
+ juizoGarrel:{n:'O Juízo de Garrel',cl:'cav',t:'atk',r:'ouro',art:'cav',c:3,tg:'e',fala:'Não carrego bandeira. Carrego o martelo.',v:{d:45,e:2},u:{d:55,e:2},x:v=>`Causa ${D(v.d)} de dano. Se o inimigo tombar, recupere ${v.e} de energia.`,p:(v,t)=>{if(hit(t,v.d))gainEnergy(v.e)}},
+ falcaoYsolda:{n:'Falcão de Ysolda',cl:'cac',t:'pwr',r:'ouro',art:'cac',c:2,fala:'Ele vê o que a bruma esconde.',v:{d:10,m:2},u:{d:13,m:3},x:v=>`No fim de cada turno, o falcão causa ${v.d} de dano a um inimigo e aplica ${v.m} de Marca.`,p:v=>{apply(P(),'falcao',v.d);apply(P(),'falcaoM',v.m)}},
+ meteoroMorvane:{n:'Meteoro de Morvane',cl:'mag',t:'atk',r:'ouro',art:'mag',c:3,tg:'e',fxk:'fire',fala:'Me expulsaram por isto. Valeu a pena.',v:{d:36,o:12,q:8},u:{d:44,o:15,q:10},x:v=>`Causa ${D(v.d)} de dano ao alvo e ${D(v.o)} aos outros inimigos. Aplica ${FO(v.q)} de Queimadura ao alvo.`,p:(v,t)=>{const o=alive().filter(e=>e!==t);hit(t,v.d);burn(t,v.q);o.forEach(e=>hit(e,v.o))}},
+ colossoBram:{n:'Colosso de Bram',cl:'tan',t:'pwr',r:'ouro',art:'tan',c:3,uc:2,fala:'Eu forjei esta parede. Ninguém passa.',v:{a:3,b:4},u:{a:3,b:4},x:v=>`No início de cada turno, ganhe ${v.a} de Armadura e ${v.b} de Bloqueio.`,p:v=>{apply(P(),'colosso',v.a);apply(P(),'colossoB',v.b)}},
+ ceifadorElowen:{n:'Ceifador de Elowen',cl:'nec',t:'atk',r:'ouro',art:'nec',c:2,tg:'e',fala:'Não lembro o meu nome. Lembro o de vocês.',v:{d:16,k:6},u:{d:20,k:7},x:v=>`Causa ${D(v.d)} de dano, mais ${v.k} para cada Servo. Se o inimigo tombar, erga 1 Servo.`,p:(v,t)=>{if(hit(t,v.d+v.k*(P().st.servos||0)))summon(1)}},
 
  /* ----- cartas especiais das armas (Nível IV) ----- */
  golpeChamas:{n:'Golpe em Chamas',cl:'cav',t:'atk',r:'arma',c:1,tg:'e',fxk:'fire',v:{d:9,q:4},u:{d:12,q:5},x:v=>`Causa ${D(v.d)} de dano. Aplica ${FO(v.q)} de Queimadura.`,p:(v,t)=>{hit(t,v.d);burn(t,v.q)}},
@@ -1342,6 +1369,9 @@ const EVENTS={
    ========================================================= */
 let UID=1;
 function mk(id,up=0){return{uid:'c'+(UID++)+'_'+Math.floor(Math.random()*1e4),id,up}}
+/* Super Carta Dourada de cada herói: liberada para sempre quando ele vence o Corvo Rei (mesmo registro das pedras da coroa). */
+const OURO={cav:'juizoGarrel',cac:'falcaoYsolda',mag:'meteoroMorvane',tan:'colossoBram',nec:'ceifadorElowen'};
+const temOuro=ch=>!!OURO[ch]&&pedras().includes(ch);
 function newRun(seed,char='cav'){
   seed=seed||Math.floor(Math.random()*1e9);
   const ch=CHARS[char];
@@ -1349,6 +1379,7 @@ function newRun(seed,char='cav'){
      map:null,pos:null,path:[],screen:'map',combat:null,reward:null,shop:null,event:null,lastEnc:null,
      stats:{kills:0,dmg:0,cards:0,floors:0,bosses:0},won:false};
   ch.deck.forEach(([id,n])=>{for(let i=0;i<n;i++)G.deck.push(mk(id))});
+  if(temOuro(char))G.deck.push(mk(OURO[char]));
   G.map=genMap();
   render();
 }
@@ -1486,6 +1517,7 @@ function startPlayerTurn(){
   if(p.st.danca)apply(p,'esquiva',p.st.danca);
   if(p.st.implacavel)alive().forEach(e=>apply(e,'marca',p.st.implacavel));
   if(p.st.colosso)apply(p,'armadura',p.st.colosso);
+  if(p.st.colossoB)gainBlock(p.st.colossoB);
   if(p.st.marcha)summon(p.st.marcha);
   if(p.st.avatar){apply(p,'forca',p.st.avatar);apply(p,'destreza',p.st.avatar)}
 }
@@ -1661,7 +1693,7 @@ async function endTurn(){
   if(p.st.cota)addBlock(p.st.cota);
   if(p.st.armadura)addBlock(p.st.armadura);
   for(let i=0;i<(p.st.fortaleza||0);i++){const a=alive(),n=Math.floor(p.block/2);if(a.length&&n>0){const e=pick(a);slash(e.uid);dealDamage(e,n)}}
-  if(p.st.falcao){const a=alive();if(a.length){const e=pick(a);proj('p',e.uid,'arrow');FXB=270;dealDamage(e,p.st.falcao);FXB=0}}
+  if(p.st.falcao){const a=alive();if(a.length){const e=pick(a);proj('p',e.uid,'arrow');FXB=270;dealDamage(e,p.st.falcao);if(p.st.falcaoM&&e.hp>0)apply(e,'marca',p.st.falcaoM);FXB=0}}
   if(p.st.servos)servosAttack();
   if(c.ally&&WARR[c.ally]){const a=alive();if(a.length){const W=WARR[c.ally],e=pick(a),dm=3+2*G.act;FXB=400;
     if(W.atk==='melee'){anim('ally','mv-lunge',400);slash(e.uid,550);FXB=550}else{anim('ally',W.atk==='arrow'?'mv-shoot':'mv-cast',400);proj('ally',e.uid,W.atk==='arrow'?'arrow':'bolt',400);FXB=670}
@@ -1776,7 +1808,7 @@ const CT={
  nec:{f:'#14211c',gold:'#8fd0a0',nameBg:'#0a1210',nameInk:'#dcefe3',paper:'#dde6dc',ink:'#16201a',acc:'#5fd08a',tag:'Necromante'},
  any:{f:'#183b4a',gold:'#9fe6ff',nameBg:'#0b2330',nameInk:'#eafaff',paper:'#e2f3f8',ink:'#10222c',acc:'#38c8f0',tag:'Lendária'}
 };
-const RG={basic:0,common:1,unc:2,rare:3,arma:3,lend:4,special:0};
+const RG={basic:0,common:1,unc:2,rare:3,arma:3,lend:4,ouro:5,special:0};
 function cScene(cl){
  const e=(o)=>o;
  if(cl==='cav'||cl==='any'){
@@ -1861,13 +1893,13 @@ function cardHTML(card,{cls='',inCombat=false}={}){
   const tx=(d.x?d.x(v):'').toLowerCase(),kc=d.t==='atk'?'atk':/\bcure\b|\bcura\b|regenera|recupere/.test(tx)?'cura':/bloqueio|armadura|esquiva/.test(tx)?'def':(d.t==='skl'||d.t==='pwr')?'mag':'';
   const playable=!inCombat||canPlay(card)[0];
   const kws=[d.inn&&'Inata',d.ret&&'Reter',d.eph&&'Efêmera',d.ex&&'Exaurir'].filter(Boolean);
-  const tip=kws.map(k=>`<b>${k}</b>${KW[k]}`).join('');
+  const tip=kws.map(k=>`<b>${k}</b>${KW[k]}`).join('')+(d.fala?`<b>Carta Dourada</b><i>&ldquo;${d.fala}&rdquo;</i>`:'');
   const gems=Array.from({length:RG[d.r]||0},()=>'<span class="rg"></span>').join('');
   return`<div class="card cl-${cl} ${kc?'k-'+kc:''} t-${d.t} r-${d.r} ${card.up?'upg':''} ${cls} ${!playable?'unplayable':''}" data-cuid="${card.uid}" data-cid="${card.id}" ${tip?`data-tip="${tip}"`:''}>
     ${d.unp?'':`<div class="cost ${card.free?'free':''}">${cost}</div>`}
     <div class="cname ${d.n.length>15?'nl2':d.n.length>12?'nl':''}">${d.n}${card.up?'+':''}</div>
-    <div class="cart">${cArt(cl,d.t,cVar(cl,d,v))}</div>
-    <div class="ctype"><span>${d.r==='lend'?'Lendária · ':d.r==='arma'?'Arma · ':''}${TYPE_N[d.t]}</span><span class="rgs">${gems}</span></div>
+    <div class="cart">${d.art?`<img src="cartas/${d.art}.jpg" alt="" draggable="false">`:cArt(cl,d.t,cVar(cl,d,v))}</div>
+    <div class="ctype"><span>${d.r==='lend'?'Lendária · ':d.r==='arma'?'Arma · ':d.r==='ouro'?'Dourada · ':''}${TYPE_N[d.t]}</span><span class="rgs">${gems}</span></div>
     <div class="ctext"><span>${kws.filter(k=>k==='Inata'||k==='Reter').map(k=>`<i>${k}.</i> `).join('')}${d.x(v)}${kws.filter(k=>k==='Efêmera'||k==='Exaurir').map(k=>` <i>${k}.</i>`).join('')}</span></div></div>`;
 }
 const sealHTML=k=>`<span class="seal" style="--c:${RELICS[k].c}" data-tip="<b>${RELICS[k].n}</b>${RELICS[k].d}">${RELICS[k].n.replace(/^(O |A )/,'')[0]}</span>`;
@@ -2251,7 +2283,7 @@ function treasureHTML(){
 function endHTML(){
   const s=G.stats;
   return`<div class="page" style="justify-content:safe center">
-   ${G.won?`<div class="emblem" style="opacity:.55;filter:grayscale(1)">${sprHTML('crowking',{flip:1})}</div><h1 class="h1">O Corvo Rei caiu</h1><p class="lead">A torre silencia. Pela primeira vez em cem anos, os corvos deixam as ameias.</p>`:`<div class="emblem" style="filter:grayscale(1) brightness(.6)">${sprHTML(CHARS[G.char].spr)}</div><h1 class="h1">Você tombou</h1><p class="lead">A masmorra guarda mais um aventureiro. Você chegou ao ato ${G.act}, ${ACTS[G.act].n}.</p>`}
+   ${G.won?`<div class="emblem" style="opacity:.55;filter:grayscale(1)">${sprHTML('crowking',{flip:1})}</div><h1 class="h1">O Corvo Rei caiu</h1><p class="lead">A torre silencia. Pela primeira vez em cem anos, os corvos deixam as ameias.</p>${OURO[G.char]?`<div class="ouroganho"><b>${(G.pedrasAntes||[]).includes(G.char)?'Sua Carta Dourada':'Carta Dourada conquistada'}</b>${cardHTML({uid:'ouro',id:OURO[G.char],up:0},{cls:'big'})}<span>${(G.pedrasAntes||[]).includes(G.char)?'Ela continua no seu baralho em toda jornada com este herói.':'A partir de agora ela começa no seu baralho em toda jornada com este herói. Para sempre.'}</span></div>`:''}`:`<div class="emblem" style="filter:grayscale(1) brightness(.6)">${sprHTML(CHARS[G.char].spr)}</div><h1 class="h1">Você tombou</h1><p class="lead">A masmorra guarda mais um aventureiro. Você chegou ao ato ${G.act}, ${ACTS[G.act].n}.</p>`}
    <dl class="stats"><dt>Personagem</dt><dd>${heroName()}${G.name?' · '+CHARS[G.char].n:''}</dd><dt>Andares</dt><dd>${s.floors}</dd><dt>Chefes derrotados</dt><dd>${s.bosses}</dd><dt>Inimigos derrotados</dt><dd>${s.kills}</dd><dt>Dano causado</dt><dd>${s.dmg}</dd><dt>Cartas jogadas</dt><dd>${s.cards}</dd><dt>Semente</dt><dd>${G.seed}</dd></dl>
    <div class="row"><button class="btn primary" data-act="new">Nova jornada</button><button class="btn" data-act="menu">Menu</button></div></div>`;
 }
@@ -2428,7 +2460,7 @@ function renderDev(){
   }else if(tab==='todas'){
     const f=UI.libF;
     const ids=Object.keys(CARDS).filter(k=>f==='all'||CARDS[k].t===f||CARDS[k].r===f||(CARDS[k].r!=='special'&&clOf(k)===f));
-    body+=`<h3>Todas as cartas (${ids.length})</h3><div class="dbtns" style="margin-bottom:8px">${[['all','Todas'],['cav','Cavaleiro'],['cac','Caçadora'],['mag','Mago'],['tan','Guardião'],['nec','Necromante'],['lend','Lendárias'],['atk','Ataques'],['skl','Habilidades'],['pwr','Poderes'],['special','Status/Maldição']].map(([k,l])=>`<button class="dbtn ${f===k?'on':''}" data-act="devlibf" data-f="${k}">${l}</button>`).join('')}</div>
+    body+=`<h3>Todas as cartas (${ids.length})</h3><div class="dbtns" style="margin-bottom:8px">${[['all','Todas'],['cav','Cavaleiro'],['cac','Caçadora'],['mag','Mago'],['tan','Guardião'],['nec','Necromante'],['lend','Lendárias'],['ouro','Douradas'],['atk','Ataques'],['skl','Habilidades'],['pwr','Poderes'],['special','Status/Maldição']].map(([k,l])=>`<button class="dbtn ${f===k?'on':''}" data-act="devlibf" data-f="${k}">${l}</button>`).join('')}</div>
       <p class="dmv">Clique numa carta para adicioná-la.</p><div class="dgrid">${ids.map(id=>mini({uid:'lib-'+id,id,up:0},'lib',id)).join('')}</div>`;
   }else if(tab==='trapacas'){
     const b=(cmd,l)=>`<button class="dbtn" data-act="devcmd" data-c="${cmd}">${l}</button>`;

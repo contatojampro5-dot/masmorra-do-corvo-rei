@@ -1,0 +1,157 @@
+<title>Super Cartas Douradas</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IM+Fell+English:ital@0;1&family=IM+Fell+English+SC&family=UnifrakturMaguntia&display=swap">
+<style>
+/* Layout: uma fileira de cinco cartas grandes sobre pedra escura; a carta é a única coisa que brilha. */
+:root{
+  color-scheme:dark;
+  --bg:#0b0907; --bg2:#17110b; --text:#eadfc6; --muted:#a8997c; --line:#3d3326;
+  --gold:#cfa548; --gold-hi:#fff1b8; --gold-lo:#6b4a12; --ink:#120d08;
+  --f-title:'UnifrakturMaguntia','IM Fell English SC',Georgia,serif;
+  --f-sc:'IM Fell English SC','IM Fell English',Georgia,serif;
+  --f-body:'IM Fell English',Georgia,serif;
+}
+html,body{height:auto}
+body{background:radial-gradient(ellipse at 50% 0%,var(--bg2),var(--bg) 60%) fixed,var(--bg);color:var(--text);font-family:var(--f-body);font-size:17px;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:28px 56px}
+header{max-width:900px;margin:0 auto 26px;text-align:center}
+h1{font-family:var(--f-title);font-weight:400;font-size:clamp(34px,6vw,58px);margin:0;line-height:1;text-wrap:balance;
+  background:linear-gradient(180deg,var(--gold-hi),var(--gold) 45%,var(--gold-lo));-webkit-background-clip:text;background-clip:text;color:transparent}
+header p{color:var(--muted);margin:10px auto 0;max-width:60ch;line-height:1.35}
+.row{display:flex;flex-wrap:wrap;justify-content:center;gap:34px 30px;max-width:1700px;margin:0 auto}
+.slot{display:flex;flex-direction:column;align-items:center;gap:12px;min-width:0}
+.slot small{font-family:var(--f-sc);color:var(--muted);font-size:15px;text-align:center;line-height:1.25}
+.slot small b{display:block;color:var(--text);font-weight:400;font-size:18px}
+
+/* ---------- a super carta ---------- */
+.sc{--cw:min(300px,calc(100vw - 48px));--u:calc(var(--cw)/300);--gem:#d8423a;--rx:0deg;--ry:0deg;--mx:50%;--my:30%;
+  width:var(--cw);aspect-ratio:300/430;perspective:1100px;cursor:pointer;border:0;background:none;padding:0;color:inherit;font:inherit;display:block}
+.sc-in,.face,.shade,.foil,.sweep,.gem,.name,.rule,.quote{display:block}
+.sc:focus-visible{outline:2px solid var(--gold-hi);outline-offset:8px;border-radius:calc(var(--u)*18)}
+.sc-in{position:relative;width:100%;height:100%;border-radius:calc(var(--u)*16);transform:rotateX(var(--rx)) rotateY(var(--ry));transition:transform .18s ease-out;transform-style:preserve-3d;
+  /* moldura de ouro: metal escovado em volta da arte */
+  background:
+    linear-gradient(135deg,#fff3c0 0%,#e2b84f 12%,#8a5f17 26%,#f6d977 40%,#b6821f 55%,#fbe89c 68%,#7a5212 82%,#e9c460 100%);
+  padding:calc(var(--u)*9);box-sizing:border-box;
+  box-shadow:0 calc(var(--u)*18) calc(var(--u)*40) #000c,0 0 calc(var(--u)*26) color-mix(in srgb,var(--gold) 45%,transparent),0 0 calc(var(--u)*60) color-mix(in srgb,var(--gem) 30%,transparent)}
+.sc-in::before{content:"";position:absolute;inset:calc(var(--u)*3);border-radius:calc(var(--u)*13);border:calc(var(--u)*1) solid #3a2608;box-shadow:inset 0 0 0 calc(var(--u)*1) #fff6cf99;pointer-events:none;z-index:6}
+.face{position:relative;width:100%;height:100%;border-radius:calc(var(--u)*9);overflow:hidden;background:var(--ink);box-shadow:inset 0 0 0 calc(var(--u)*1.5) #2a1b06,inset 0 0 calc(var(--u)*30) #000}
+.face img{position:absolute;inset:0;width:100%;height:100%;max-width:none;object-fit:cover;object-position:50% 18%;display:block}
+.shade{position:absolute;inset:0;background:linear-gradient(180deg,#0000 0%,#0000 42%,#0b0704cc 60%,#0b0704f5 74%,#0b0704 100%),radial-gradient(ellipse at 50% 30%,#0000 55%,#0008 100%)}
+/* brilho de folha de ouro que segue o dedo */
+.foil{position:absolute;inset:0;z-index:5;pointer-events:none;mix-blend-mode:color-dodge;opacity:.36;
+  background:
+    radial-gradient(circle at var(--mx) var(--my),#fff6c8cc 0%,#ffd86a55 18%,#0000 46%),
+    repeating-linear-gradient(115deg,#0000 0 calc(var(--u)*22),#ffe9a01f calc(var(--u)*26),#fff8d83d calc(var(--u)*30),#ffb84d1f calc(var(--u)*34),#0000 calc(var(--u)*40));
+  background-size:100% 100%,220% 220%;background-position:0 0,var(--mx) var(--my)}
+.sweep{position:absolute;inset:0;z-index:5;pointer-events:none;overflow:hidden;border-radius:inherit}
+.sweep::after{content:"";position:absolute;top:-20%;bottom:-20%;left:-60%;width:38%;transform:skewX(-18deg);background:linear-gradient(90deg,#0000,#fff3c455 45%,#ffffff99 50%,#fff3c455 55%,#0000);animation:sweep 5.5s ease-in-out infinite;animation-delay:var(--d,0s)}
+@keyframes sweep{0%,62%{left:-60%}100%{left:130%}}
+/* cantos e brasão */
+.corner{position:absolute;width:calc(var(--u)*54);height:calc(var(--u)*54);z-index:4;pointer-events:none;filter:drop-shadow(0 calc(var(--u)*1) calc(var(--u)*1.5) #000c)}
+.corner.tl{top:0;left:0}.corner.tr{top:0;right:0;transform:scaleX(-1)}.corner.bl{bottom:0;left:0;transform:scaleY(-1)}.corner.br{bottom:0;right:0;transform:scale(-1)}
+.crest{position:absolute;top:calc(var(--u)*-2);left:50%;transform:translateX(-50%);width:calc(var(--u)*92);height:calc(var(--u)*46);z-index:4;pointer-events:none;filter:drop-shadow(0 calc(var(--u)*2) calc(var(--u)*3) #000d)}
+.gem{position:absolute;top:calc(var(--u)*13);left:50%;width:calc(var(--u)*17);height:calc(var(--u)*17);transform:translateX(-50%) rotate(45deg);z-index:5;border-radius:calc(var(--u)*3);
+  background:linear-gradient(135deg,#fff 0%,color-mix(in srgb,var(--gem) 70%,#fff) 22%,var(--gem) 55%,color-mix(in srgb,var(--gem) 55%,#000) 100%);
+  box-shadow:0 0 0 calc(var(--u)*1.5) #3a2608,0 0 calc(var(--u)*12) var(--gem),0 0 calc(var(--u)*26) color-mix(in srgb,var(--gem) 70%,transparent);animation:pulse 3.2s ease-in-out infinite}
+@keyframes pulse{50%{box-shadow:0 0 0 calc(var(--u)*1.5) #3a2608,0 0 calc(var(--u)*20) var(--gem),0 0 calc(var(--u)*44) var(--gem)}}
+.cost{position:absolute;top:calc(var(--u)*8);left:calc(var(--u)*8);width:calc(var(--u)*46);height:calc(var(--u)*46);border-radius:50%;z-index:6;display:grid;place-items:center;
+  font:400 calc(var(--u)*27)/1 var(--f-sc);color:#2b1606;text-shadow:0 1px 0 #fff3c4aa;
+  background:radial-gradient(circle at 35% 28%,#fff6cf,#f0c24f 38%,#b47a18 70%,#5e3c08);border:calc(var(--u)*2) solid #3a2608;box-shadow:0 0 0 calc(var(--u)*1.5) #f6d977,0 calc(var(--u)*3) calc(var(--u)*6) #000c,inset 0 calc(var(--u)*-3) calc(var(--u)*5) #5e3c0899}
+/* textos */
+.body{position:absolute;left:0;right:0;bottom:0;z-index:3;padding:0 calc(var(--u)*16) calc(var(--u)*16);display:flex;flex-direction:column;align-items:center;gap:calc(var(--u)*6);text-align:center}
+.name{font-family:var(--f-sc);font-size:calc(var(--u)*25);line-height:1.02;letter-spacing:.02em;margin:0;font-weight:400;
+  background:linear-gradient(180deg,#fff6cf 0%,#f3cf63 42%,#b47a18 78%,#f6d977 100%);-webkit-background-clip:text;background-clip:text;color:transparent;
+  filter:drop-shadow(0 calc(var(--u)*1.5) 0 #000) drop-shadow(0 0 calc(var(--u)*8) #000)}
+.kind{display:flex;align-items:center;gap:calc(var(--u)*8);width:100%;font-family:var(--f-sc);font-size:calc(var(--u)*12.5);letter-spacing:.14em;color:var(--gold);text-transform:uppercase;white-space:nowrap}
+.kind::before,.kind::after{content:"";flex:1;height:calc(var(--u)*1);background:linear-gradient(90deg,#0000,var(--gold))}
+.kind::after{transform:scaleX(-1)}
+.kind i{width:calc(var(--u)*6);height:calc(var(--u)*6);background:var(--gem);transform:rotate(45deg);box-shadow:0 0 calc(var(--u)*6) var(--gem);flex:none}
+.rule{width:100%;box-sizing:border-box;font-size:calc(var(--u)*15.5);line-height:1.18;color:#f3e7cc;padding:calc(var(--u)*8) calc(var(--u)*10);border-radius:calc(var(--u)*6);
+  background:linear-gradient(180deg,#1c140bd9,#0e0905e6);border:calc(var(--u)*1) solid #8a6a2a;box-shadow:inset 0 0 0 calc(var(--u)*1) #0009,inset 0 calc(var(--u)*1) 0 #f6d97722}
+.rule b{color:#ffd86a;font-weight:400}
+.quote{font-style:italic;font-size:calc(var(--u)*13);line-height:1.2;color:#cdbb92;margin:0;text-wrap:balance}
+.quote::before{content:"“"}.quote::after{content:"”"}
+/* cores das famílias */
+.cav{--gem:#e0483f}.cac{--gem:#3fcf74}.mag{--gem:#a866f0}.tan{--gem:#f0a832}.nec{--gem:#9fd8ff}
+/* carta aberta em tela cheia */
+dialog{border:0;background:none;padding:0;max-width:none;max-height:none;overflow:visible}
+dialog::backdrop{background:#000d;backdrop-filter:blur(3px)}
+dialog .sc{--cw:min(440px,calc(100vw - 40px),calc((100dvh - 110px)*300/430))}
+dialog form{display:flex;justify-content:center;margin-top:14px}
+dialog button.close{font-family:var(--f-sc);font-size:17px;color:var(--text);background:#14100c;border:1px solid var(--line);border-radius:6px;padding:8px 18px;cursor:pointer}
+dialog button.close:focus-visible{outline:2px solid var(--gold-hi);outline-offset:3px}
+@media (prefers-reduced-motion:reduce){.sweep::after,.gem{animation:none}.sc-in{transition:none}}
+</style>
+
+<header>
+  <h1>Super Cartas Douradas</h1>
+  <p>Uma carta de cada herói, refeita em ouro. Passe o dedo ou o mouse para o ouro brilhar; toque numa carta para vê-la grande.</p>
+</header>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <linearGradient id="g-gold" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#fff6cf"/><stop offset=".3" stop-color="#f0c24f"/><stop offset=".6" stop-color="#9a6a16"/><stop offset="1" stop-color="#f6d977"/>
+    </linearGradient>
+    <symbol id="corner" viewBox="0 0 54 54">
+      <path d="M0 0H30C22 3 16 6 13 13C10 20 6 22 0 30Z" fill="url(#g-gold)" stroke="#3a2608" stroke-width=".8"/>
+      <path d="M4 34C10 30 14 26 15 20C19 22 22 19 20 15C26 14 30 10 34 4" fill="none" stroke="url(#g-gold)" stroke-width="2.2" stroke-linecap="round"/>
+      <path d="M4 44C6 38 9 35 13 34M44 4C38 6 35 9 34 13" fill="none" stroke="url(#g-gold)" stroke-width="1.6" stroke-linecap="round"/>
+      <circle cx="8.5" cy="8.5" r="3.2" fill="#3a2608"/><circle cx="8.5" cy="8.5" r="2" fill="#fff1b8"/>
+    </symbol>
+    <symbol id="crest" viewBox="0 0 92 46">
+      <!-- asas de corvo abertas em volta da pedra -->
+      <path d="M46 6C40 10 34 12 26 11C18 10 10 6 2 2C5 10 9 15 15 18C11 19 8 19 5 18C9 24 15 27 22 27C19 29 17 30 14 30C20 34 28 34 35 30C38 34 42 37 46 40C50 37 54 34 57 30C64 34 72 34 78 30C75 30 73 29 70 27C77 27 83 24 87 18C84 19 81 19 77 18C83 15 87 10 90 2C82 6 74 10 66 11C58 12 52 10 46 6Z" fill="url(#g-gold)" stroke="#3a2608" stroke-width="1"/>
+      <path d="M36 8L40 1L46 5L52 1L56 8Z" fill="url(#g-gold)" stroke="#3a2608" stroke-width=".9"/>
+      <path d="M14 14C22 18 30 19 38 17M78 14C70 18 62 19 54 17M20 23C26 25 32 25 38 22M72 23C66 25 60 25 54 22" fill="none" stroke="#3a2608" stroke-width=".9" stroke-linecap="round" opacity=".7"/>
+    </symbol>
+  </defs>
+</svg>
+
+<main class="row" id="row"></main>
+<dialog id="dlg" aria-label="Carta ampliada"><div id="dlgcard"></div><form method="dialog"><button class="close">Fechar</button></form></dialog>
+
+<script>
+const CARTAS=[
+ {k:'cav',heroi:'Cavaleiro Errante',de:'Martelo do Juízo',n:'O Juízo de Garrel',custo:3,tipo:'Ataque',img:'cav.jpg',pos:'50% 12%',
+  regra:'Causa <b>45</b> de dano. Se o inimigo tombar, recupere <b>2</b> de energia.',fala:'Não carrego bandeira. Carrego o martelo.'},
+ {k:'cac',heroi:'Caçadora das Brumas',de:'Falcão Companheiro',n:'Falcão de Ysolda',custo:2,tipo:'Poder',img:'cac.jpg',pos:'40% 10%',
+  regra:'No fim de cada turno, o falcão causa <b>10</b> de dano a um inimigo e aplica <b>2</b> de Marca.',fala:'Ele vê o que a bruma esconde.'},
+ {k:'mag',heroi:'Mago Arcano',de:'Meteoro',n:'Meteoro de Morvane',custo:3,tipo:'Ataque',img:'mag.jpg',pos:'50% 8%',
+  regra:'Causa <b>36</b> de dano ao alvo e <b>12</b> aos outros inimigos. Aplica <b>8</b> de Queimadura ao alvo.',fala:'Me expulsaram por isto. Valeu a pena.'},
+ {k:'tan',heroi:'Guardião de Ferro',de:'Colosso',n:'Colosso de Bram',custo:3,tipo:'Poder',img:'tan.jpg',pos:'50% 10%',
+  regra:'No início de cada turno, ganhe <b>3</b> de Armadura e <b>4</b> de Bloqueio.',fala:'Eu forjei esta parede. Ninguém passa.'},
+ {k:'nec',heroi:'Necromante',de:'Ceifador',n:'Ceifador de Elowen',custo:2,tipo:'Ataque',img:'nec.jpg',pos:'50% 10%',
+  regra:'Causa <b>16</b> de dano, mais <b>6</b> para cada Servo. Se o inimigo tombar, erga <b>1</b> Servo.',fala:'Não lembro o meu nome. Lembro o de vocês.'}
+];
+const cardHTML=(c,i,tag='button')=>`<${tag} class="sc ${c.k}" ${tag==='button'?`type="button" data-i="${i}" aria-label="Ampliar ${c.n}"`:''} style="--d:${(i*.9).toFixed(1)}s">
+  <span class="sc-in">
+    <span class="face">
+      <img src="${c.img}" alt="${c.n}: ilustração do ${c.heroi}" style="object-position:${c.pos}">
+      <span class="shade"></span>
+      <span class="body">
+        <span class="name">${c.n}</span>
+        <span class="kind"><i></i>Carta Dourada · ${c.tipo}<i></i></span>
+        <span class="rule">${c.regra}</span>
+        <span class="quote">${c.fala}</span>
+      </span>
+      <span class="foil"></span><span class="sweep"></span>
+    </span>
+    <svg class="corner tl"><use href="#corner"/></svg><svg class="corner tr"><use href="#corner"/></svg>
+    <svg class="corner bl"><use href="#corner"/></svg><svg class="corner br"><use href="#corner"/></svg>
+    <svg class="crest"><use href="#crest"/></svg><span class="gem"></span>
+    <span class="cost">${c.custo}</span>
+  </span></${tag}>`;
+const row=document.getElementById('row'),dlg=document.getElementById('dlg'),dc=document.getElementById('dlgcard');
+row.innerHTML=CARTAS.map((c,i)=>`<div class="slot">${cardHTML(c,i)}<small><b>${c.heroi}</b>versão dourada de ${c.de}</small></div>`).join('');
+const still=matchMedia('(prefers-reduced-motion:reduce)').matches;
+function tilt(el){
+  el.addEventListener('pointermove',e=>{const r=el.getBoundingClientRect(),x=(e.clientX-r.left)/r.width,y=(e.clientY-r.top)/r.height;
+    el.style.setProperty('--mx',(x*100).toFixed(1)+'%');el.style.setProperty('--my',(y*100).toFixed(1)+'%');
+    if(!still){el.style.setProperty('--ry',((x-.5)*16).toFixed(2)+'deg');el.style.setProperty('--rx',((.5-y)*14).toFixed(2)+'deg')}});
+  el.addEventListener('pointerleave',()=>{el.style.setProperty('--rx','0deg');el.style.setProperty('--ry','0deg');el.style.setProperty('--mx','50%');el.style.setProperty('--my','30%')});
+}
+row.querySelectorAll('.sc').forEach(el=>{tilt(el);el.addEventListener('click',()=>{dc.innerHTML=cardHTML(CARTAS[+el.dataset.i],0,'div');tilt(dc.firstElementChild);dlg.showModal()})});
+dlg.addEventListener('click',e=>{if(e.target===dlg)dlg.close()});
+</script>

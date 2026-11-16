@@ -7,7 +7,7 @@ Deméter = cenário, Hélio = luz/efeitos). Responda sempre em português, simpl
 - Jogável: https://contatojampro5-dot.github.io/masmorra-do-corvo-rei/ (GitHub Pages, branch `main`, raiz).
 - Também publicado como artifact: https://claude.ai/artifact/HHbsk4MDv8hyVKrJ3A77TG (manter os dois iguais).
 - O jogo está em `index.html` (arquivo único). Ao lado: `abertura.mp4`/`abertura.jpg` (vídeo de abertura), `musica/` (15 músicas),
-  `sfx/` (18 efeitos), `icones/` + `manifest.webmanifest` + `sw.js` (instalar e abrir sem internet; subir a versão `V` do `sw.js` a cada entrega),
+  `sfx/` (18 efeitos), `cartas/` (artes das 5 Super Cartas Douradas e a página de prévia), `icones/` + `manifest.webmanifest` + `sw.js` (instalar e abrir sem internet; subir a versão `V` do `sw.js` a cada entrega),
   `privacidade.html` (página da App Store) e `loja/` (fotos da loja). DEV só com o endereço terminado em `#dev`.
 - Ferramentas: `tools/musica/` (gera as músicas), `tools/sfx/` (gera os efeitos, usa os instrumentos de `tools/musica/`), `tools/loja/` (fotos da loja).
 - Documentos: `docs/` (plano Atlas, lore, loja, textos da loja, classificação etária).
