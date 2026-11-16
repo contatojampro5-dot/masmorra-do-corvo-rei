@@ -184,21 +184,57 @@ button:focus-visible,[data-act]:focus-visible{outline:2px solid var(--gold);outl
 .card[class*="k-"] .ctype>span:first-child{color:var(--kl);display:inline-flex;align-items:center;gap:calc(var(--cw)*.025)}
 .card[class*="k-"] .ctype>span:first-child::before{content:"";width:calc(var(--cw)*.045);height:calc(var(--cw)*.045);background:var(--kc);transform:rotate(45deg);box-shadow:0 0 0 1px #0008}
 .card[class*="k-"] .cost{border-color:var(--kc)!important}
-/* v2.24: Super Cartas Douradas (moldura de ouro, arte pintada e a pedra da família) */
-.card.r-ouro[class*="cl-"]{--gemc:#e0483f;--gold:#f6d977;--nameBg:#120c05;--nameInk:#ffe9a0;--paper:#17100a;--cink:#f3e7cc;border-color:#3a2608;
-  background:linear-gradient(135deg,#fff3c0,#e2b84f 12%,#8a5f17 26%,#f6d977 40%,#b6821f 55%,#fbe89c 68%,#7a5212 82%,#e9c460);
-  box-shadow:0 0 16px #f6c94eaa,0 0 30px color-mix(in srgb,var(--gemc) 50%,transparent),0 4px 12px #000a,inset 0 0 0 calc(var(--cw)*.012) #fff6cf}
+/* v2.25: Super Cartas Douradas com o mesmo desenho da página de prévia (arte na carta inteira, cantos, asas de corvo, pedra e brilho de ouro) */
+.card.r-ouro{--u:calc(var(--cw)/300);--gemc:#e0483f;--mx:50%;--my:30%;--rx:0deg;--ry:0deg;container-type:inline-size;display:block;padding:0;border:0;background:none;box-shadow:none;perspective:900px;color:#f3e7cc;border-radius:calc(var(--u)*16)}
 .cl-cac.r-ouro{--gemc:#3fcf74}.cl-mag.r-ouro{--gemc:#a866f0}.cl-tan.r-ouro{--gemc:#f0a832}.cl-nec.r-ouro{--gemc:#9fd8ff}
-.card.r-ouro[class*="cl-"] .cart{height:44%;position:relative;clip-path:none;border:2px solid #3a2608!important;border-radius:calc(var(--cw)*.04);box-shadow:0 0 0 1px #fff6cf,inset 0 0 0 1px #000a!important;background:#120c05}
-.card.r-ouro .cart img{width:100%;height:100%;max-width:none;object-fit:cover;object-position:50% 12%;display:block;pointer-events:none;user-select:none}
-.card.r-ouro .cart::after{content:"";position:absolute;top:-20%;bottom:-20%;left:-70%;width:40%;transform:skewX(-18deg);background:linear-gradient(90deg,#0000,#fff3c466 45%,#ffffffaa 50%,#fff3c466 55%,#0000);animation:ourobrilho 5s ease-in-out infinite;pointer-events:none}
-@keyframes ourobrilho{0%,60%{left:-70%}100%{left:140%}}
-.card.r-ouro[class*="cl-"] .cname{border-color:#3a2608;box-shadow:0 0 0 1px #fff6cf88;text-shadow:0 1px 0 #000}
-.card.r-ouro[class*="cl-"] .ctype{color:#2a1b06}.card.r-ouro .ctype>span:first-child{color:#2a1b06!important;font-weight:700}
-.card.r-ouro .rg{background:var(--gemc);box-shadow:0 0 0 1px #3a2608,0 0 5px var(--gemc)}
-.card.r-ouro[class*="cl-"] .ctext{border-color:#3a2608;box-shadow:inset 0 0 0 1px #8a6a2a;font-size:.93em;line-height:1.06}
-.card.r-ouro .ctext b{color:#ffd86a}
-.card.r-ouro .cost{border-color:#3a2608!important;box-shadow:0 0 0 1px #fff6cf,0 0 8px #f6c94e}
+.so-in{position:absolute;inset:0;border-radius:calc(var(--u)*16);padding:calc(var(--u)*9);box-sizing:border-box;transform:rotateX(var(--rx)) rotateY(var(--ry));transition:transform .18s ease-out;
+  background:linear-gradient(135deg,#fff3c0 0%,#e2b84f 12%,#8a5f17 26%,#f6d977 40%,#b6821f 55%,#fbe89c 68%,#7a5212 82%,#e9c460 100%);
+  box-shadow:0 calc(var(--u)*12) calc(var(--u)*30) #000c,0 0 calc(var(--u)*26) #cfa54877,0 0 calc(var(--u)*56) color-mix(in srgb,var(--gemc) 35%,transparent)}
+.so-in::before{content:"";position:absolute;inset:calc(var(--u)*3);border-radius:calc(var(--u)*13);border:calc(var(--u)*1) solid #3a2608;box-shadow:inset 0 0 0 calc(var(--u)*1) #fff6cf99;pointer-events:none;z-index:6}
+.card.sel.r-ouro .so-in{box-shadow:0 0 0 3px #fff1b8,0 0 24px #f5c56a}
+.so-face{position:relative;width:100%;height:100%;border-radius:calc(var(--u)*9);overflow:hidden;background:#120d08;box-shadow:inset 0 0 0 calc(var(--u)*1.5) #2a1b06}
+.so-face img{position:absolute;inset:0;width:100%;height:100%;max-width:none;object-fit:cover;object-position:50% 12%;display:block;pointer-events:none;user-select:none}
+.so-shade{position:absolute;inset:0;background:linear-gradient(180deg,#0000 0%,#0000 42%,#0b0704cc 60%,#0b0704f5 74%,#0b0704 100%),radial-gradient(ellipse at 50% 30%,#0000 55%,#0008 100%)}
+.so-foil{position:absolute;inset:0;z-index:5;pointer-events:none;mix-blend-mode:color-dodge;opacity:.36;
+  background:radial-gradient(circle at var(--mx) var(--my),#fff6c8cc 0%,#ffd86a55 18%,#0000 46%),repeating-linear-gradient(115deg,#0000 0 calc(var(--u)*22),#ffe9a01f calc(var(--u)*26),#fff8d83d calc(var(--u)*30),#ffb84d1f calc(var(--u)*34),#0000 calc(var(--u)*40));
+  background-size:100% 100%,220% 220%;background-position:0 0,var(--mx) var(--my)}
+.so-sweep{position:absolute;inset:0;z-index:5;pointer-events:none;overflow:hidden}
+.so-sweep::after{content:"";position:absolute;top:-20%;bottom:-20%;left:-60%;width:38%;transform:skewX(-18deg);background:linear-gradient(90deg,#0000,#fff3c455 45%,#ffffff99 50%,#fff3c455 55%,#0000);animation:ourobrilho 5.5s ease-in-out infinite}
+@keyframes ourobrilho{0%,62%{left:-60%}100%{left:130%}}
+.so-corner{position:absolute;width:calc(var(--u)*54);height:calc(var(--u)*54);z-index:4;pointer-events:none;filter:drop-shadow(0 calc(var(--u)*1) calc(var(--u)*1.5) #000c)}
+.so-corner.tl{top:0;left:0}.so-corner.tr{top:0;right:0;transform:scaleX(-1)}.so-corner.bl{bottom:0;left:0;transform:scaleY(-1)}.so-corner.br{bottom:0;right:0;transform:scale(-1)}
+.so-crest{position:absolute;top:calc(var(--u)*-2);left:50%;transform:translateX(-50%);width:calc(var(--u)*92);height:calc(var(--u)*46);z-index:4;pointer-events:none;filter:drop-shadow(0 calc(var(--u)*2) calc(var(--u)*3) #000d)}
+.so-gem{position:absolute;top:calc(var(--u)*13);left:50%;width:calc(var(--u)*17);height:calc(var(--u)*17);transform:translateX(-50%) rotate(45deg);z-index:5;border-radius:calc(var(--u)*3);
+  background:linear-gradient(135deg,#fff 0%,color-mix(in srgb,var(--gemc) 70%,#fff) 22%,var(--gemc) 55%,color-mix(in srgb,var(--gemc) 55%,#000) 100%);
+  box-shadow:0 0 0 calc(var(--u)*1.5) #3a2608,0 0 calc(var(--u)*12) var(--gemc),0 0 calc(var(--u)*26) color-mix(in srgb,var(--gemc) 70%,transparent)}
+.card.r-ouro .cost{top:calc(var(--u)*8);left:calc(var(--u)*8);width:calc(var(--u)*46);height:calc(var(--u)*46);z-index:7;font:400 calc(var(--u)*27)/1 var(--f-sc);color:#2b1606;text-shadow:0 1px 0 #fff3c4aa;
+  background:radial-gradient(circle at 35% 28%,#fff6cf,#f0c24f 38%,#b47a18 70%,#5e3c08);border:calc(var(--u)*2) solid #3a2608!important;box-shadow:0 0 0 calc(var(--u)*1.5) #f6d977,0 calc(var(--u)*3) calc(var(--u)*6) #000c}
+.card.r-ouro.unplayable .cost{background:radial-gradient(circle at 35% 30%,#bbb,#666);color:#222;box-shadow:0 0 0 calc(var(--u)*1.5) #999}
+.card.r-ouro.unplayable .so-face{filter:saturate(.5) brightness(.78)}
+.so-body{position:absolute;left:0;right:0;bottom:0;z-index:3;padding:0 calc(var(--u)*16) calc(var(--u)*16);display:flex;flex-direction:column;align-items:center;gap:calc(var(--u)*6);text-align:center}
+.so-name{font-family:var(--f-sc);font-size:calc(var(--u)*25);line-height:1.02;letter-spacing:.02em;text-wrap:balance;
+  background:linear-gradient(180deg,#fff6cf 0%,#f3cf63 42%,#b47a18 78%,#f6d977 100%);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 calc(var(--u)*1.5) 0 #000) drop-shadow(0 0 calc(var(--u)*8) #000)}
+.so-kind{display:flex;align-items:center;gap:calc(var(--u)*8);width:100%;font-family:var(--f-sc);font-size:calc(var(--u)*12.5);letter-spacing:.14em;color:#cfa548;text-transform:uppercase;white-space:nowrap;line-height:1}
+.so-kind::before,.so-kind::after{content:"";flex:1;height:max(1px,calc(var(--u)*1));background:linear-gradient(90deg,#0000,#cfa548)}
+.so-kind::after{transform:scaleX(-1)}
+.so-kind i{width:calc(var(--u)*6);height:calc(var(--u)*6);background:var(--gemc);transform:rotate(45deg);box-shadow:0 0 calc(var(--u)*6) var(--gemc);flex:none}
+.so-rule{width:100%;box-sizing:border-box;font-family:var(--f-body,inherit);font-size:calc(var(--u)*15.5);line-height:1.18;color:#f3e7cc;padding:calc(var(--u)*8) calc(var(--u)*10);border-radius:calc(var(--u)*6);
+  background:linear-gradient(180deg,#1c140bd9,#0e0905e6);border:max(1px,calc(var(--u)*1)) solid #8a6a2a;box-shadow:inset 0 0 0 1px #0009}
+.so-rule b{color:#ffd86a;font-weight:400}.so-rule i{color:#cdbb92}
+.so-quote{font-style:italic;font-size:calc(var(--u)*13);line-height:1.2;color:#cdbb92;text-wrap:balance}
+/* carta pequena (mão, baralho, loja): letras maiores para dar para ler, sem a fala */
+@container (max-width:210px){
+  .so-quote{display:none}
+  .so-shade{background:linear-gradient(180deg,#0000 0%,#0000 26%,#0b0704cc 44%,#0b0704f5 58%,#0b0704 100%)}
+  .so-body{padding:0 calc(var(--u)*11) calc(var(--u)*12);gap:calc(var(--u)*5)}
+  .so-name{font-size:calc(var(--u)*27)}
+  .so-kind{font-size:calc(var(--u)*15);letter-spacing:.05em;gap:calc(var(--u)*5)}
+  .so-rule{font-size:calc(var(--u)*21.5);line-height:1.07;padding:calc(var(--u)*7) calc(var(--u)*6)}
+  .card.r-ouro .cost{width:calc(var(--u)*64);height:calc(var(--u)*64);font-size:calc(var(--u)*38);top:calc(var(--u)*5);left:calc(var(--u)*5)}
+  .so-crest{left:58%}.so-gem{left:58%}
+}
+@media (prefers-reduced-motion:reduce){.so-sweep::after{animation:none}.so-in{transition:none}}
+.ouroganho .card{--cw:min(300px,calc(100vw - 64px));--ch:calc(var(--cw)*1.433)}
 .ouroganho{display:flex;flex-direction:column;align-items:center;gap:10px;margin:6px 0 14px;text-align:center}
 .ouroganho b{font-family:var(--f-sc);font-weight:400;font-size:22px;color:#f6d977;text-shadow:0 0 12px #f6c94e88}
 .ouroganho span{color:var(--muted);max-width:34ch;font-size:15px}
@@ -1895,6 +1931,13 @@ function cardHTML(card,{cls='',inCombat=false}={}){
   const kws=[d.inn&&'Inata',d.ret&&'Reter',d.eph&&'Efêmera',d.ex&&'Exaurir'].filter(Boolean);
   const tip=kws.map(k=>`<b>${k}</b>${KW[k]}`).join('')+(d.fala?`<b>Carta Dourada</b><i>&ldquo;${d.fala}&rdquo;</i>`:'');
   const gems=Array.from({length:RG[d.r]||0},()=>'<span class="rg"></span>').join('');
+  if(d.r==='ouro')return`<div class="card cl-${cl} t-${d.t} r-ouro ${card.up?'upg':''} ${cls} ${!playable?'unplayable':''}" data-cuid="${card.uid}" data-cid="${card.id}" ${tip?`data-tip="${tip}"`:''}>
+    <div class="so-in"><div class="so-face"><img src="cartas/${d.art}.jpg" alt="" draggable="false"><div class="so-shade"></div>
+      <div class="so-body"><div class="so-name">${d.n}${card.up?'+':''}</div><div class="so-kind"><i></i>Dourada · ${TYPE_N[d.t]}<i></i></div><div class="so-rule">${d.x(v)}</div><div class="so-quote">&ldquo;${d.fala}&rdquo;</div></div>
+      <div class="so-foil"></div><div class="so-sweep"></div></div>
+      <svg class="so-corner tl"><use href="#so-corner"/></svg><svg class="so-corner tr"><use href="#so-corner"/></svg><svg class="so-corner bl"><use href="#so-corner"/></svg><svg class="so-corner br"><use href="#so-corner"/></svg>
+      <svg class="so-crest"><use href="#so-crest"/></svg><div class="so-gem"></div>
+      ${d.unp?'':`<div class="cost ${card.free?'free':''}">${cost}</div>`}</div></div>`;
   return`<div class="card cl-${cl} ${kc?'k-'+kc:''} t-${d.t} r-${d.r} ${card.up?'upg':''} ${cls} ${!playable?'unplayable':''}" data-cuid="${card.uid}" data-cid="${card.id}" ${tip?`data-tip="${tip}"`:''}>
     ${d.unp?'':`<div class="cost ${card.free?'free':''}">${cost}</div>`}
     <div class="cname ${d.n.length>15?'nl2':d.n.length>12?'nl':''}">${d.n}${card.up?'+':''}</div>
@@ -1902,6 +1945,13 @@ function cardHTML(card,{cls='',inCombat=false}={}){
     <div class="ctype"><span>${d.r==='lend'?'Lendária · ':d.r==='arma'?'Arma · ':d.r==='ouro'?'Dourada · ':''}${TYPE_N[d.t]}</span><span class="rgs">${gems}</span></div>
     <div class="ctext"><span>${kws.filter(k=>k==='Inata'||k==='Reter').map(k=>`<i>${k}.</i> `).join('')}${d.x(v)}${kws.filter(k=>k==='Efêmera'||k==='Exaurir').map(k=>` <i>${k}.</i>`).join('')}</span></div></div>`;
 }
+document.body.insertAdjacentHTML('beforeend','<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><linearGradient id="so-gold" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff6cf"/><stop offset=".3" stop-color="#f0c24f"/><stop offset=".6" stop-color="#9a6a16"/><stop offset="1" stop-color="#f6d977"/></linearGradient>'
+ +'<symbol id="so-corner" viewBox="0 0 54 54"><path d="M0 0H30C22 3 16 6 13 13C10 20 6 22 0 30Z" fill="url(#so-gold)" stroke="#3a2608" stroke-width=".8"/><path d="M4 34C10 30 14 26 15 20C19 22 22 19 20 15C26 14 30 10 34 4" fill="none" stroke="url(#so-gold)" stroke-width="2.2" stroke-linecap="round"/><path d="M4 44C6 38 9 35 13 34M44 4C38 6 35 9 34 13" fill="none" stroke="url(#so-gold)" stroke-width="1.6" stroke-linecap="round"/><circle cx="8.5" cy="8.5" r="3.2" fill="#3a2608"/><circle cx="8.5" cy="8.5" r="2" fill="#fff1b8"/></symbol>'
+ +'<symbol id="so-crest" viewBox="0 0 92 46"><path d="M46 6C40 10 34 12 26 11C18 10 10 6 2 2C5 10 9 15 15 18C11 19 8 19 5 18C9 24 15 27 22 27C19 29 17 30 14 30C20 34 28 34 35 30C38 34 42 37 46 40C50 37 54 34 57 30C64 34 72 34 78 30C75 30 73 29 70 27C77 27 83 24 87 18C84 19 81 19 77 18C83 15 87 10 90 2C82 6 74 10 66 11C58 12 52 10 46 6Z" fill="url(#so-gold)" stroke="#3a2608" stroke-width="1"/><path d="M36 8L40 1L46 5L52 1L56 8Z" fill="url(#so-gold)" stroke="#3a2608" stroke-width=".9"/></symbol></defs></svg>');
+(()=>{let last=null;const still=matchMedia('(prefers-reduced-motion:reduce)').matches,reset=el=>{['--rx','--ry','--mx','--my'].forEach(p=>el.style.removeProperty(p))};
+  document.addEventListener('pointermove',e=>{const el=e.target&&e.target.closest?e.target.closest('.card.r-ouro'):null;if(last&&last!==el)reset(last);last=el;if(!el)return;
+    const r=el.getBoundingClientRect(),x=(e.clientX-r.left)/r.width,y=(e.clientY-r.top)/r.height;el.style.setProperty('--mx',(x*100).toFixed(1)+'%');el.style.setProperty('--my',(y*100).toFixed(1)+'%');
+    if(!still&&!el.closest('.hand')){el.style.setProperty('--ry',((x-.5)*16).toFixed(2)+'deg');el.style.setProperty('--rx',((.5-y)*14).toFixed(2)+'deg')}},{passive:true})})();
 const sealHTML=k=>`<span class="seal" style="--c:${RELICS[k].c}" data-tip="<b>${RELICS[k].n}</b>${RELICS[k].d}">${RELICS[k].n.replace(/^(O |A )/,'')[0]}</span>`;
 const gemHTML=k=>`<span class="gem" data-tip="<b>${POWERS[k].n}</b>${POWERS[k].d}">${POWERS[k].n[0]}</span>`;
 const DIA='<span class="dia"></span>';
@@ -2283,7 +2333,7 @@ function treasureHTML(){
 function endHTML(){
   const s=G.stats;
   return`<div class="page" style="justify-content:safe center">
-   ${G.won?`<div class="emblem" style="opacity:.55;filter:grayscale(1)">${sprHTML('crowking',{flip:1})}</div><h1 class="h1">O Corvo Rei caiu</h1><p class="lead">A torre silencia. Pela primeira vez em cem anos, os corvos deixam as ameias.</p>${OURO[G.char]?`<div class="ouroganho"><b>${(G.pedrasAntes||[]).includes(G.char)?'Sua Carta Dourada':'Carta Dourada conquistada'}</b>${cardHTML({uid:'ouro',id:OURO[G.char],up:0},{cls:'big'})}<span>${(G.pedrasAntes||[]).includes(G.char)?'Ela continua no seu baralho em toda jornada com este herói.':'A partir de agora ela começa no seu baralho em toda jornada com este herói. Para sempre.'}</span></div>`:''}`:`<div class="emblem" style="filter:grayscale(1) brightness(.6)">${sprHTML(CHARS[G.char].spr)}</div><h1 class="h1">Você tombou</h1><p class="lead">A masmorra guarda mais um aventureiro. Você chegou ao ato ${G.act}, ${ACTS[G.act].n}.</p>`}
+   ${G.won?`<div class="emblem" style="opacity:.55;filter:grayscale(1)">${sprHTML('crowking',{flip:1})}</div><h1 class="h1">O Corvo Rei caiu</h1><p class="lead">A torre silencia. Pela primeira vez em cem anos, os corvos deixam as ameias.</p>${OURO[G.char]?`<div class="ouroganho"><b>${(G.pedrasAntes||[]).includes(G.char)?'Sua Carta Dourada':'Carta Dourada conquistada'}</b>${cardHTML({uid:'ouro',id:OURO[G.char],up:0})}<span>${(G.pedrasAntes||[]).includes(G.char)?'Ela continua no seu baralho em toda jornada com este herói.':'A partir de agora ela começa no seu baralho em toda jornada com este herói. Para sempre.'}</span></div>`:''}`:`<div class="emblem" style="filter:grayscale(1) brightness(.6)">${sprHTML(CHARS[G.char].spr)}</div><h1 class="h1">Você tombou</h1><p class="lead">A masmorra guarda mais um aventureiro. Você chegou ao ato ${G.act}, ${ACTS[G.act].n}.</p>`}
    <dl class="stats"><dt>Personagem</dt><dd>${heroName()}${G.name?' · '+CHARS[G.char].n:''}</dd><dt>Andares</dt><dd>${s.floors}</dd><dt>Chefes derrotados</dt><dd>${s.bosses}</dd><dt>Inimigos derrotados</dt><dd>${s.kills}</dd><dt>Dano causado</dt><dd>${s.dmg}</dd><dt>Cartas jogadas</dt><dd>${s.cards}</dd><dt>Semente</dt><dd>${G.seed}</dd></dl>
    <div class="row"><button class="btn primary" data-act="new">Nova jornada</button><button class="btn" data-act="menu">Menu</button></div></div>`;
 }
