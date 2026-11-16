@@ -258,6 +258,24 @@ button:focus-visible,[data-act]:focus-visible{outline:2px solid var(--gold);outl
 .card.ferro.unplayable .cost{background:radial-gradient(circle at 35% 30%,#bbb,#666);color:#222}
 .card.ferro.unplayable .so-face{filter:saturate(.4) brightness(.75)}
 .card.ferro.sel .so-in{box-shadow:0 0 0 3px #e6edf4,0 0 24px #b8c6d4aa}
+/* v2.31: Bronze = mesma estrutura do Ferro, com cobre envelhecido e pátina verde nas bordas */
+.card.bronze{--u:calc(var(--cw)/300);display:block;padding:0;border:0;background:none;box-shadow:none;perspective:900px;container-type:inline-size;color:#f3e4cf;border-radius:calc(var(--u)*16)}
+.card.bronze[class*="cl-"]{background:none;box-shadow:none;padding:0;border:0}
+.card.bronze .so-in{background:linear-gradient(135deg,#e7c49a 0%,#8c5a2c 12%,#3f2a17 26%,#c8905a 40%,#6f4a2a 55%,#f0d6b0 68%,#4a3420 82%,#b98354 100%);box-shadow:0 calc(var(--u)*12) calc(var(--u)*30) #000c,0 0 calc(var(--u)*22) #b5773d55,inset 0 0 calc(var(--u)*18) #3f7a6040}
+.card.bronze .so-in::before{border-color:#2a1b0e;box-shadow:inset 0 0 0 calc(var(--u)*1) #e8c59a99,inset 0 0 calc(var(--u)*10) #3f7a6055}
+.card.bronze .so-name{background:linear-gradient(180deg,#ffe2bd 0%,#d89a60 42%,#6b3f1f 78%,#f2c99a 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.card.bronze .so-kind{color:#d89a60}.card.bronze .so-kind::before,.card.bronze .so-kind::after{background:linear-gradient(90deg,#0000,#d89a60)}
+.card.bronze .so-kind i{background:#7fb59a;box-shadow:0 0 calc(var(--u)*6) #5f9c82}
+.card.bronze .so-corner,.card.bronze .so-crest{filter:sepia(1) hue-rotate(-18deg) saturate(1.6) brightness(.95) drop-shadow(0 calc(var(--u)*1) calc(var(--u)*1.5) #000c)}
+.card.bronze .so-foil{filter:sepia(1) hue-rotate(-20deg) saturate(1.4)}
+.card.bronze .so-gem{background:linear-gradient(135deg,#ffe0b8 0%,#d98c4e 24%,#7a4a22 58%,#3e2614 100%);box-shadow:0 0 0 calc(var(--u)*1.5) #2a1b0e,0 0 calc(var(--u)*10) #d98c4e}
+.card.bronze .so-rule{border-color:#7a5a3a;background:linear-gradient(180deg,#2a1d12d9,#140d07e6);color:#f3e4cf}
+.card.bronze .so-rule b{color:#f0c28a}
+.card.bronze .cost{top:calc(var(--u)*8);left:calc(var(--u)*8);width:calc(var(--u)*46);height:calc(var(--u)*46);z-index:7;font:400 calc(var(--u)*27)/1 var(--f-sc);color:#2a1b0e;text-shadow:0 1px 0 #ffe2bb99;
+  background:radial-gradient(circle at 35% 28%,#ffe0b8,#c07a3c 40%,#6a3f1c 75%,#2c1a0c);border:calc(var(--u)*2) solid #2a1b0e!important;box-shadow:0 0 0 calc(var(--u)*1.5) #d9a46b,0 calc(var(--u)*3) calc(var(--u)*6) #000c}
+.card.bronze.unplayable .cost{background:radial-gradient(circle at 35% 30%,#bbb,#666);color:#222}
+.card.bronze.unplayable .so-face{filter:saturate(.4) brightness(.75)}
+.card.bronze.sel .so-in{box-shadow:0 0 0 3px #f0c28a,0 0 24px #d98c4eaa}
 @media (prefers-reduced-motion:reduce){.card.r-ouro .cart::after{animation:none}}
 
 /* ---------- combate ---------- */
@@ -1068,23 +1086,23 @@ const CARDS={
  golpe:{n:'Golpe',t:'atk',r:'basic',img:'02-golpe',c:1,tg:'e',v:{d:6},u:{d:9},x:v=>`Causa ${D(v.d)} de dano.`,p:(v,t)=>hit(t,v.d)},
  defender:{n:'Defender',t:'skl',r:'basic',img:'03-defender',c:1,v:{b:5},u:{b:8},x:v=>`Ganhe ${B(v.b)} de Bloqueio.`,p:v=>gainBlock(v.b)},
  maca:{n:'Golpe de Maça',t:'atk',r:'basic',img:'04-golpe-de-maca',c:2,tg:'e',v:{d:8,w:1},u:{d:10,w:2},x:v=>`Causa ${D(v.d)} de dano. Aplica ${v.w} de Fraqueza e ${v.w} de Vulnerável.`,p:(v,t)=>{hit(t,v.d);apply(t,'fraco',v.w);apply(t,'vuln',v.w)}},
- talho:{n:'Talho Duplo',t:'atk',r:'common',c:1,tg:'e',v:{d:4},u:{d:6},x:v=>`Causa ${D(v.d)} de dano 2 vezes.`,p:(v,t)=>hit(t,v.d,2)},
- pesado:{n:'Golpe Pesado',t:'atk',r:'common',c:2,tg:'e',v:{d:14},u:{d:19},x:v=>`Causa ${D(v.d)} de dano.`,p:(v,t)=>hit(t,v.d)},
- varrida:{n:'Varredura',t:'atk',r:'common',c:1,v:{d:7},u:{d:10},x:v=>`Causa ${D(v.d)} de dano a TODOS os inimigos.`,p:v=>hitAll(v.d)},
- estocada:{n:'Estocada Rápida',t:'atk',r:'common',c:0,tg:'e',v:{d:4},u:{d:6},x:v=>`Causa ${D(v.d)} de dano. Compre 1 carta.`,p:(v,t)=>{hit(t,v.d);draw(1)}},
- empurrao:{n:'Empurrão de Escudo',t:'atk',r:'common',c:1,tg:'e',v:{d:5,b:5},u:{d:7,b:7},x:v=>`Ganhe ${B(v.b)} de Bloqueio. Causa ${D(v.d)} de dano.`,p:(v,t)=>{gainBlock(v.b);hit(t,v.d)}},
- lamina:{n:'Lâmina Sangrenta',t:'atk',r:'common',c:1,tg:'e',v:{d:5,s:3},u:{d:6,s:5},x:v=>`Causa ${D(v.d)} de dano. Aplica ${v.s} de Sangramento.`,p:(v,t)=>{hit(t,v.d);apply(t,'sangra',v.s)}},
- machadada:{n:'Machadada',t:'atk',r:'common',c:1,tg:'e',v:{d:8},u:{d:11},x:v=>`Causa ${D(v.d)} de dano. Se o alvo estiver Vulnerável, compre 1 carta.`,p:(v,t)=>{const vu=t.st.vuln;hit(t,v.d);if(vu)draw(1)}},
- arremesso:{n:'Arremesso de Escudo',t:'atk',r:'common',c:1,uc:0,tg:'e',v:{},u:{},x:()=>`Causa dano igual ao seu Bloqueio${inC()?` (${D(P().block)})`:''}.`,p:(v,t)=>hit(t,P().block)},
- erguer:{n:'Erguer Escudo',t:'skl',r:'common',c:1,v:{b:8},u:{b:11},x:v=>`Ganhe ${B(v.b)} de Bloqueio.`,p:v=>gainBlock(v.b)},
- postura:{n:'Postura Firme',t:'skl',r:'common',c:1,v:{b:5},u:{b:8},x:v=>`Ganhe ${B(v.b)} de Bloqueio. Compre 1 carta.`,p:v=>{gainBlock(v.b);draw(1)}},
- bandagem:{n:'Bandagem',t:'skl',r:'common',c:1,ex:1,v:{h:5},u:{h:8},x:v=>`Cure ${v.h} de vida.`,p:v=>heal(v.h)},
- hidromel:{n:'Gole de Chá de Ervas',t:'skl',r:'common',c:0,ex:1,v:{e:1},u:{e:2},x:v=>`Ganhe ${v.e} de Energia.`,p:v=>gainEnergy(v.e)},
- provocar:{n:'Provocação',t:'skl',r:'common',c:1,v:{w:1,b:4},u:{w:2,b:6},x:v=>`Ganhe ${B(v.b)} de Bloqueio. Aplica ${v.w} de Fraqueza a TODOS os inimigos.`,p:v=>{gainBlock(v.b);alive().forEach(e=>apply(e,'fraco',v.w))}},
- guarda:{n:'Guarda Alta',t:'skl',r:'common',c:1,ret:1,v:{b:7},u:{b:10},x:v=>`Ganhe ${B(v.b)} de Bloqueio.`,p:v=>gainBlock(v.b)},
- chamado:{n:'Chamado às Armas',t:'skl',r:'common',c:0,eph:1,v:{k:2},u:{k:3},x:v=>`Compre ${v.k} cartas.`,p:v=>draw(v.k)},
- selvagem:{n:'Golpe Selvagem',t:'atk',r:'common',c:1,tg:'e',v:{d:12},u:{d:16},x:v=>`Causa ${D(v.d)} de dano. Coloque um Ferimento no seu descarte.`,p:(v,t)=>{hit(t,v.d);addCardTo('ferimento','discard')}},
- brado:{n:'Brado de Guerra',t:'skl',r:'common',c:0,v:{f:2},u:{f:4},x:v=>`Ganhe ${v.f} de Força até o fim do turno.`,p:v=>{apply(P(),'forca',v.f);apply(P(),'bradoT',v.f)}},
+ talho:{n:'Talho Duplo',t:'atk',r:'common',img:'01-talho',c:1,tg:'e',v:{d:4},u:{d:6},x:v=>`Causa ${D(v.d)} de dano 2 vezes.`,p:(v,t)=>hit(t,v.d,2)},
+ pesado:{n:'Golpe Pesado',t:'atk',r:'common',img:'02-pesado',c:2,tg:'e',v:{d:14},u:{d:19},x:v=>`Causa ${D(v.d)} de dano.`,p:(v,t)=>hit(t,v.d)},
+ varrida:{n:'Varredura',t:'atk',r:'common',img:'03-varredura',c:1,v:{d:7},u:{d:10},x:v=>`Causa ${D(v.d)} de dano a TODOS os inimigos.`,p:v=>hitAll(v.d)},
+ estocada:{n:'Estocada Rápida',t:'atk',r:'common',img:'04-estocada',c:0,tg:'e',v:{d:4},u:{d:6},x:v=>`Causa ${D(v.d)} de dano. Compre 1 carta.`,p:(v,t)=>{hit(t,v.d);draw(1)}},
+ empurrao:{n:'Empurrão de Escudo',t:'atk',r:'common',img:'05-empurrao',c:1,tg:'e',v:{d:5,b:5},u:{d:7,b:7},x:v=>`Ganhe ${B(v.b)} de Bloqueio. Causa ${D(v.d)} de dano.`,p:(v,t)=>{gainBlock(v.b);hit(t,v.d)}},
+ lamina:{n:'Lâmina Sangrenta',t:'atk',r:'common',img:'06-lamina',c:1,tg:'e',v:{d:5,s:3},u:{d:6,s:5},x:v=>`Causa ${D(v.d)} de dano. Aplica ${v.s} de Sangramento.`,p:(v,t)=>{hit(t,v.d);apply(t,'sangra',v.s)}},
+ machadada:{n:'Machadada',t:'atk',r:'common',img:'07-machadada',c:1,tg:'e',v:{d:8},u:{d:11},x:v=>`Causa ${D(v.d)} de dano. Se o alvo estiver Vulnerável, compre 1 carta.`,p:(v,t)=>{const vu=t.st.vuln;hit(t,v.d);if(vu)draw(1)}},
+ arremesso:{n:'Arremesso de Escudo',t:'atk',r:'common',img:'08-arremesso',c:1,uc:0,tg:'e',v:{},u:{},x:()=>`Causa dano igual ao seu Bloqueio${inC()?` (${D(P().block)})`:''}.`,p:(v,t)=>hit(t,P().block)},
+ erguer:{n:'Erguer Escudo',t:'skl',r:'common',img:'09-erguer-escudo',c:1,v:{b:8},u:{b:11},x:v=>`Ganhe ${B(v.b)} de Bloqueio.`,p:v=>gainBlock(v.b)},
+ postura:{n:'Postura Firme',t:'skl',r:'common',img:'10-postura',c:1,v:{b:5},u:{b:8},x:v=>`Ganhe ${B(v.b)} de Bloqueio. Compre 1 carta.`,p:v=>{gainBlock(v.b);draw(1)}},
+ bandagem:{n:'Bandagem',t:'skl',r:'common',img:'11-bandagem',c:1,ex:1,v:{h:5},u:{h:8},x:v=>`Cure ${v.h} de vida.`,p:v=>heal(v.h)},
+ hidromel:{n:'Gole de Chá de Ervas',t:'skl',r:'common',img:'12-cha-de-ervas',c:0,ex:1,v:{e:1},u:{e:2},x:v=>`Ganhe ${v.e} de Energia.`,p:v=>gainEnergy(v.e)},
+ provocar:{n:'Provocação',t:'skl',r:'common',img:'13-provocacao',c:1,v:{w:1,b:4},u:{w:2,b:6},x:v=>`Ganhe ${B(v.b)} de Bloqueio. Aplica ${v.w} de Fraqueza a TODOS os inimigos.`,p:v=>{gainBlock(v.b);alive().forEach(e=>apply(e,'fraco',v.w))}},
+ guarda:{n:'Guarda Alta',t:'skl',r:'common',img:'14-guarda-alta',c:1,ret:1,v:{b:7},u:{b:10},x:v=>`Ganhe ${B(v.b)} de Bloqueio.`,p:v=>gainBlock(v.b)},
+ chamado:{n:'Chamado às Armas',t:'skl',r:'common',img:'15-chamado-armas',c:0,eph:1,v:{k:2},u:{k:3},x:v=>`Compre ${v.k} cartas.`,p:v=>draw(v.k)},
+ selvagem:{n:'Golpe Selvagem',t:'atk',r:'common',img:'16-golpe-selvagem',c:1,tg:'e',v:{d:12},u:{d:16},x:v=>`Causa ${D(v.d)} de dano. Coloque um Ferimento no seu descarte.`,p:(v,t)=>{hit(t,v.d);addCardTo('ferimento','discard')}},
+ brado:{n:'Brado de Guerra',t:'skl',r:'common',img:'17-brado',c:0,v:{f:2},u:{f:4},x:v=>`Ganhe ${v.f} de Força até o fim do turno.`,p:v=>{apply(P(),'forca',v.f);apply(P(),'bradoT',v.f)}},
  furia:{n:'Fúria Sagrada',t:'pwr',r:'unc',c:1,v:{f:2},u:{f:3},x:v=>`Ganhe ${v.f} de Força.`,p:v=>apply(P(),'forca',v.f)},
  cota:{n:'Cota de Malha',t:'pwr',r:'unc',c:1,v:{b:3},u:{b:4},x:v=>`No fim de cada turno, ganhe ${v.b} de Bloqueio.`,p:v=>apply(P(),'cota',v.b)},
  serrilhada:{n:'Lâmina Serrilhada',t:'pwr',r:'unc',c:1,uc:0,v:{},u:{},x:()=>`Seus ataques que causam dano aplicam 1 de Sangramento.`,p:()=>apply(P(),'serrilhada',1)},
@@ -1119,15 +1137,15 @@ const CARDS={
  esquivar:{n:'Esquivar',cl:'cac',t:'skl',r:'basic',img:'05-esquivar',c:1,v:{b:5},u:{b:8},x:v=>`Ganhe ${B(v.b)} de Bloqueio.`,p:v=>gainBlock(v.b)},
  tiroMarcado:{n:'Tiro Marcado',cl:'cac',t:'atk',r:'basic',img:'06-tiro-marcado',c:1,tg:'e',v:{d:5,m:2},u:{d:7,m:3},x:v=>`Causa ${D(v.d)} de dano. Aplica ${v.m} de Marca.`,p:(v,t)=>{hit(t,v.d);apply(t,'marca',v.m)}},
  flecha:{n:'Flecha',cl:'cac',t:'atk',r:'special',c:0,ex:1,tg:'e',v:{d:3},u:{d:5},x:v=>`Causa ${D(v.d+aguia())} de dano.`,p:(v,t)=>hit(t,v.d+aguia())},
- rajada:{n:'Rajada de Flechas',cl:'cac',t:'skl',r:'common',c:1,v:{k:3},u:{k:4},x:v=>`Adicione ${v.k} Flechas à sua mão.`,p:v=>addHand('flecha',v.k)},
- encher:{n:'Encher a Aljava',cl:'cac',t:'skl',r:'common',c:0,v:{k:1},u:{k:2},x:v=>`Adicione ${v.k} Flecha${v.k>1?'s':''} à mão. Compre 1 carta.`,p:v=>{addHand('flecha',v.k);draw(1)}},
- tiroDuplo:{n:'Tiro Duplo',cl:'cac',t:'atk',r:'common',c:1,tg:'e',v:{d:4},u:{d:6},x:v=>`Causa ${D(v.d)} de dano 2 vezes.`,p:(v,t)=>hit(t,v.d,2)},
- passoAtras:{n:'Passo Atrás',cl:'cac',t:'skl',r:'common',c:1,v:{b:6},u:{b:9},x:v=>`Ganhe ${B(v.b)} de Bloqueio e 1 de Esquiva.`,p:v=>{gainBlock(v.b);apply(P(),'esquiva',1)}},
- emboscada:{n:'Emboscada',cl:'cac',t:'atk',r:'common',c:2,tg:'e',v:{d:10},u:{d:13},x:v=>`Causa ${D(v.d)} de dano. Dano dobrado se for a primeira carta jogada no turno.`,p:(v,t)=>hit(t,v.d,1,G.combat.cardsTurn?1:2)},
- rastrear:{n:'Rastrear',cl:'cac',t:'skl',r:'common',c:1,tg:'e',v:{m:3},u:{m:5},x:v=>`Aplica ${v.m} de Marca. Compre 1 carta.`,p:(v,t)=>{apply(t,'marca',v.m);draw(1)}},
- armadilha:{n:'Armadilha de Urso',cl:'cac',t:'skl',r:'common',c:1,v:{b:4,s:4},u:{b:6,s:6},x:v=>`Ganhe ${B(v.b)} de Bloqueio e ${v.s} de Espinhos até o seu próximo turno.`,p:v=>{gainBlock(v.b);apply(P(),'espinhos',v.s)}},
- perfurante:{n:'Tiro Perfurante',cl:'cac',t:'atk',r:'common',c:1,tg:'e',v:{d:7},u:{d:10},x:v=>`Causa ${D(v.d)} de dano. Ignora Bloqueio.`,p:(v,t)=>hit(t,v.d,1,1,true)},
- sombras:{n:'Fundir-se às Sombras',cl:'cac',t:'skl',r:'common',c:1,v:{k:2},u:{k:3},x:v=>`Ganhe 1 de Esquiva. Compre ${v.k} cartas.`,p:v=>{apply(P(),'esquiva',1);draw(v.k)}},
+ rajada:{n:'Rajada de Flechas',cl:'cac',t:'skl',r:'common',img:'18-rajada',c:1,v:{k:3},u:{k:4},x:v=>`Adicione ${v.k} Flechas à sua mão.`,p:v=>addHand('flecha',v.k)},
+ encher:{n:'Encher a Aljava',cl:'cac',t:'skl',r:'common',img:'19-encher-aljava',c:0,v:{k:1},u:{k:2},x:v=>`Adicione ${v.k} Flecha${v.k>1?'s':''} à mão. Compre 1 carta.`,p:v=>{addHand('flecha',v.k);draw(1)}},
+ tiroDuplo:{n:'Tiro Duplo',cl:'cac',t:'atk',r:'common',img:'20-tiro-duplo',c:1,tg:'e',v:{d:4},u:{d:6},x:v=>`Causa ${D(v.d)} de dano 2 vezes.`,p:(v,t)=>hit(t,v.d,2)},
+ passoAtras:{n:'Passo Atrás',cl:'cac',t:'skl',r:'common',img:'21-passo-atras',c:1,v:{b:6},u:{b:9},x:v=>`Ganhe ${B(v.b)} de Bloqueio e 1 de Esquiva.`,p:v=>{gainBlock(v.b);apply(P(),'esquiva',1)}},
+ emboscada:{n:'Emboscada',cl:'cac',t:'atk',r:'common',img:'22-emboscada',c:2,tg:'e',v:{d:10},u:{d:13},x:v=>`Causa ${D(v.d)} de dano. Dano dobrado se for a primeira carta jogada no turno.`,p:(v,t)=>hit(t,v.d,1,G.combat.cardsTurn?1:2)},
+ rastrear:{n:'Rastrear',cl:'cac',t:'skl',r:'common',img:'23-rastrear',c:1,tg:'e',v:{m:3},u:{m:5},x:v=>`Aplica ${v.m} de Marca. Compre 1 carta.`,p:(v,t)=>{apply(t,'marca',v.m);draw(1)}},
+ armadilha:{n:'Armadilha de Urso',cl:'cac',t:'skl',r:'common',img:'24-armadilha-urso',c:1,v:{b:4,s:4},u:{b:6,s:6},x:v=>`Ganhe ${B(v.b)} de Bloqueio e ${v.s} de Espinhos até o seu próximo turno.`,p:v=>{gainBlock(v.b);apply(P(),'espinhos',v.s)}},
+ perfurante:{n:'Tiro Perfurante',cl:'cac',t:'atk',r:'common',img:'25-tiro-perfurante',c:1,tg:'e',v:{d:7},u:{d:10},x:v=>`Causa ${D(v.d)} de dano. Ignora Bloqueio.`,p:(v,t)=>hit(t,v.d,1,1,true)},
+ sombras:{n:'Fundir-se às Sombras',cl:'cac',t:'skl',r:'common',img:'26-sombras',c:1,v:{k:2},u:{k:3},x:v=>`Ganhe 1 de Esquiva. Compre ${v.k} cartas.`,p:v=>{apply(P(),'esquiva',1);draw(v.k)}},
  explosiva:{n:'Flecha Explosiva',cl:'cac',t:'atk',r:'unc',c:1,tg:'e',fxk:'fire',v:{k:3},u:{k:4},x:v=>`Consome toda a Marca do alvo e causa ${v.k}× esse valor de dano.`,p:(v,t)=>{const m=t.st.marca||0;delete t.st.marca;if(m)hit(t,m*v.k);else fx(t.uid,'Sem Marca','st')}},
  chuva:{n:'Chuva de Flechas',cl:'cac',t:'atk',r:'unc',c:2,v:{d:4},u:{d:5},x:v=>`Causa ${D(v.d)} de dano a TODOS os inimigos 3 vezes.`,p:v=>hitAll(v.d,3)},
  olhoAguia:{n:'Olho de Águia',cl:'cac',t:'pwr',r:'unc',c:1,v:{k:2},u:{k:3},x:v=>`Suas Flechas causam +${v.k} de dano.`,p:v=>apply(P(),'aguia',v.k)},
@@ -1149,14 +1167,14 @@ const CARDS={
  barreira:{n:'Barreira Arcana',cl:'mag',t:'skl',r:'basic',img:'08-barreira-arcana',c:1,v:{b:5},u:{b:8},x:v=>`Ganhe ${B(v.b)} de Bloqueio.`,p:v=>gainBlock(v.b)},
  raioGelo:{n:'Raio de Gelo',cl:'mag',t:'atk',r:'basic',img:'09-raio-de-gelo',c:1,tg:'e',fxk:'ice',v:{d:4,g:3},u:{d:6,g:4},x:v=>`Causa ${D(v.d)} de dano. Aplica ${FO(v.g)} de Gelo.`,p:(v,t)=>{hit(t,v.d);frost(t,v.g)}},
  labareda:{n:'Labareda',cl:'mag',t:'atk',r:'basic',img:'10-labareda',c:1,fxk:'fire',v:{d:4,q:2},u:{d:6,q:3},x:v=>`Causa ${D(v.d)} de dano e aplica ${FO(v.q)} de Queimadura a TODOS os inimigos.`,p:v=>{hitAll(v.d);alive().forEach(e=>burn(e,v.q))}},
- seta:{n:'Seta Arcana',cl:'mag',t:'atk',r:'common',c:0,tg:'e',v:{d:3},u:{d:5},x:v=>`Causa ${D(v.d)} de dano. Compre 1 carta.`,p:(v,t)=>{hit(t,v.d);draw(1)}},
- nevasca:{n:'Nevasca',cl:'mag',t:'skl',r:'common',c:1,v:{g:2,b:4},u:{g:3,b:6},x:v=>`Ganhe ${B(v.b)} de Bloqueio. Aplica ${FO(v.g)} de Gelo a TODOS os inimigos.`,p:v=>{gainBlock(v.b);alive().forEach(e=>frost(e,v.g))}},
- estilhaco:{n:'Estilhaço de Gelo',cl:'mag',t:'atk',r:'common',c:1,tg:'e',fxk:'ice',v:{d:7,g:2},u:{d:10,g:3},x:v=>`Causa ${D(v.d)} de dano. Aplica ${FO(v.g)} de Gelo.`,p:(v,t)=>{hit(t,v.d);frost(t,v.g)}},
- escudoGelo:{n:'Escudo de Gelo',cl:'mag',t:'skl',r:'common',c:1,v:{b:7},u:{b:10},x:v=>`Ganhe ${B(v.b)} de Bloqueio. Se algum inimigo tiver Gelo, ganhe mais 4.`,p:v=>{gainBlock(v.b);if(alive().some(e=>e.st.gelo||e.st.congelado))addBlock(4)}},
- meditar:{n:'Meditar',cl:'mag',t:'skl',r:'common',c:1,v:{k:2},u:{k:3},x:v=>`Compre ${v.k} cartas. No próximo turno, ganhe 1 de Energia.`,p:v=>{draw(v.k);apply(P(),'canal',1)}},
- ignicao:{n:'Ignição',cl:'mag',t:'skl',r:'common',c:1,tg:'e',fxk:'fire',v:{q:5},u:{q:8},x:v=>`Aplica ${FO(v.q)} de Queimadura.`,p:(v,t)=>burn(t,v.q)},
- relampago:{n:'Relâmpago',cl:'mag',t:'atk',r:'common',c:2,tg:'e',v:{d:15},u:{d:20},x:v=>`Causa ${D(v.d)} de dano.`,p:(v,t)=>hit(t,v.d)},
- runas:{n:'Runas de Proteção',cl:'mag',t:'skl',r:'common',c:2,ret:1,v:{b:12},u:{b:16},x:v=>`Ganhe ${B(v.b)} de Bloqueio.`,p:v=>gainBlock(v.b)},
+ seta:{n:'Seta Arcana',cl:'mag',t:'atk',r:'common',img:'27-seta-arcana',c:0,tg:'e',v:{d:3},u:{d:5},x:v=>`Causa ${D(v.d)} de dano. Compre 1 carta.`,p:(v,t)=>{hit(t,v.d);draw(1)}},
+ nevasca:{n:'Nevasca',cl:'mag',t:'skl',r:'common',img:'28-nevasca',c:1,v:{g:2,b:4},u:{g:3,b:6},x:v=>`Ganhe ${B(v.b)} de Bloqueio. Aplica ${FO(v.g)} de Gelo a TODOS os inimigos.`,p:v=>{gainBlock(v.b);alive().forEach(e=>frost(e,v.g))}},
+ estilhaco:{n:'Estilhaço de Gelo',cl:'mag',t:'atk',r:'common',img:'29-estilhaco-gelo',c:1,tg:'e',fxk:'ice',v:{d:7,g:2},u:{d:10,g:3},x:v=>`Causa ${D(v.d)} de dano. Aplica ${FO(v.g)} de Gelo.`,p:(v,t)=>{hit(t,v.d);frost(t,v.g)}},
+ escudoGelo:{n:'Escudo de Gelo',cl:'mag',t:'skl',r:'common',img:'30-escudo-gelo',c:1,v:{b:7},u:{b:10},x:v=>`Ganhe ${B(v.b)} de Bloqueio. Se algum inimigo tiver Gelo, ganhe mais 4.`,p:v=>{gainBlock(v.b);if(alive().some(e=>e.st.gelo||e.st.congelado))addBlock(4)}},
+ meditar:{n:'Meditar',cl:'mag',t:'skl',r:'common',img:'31-meditar',c:1,v:{k:2},u:{k:3},x:v=>`Compre ${v.k} cartas. No próximo turno, ganhe 1 de Energia.`,p:v=>{draw(v.k);apply(P(),'canal',1)}},
+ ignicao:{n:'Ignição',cl:'mag',t:'skl',r:'common',img:'32-ignicao',c:1,tg:'e',fxk:'fire',v:{q:5},u:{q:8},x:v=>`Aplica ${FO(v.q)} de Queimadura.`,p:(v,t)=>burn(t,v.q)},
+ relampago:{n:'Relâmpago',cl:'mag',t:'atk',r:'common',img:'33-relampago',c:2,tg:'e',v:{d:15},u:{d:20},x:v=>`Causa ${D(v.d)} de dano.`,p:(v,t)=>hit(t,v.d)},
+ runas:{n:'Runas de Proteção',cl:'mag',t:'skl',r:'common',img:'34-runas-protecao',c:2,ret:1,v:{b:12},u:{b:16},x:v=>`Ganhe ${B(v.b)} de Bloqueio.`,p:v=>gainBlock(v.b)},
  foco:{n:'Foco Arcano',cl:'mag',t:'pwr',r:'unc',c:1,v:{f:2},u:{f:3},x:v=>`Gelo e Queimadura que você aplica aumentam em ${v.f}.`,p:v=>apply(P(),'foco',v.f)},
  combustao:{n:'Combustão',cl:'mag',t:'atk',r:'unc',c:1,tg:'e',fxk:'fire',v:{k:2},u:{k:3},x:v=>`Causa dano igual a ${v.k}× a Queimadura do alvo.`,p:(v,t)=>hit(t,(t.st.queima||0)*v.k)},
  congelamento:{n:'Congelamento Profundo',cl:'mag',t:'skl',r:'unc',c:2,tg:'e',fxk:'ice',v:{g:7},u:{g:10},x:v=>`Aplica ${FO(v.g)} de Gelo.`,p:(v,t)=>frost(t,v.g)},
@@ -1175,14 +1193,14 @@ const CARDS={
  pancada:{n:'Pancada',cl:'tan',t:'atk',r:'basic',img:'11-pancada',c:1,tg:'e',v:{d:6},u:{d:9},x:v=>`Causa ${D(v.d)} de dano.`,p:(v,t)=>hit(t,v.d)},
  muralha:{n:'Erguer Muralha',cl:'tan',t:'skl',r:'basic',img:'12-erguer-muralha',c:1,v:{b:5},u:{b:8},x:v=>`Ganhe ${B(v.b)} de Bloqueio.`,p:v=>gainBlock(v.b)},
  baterEscudo:{n:'Bater no Escudo',cl:'tan',t:'skl',r:'basic',img:'13-bater-no-escudo',c:1,v:{b:5,w:1},u:{b:7,w:2},x:v=>`Ganhe ${B(v.b)} de Bloqueio. Aplica ${v.w} de Fraqueza a TODOS os inimigos.`,p:v=>{gainBlock(v.b);alive().forEach(e=>apply(e,'fraco',v.w))}},
- placas:{n:'Placas de Aço',cl:'tan',t:'skl',r:'common',c:1,v:{a:2,b:3},u:{a:3,b:4},x:v=>`Ganhe ${v.a} de Armadura e ${B(v.b)} de Bloqueio.`,p:v=>{apply(P(),'armadura',v.a);gainBlock(v.b)}},
- avanco:{n:'Avanço Blindado',cl:'tan',t:'atk',r:'common',c:1,tg:'e',v:{d:6,b:6},u:{d:8,b:8},x:v=>`Ganhe ${B(v.b)} de Bloqueio. Causa ${D(v.d)} de dano.`,p:(v,t)=>{gainBlock(v.b);hit(t,v.d)}},
- ombro:{n:'Golpe de Ombro',cl:'tan',t:'atk',r:'common',c:1,uc:0,tg:'e',v:{},u:{},x:()=>`Causa dano igual ao seu Bloqueio${inC()?` (${D(P().block)})`:''}.`,p:(v,t)=>hit(t,P().block)},
- rebite:{n:'Rebite',cl:'tan',t:'skl',r:'common',c:0,v:{b:4},u:{b:6},x:v=>`Ganhe ${B(v.b)} de Bloqueio. Se tiver Armadura, compre 1 carta.`,p:v=>{gainBlock(v.b);if(P().st.armadura)draw(1)}},
- ferro:{n:'Postura de Ferro',cl:'tan',t:'skl',r:'common',c:2,v:{b:14},u:{b:18},x:v=>`Ganhe ${B(v.b)} de Bloqueio.`,p:v=>gainBlock(v.b)},
- martelada:{n:'Martelada',cl:'tan',t:'atk',r:'common',c:2,tg:'e',v:{d:12,w:2},u:{d:15,w:3},x:v=>`Causa ${D(v.d)} de dano. Aplica ${v.w} de Fraqueza.`,p:(v,t)=>{hit(t,v.d);apply(t,'fraco',v.w)}},
- desafiar:{n:'Desafiar',cl:'tan',t:'skl',r:'common',c:1,tg:'e',v:{vu:2,b:5},u:{vu:3,b:7},x:v=>`Ganhe ${B(v.b)} de Bloqueio. Aplica ${v.vu} de Vulnerável.`,p:(v,t)=>{gainBlock(v.b);apply(t,'vuln',v.vu)}},
- pesoMorto:{n:'Peso Morto',cl:'tan',t:'atk',r:'common',c:2,tg:'e',v:{d:10},u:{d:13},x:v=>`Causa ${D(v.d)} de dano, mais 3 para cada Armadura.`,p:(v,t)=>hit(t,v.d+3*(P().st.armadura||0))},
+ placas:{n:'Placas de Aço',cl:'tan',t:'skl',r:'common',img:'35-placas-aco',c:1,v:{a:2,b:3},u:{a:3,b:4},x:v=>`Ganhe ${v.a} de Armadura e ${B(v.b)} de Bloqueio.`,p:v=>{apply(P(),'armadura',v.a);gainBlock(v.b)}},
+ avanco:{n:'Avanço Blindado',cl:'tan',t:'atk',r:'common',img:'36-avanco-blindado',c:1,tg:'e',v:{d:6,b:6},u:{d:8,b:8},x:v=>`Ganhe ${B(v.b)} de Bloqueio. Causa ${D(v.d)} de dano.`,p:(v,t)=>{gainBlock(v.b);hit(t,v.d)}},
+ ombro:{n:'Golpe de Ombro',cl:'tan',t:'atk',r:'common',img:'37-golpe-ombro',c:1,uc:0,tg:'e',v:{},u:{},x:()=>`Causa dano igual ao seu Bloqueio${inC()?` (${D(P().block)})`:''}.`,p:(v,t)=>hit(t,P().block)},
+ rebite:{n:'Rebite',cl:'tan',t:'skl',r:'common',img:'38-rebite',c:0,v:{b:4},u:{b:6},x:v=>`Ganhe ${B(v.b)} de Bloqueio. Se tiver Armadura, compre 1 carta.`,p:v=>{gainBlock(v.b);if(P().st.armadura)draw(1)}},
+ ferro:{n:'Postura de Ferro',cl:'tan',t:'skl',r:'common',img:'39-postura-ferro',c:2,v:{b:14},u:{b:18},x:v=>`Ganhe ${B(v.b)} de Bloqueio.`,p:v=>gainBlock(v.b)},
+ martelada:{n:'Martelada',cl:'tan',t:'atk',r:'common',img:'40-martelada',c:2,tg:'e',v:{d:12,w:2},u:{d:15,w:3},x:v=>`Causa ${D(v.d)} de dano. Aplica ${v.w} de Fraqueza.`,p:(v,t)=>{hit(t,v.d);apply(t,'fraco',v.w)}},
+ desafiar:{n:'Desafiar',cl:'tan',t:'skl',r:'common',img:'41-desafiar',c:1,tg:'e',v:{vu:2,b:5},u:{vu:3,b:7},x:v=>`Ganhe ${B(v.b)} de Bloqueio. Aplica ${v.vu} de Vulnerável.`,p:(v,t)=>{gainBlock(v.b);apply(t,'vuln',v.vu)}},
+ pesoMorto:{n:'Peso Morto',cl:'tan',t:'atk',r:'common',img:'42-peso-morto',c:2,tg:'e',v:{d:10},u:{d:13},x:v=>`Causa ${D(v.d)} de dano, mais 3 para cada Armadura.`,p:(v,t)=>hit(t,v.d+3*(P().st.armadura||0))},
  reforcar:{n:'Reforçar',cl:'tan',t:'skl',r:'unc',c:1,uc:0,v:{},u:{},x:()=>`Dobra o seu Bloqueio.`,p:()=>addBlock(P().block)},
  tremor:{n:'Tremor',cl:'tan',t:'atk',r:'unc',c:2,v:{d:8},u:{d:11},x:v=>`Causa ${D(v.d)} de dano e aplica 1 de Fraqueza a TODOS os inimigos.`,p:v=>{hitAll(v.d);alive().forEach(e=>apply(e,'fraco',1))}},
  armViva:{n:'Armadura Viva',cl:'tan',t:'pwr',r:'unc',c:1,uc:0,v:{},u:{},x:()=>`Sua Armadura não diminui ao sofrer dano.`,p:()=>{P().st.armViva=1}},
@@ -1199,15 +1217,15 @@ const CARDS={
  toque:{n:'Toque Sombrio',cl:'nec',t:'atk',r:'basic',img:'14-toque-sombrio',c:1,tg:'e',v:{d:6},u:{d:9},x:v=>`Causa ${D(v.d)} de dano.`,p:(v,t)=>hit(t,v.d)},
  veu:{n:'Véu de Ossos',cl:'nec',t:'skl',r:'basic',img:'15-veu-de-ossos',c:1,v:{b:5},u:{b:8},x:v=>`Ganhe ${B(v.b)} de Bloqueio.`,p:v=>gainBlock(v.b)},
  erguerMorto:{n:'Erguer Morto',cl:'nec',t:'skl',r:'basic',img:'16-erguer-morto',c:1,v:{b:0},u:{b:4},x:v=>`Invoque 1 Servo.${v.b?` Ganhe ${B(v.b)} de Bloqueio.`:''}`,p:v=>{summon(1);if(v.b)gainBlock(v.b)}},
- drenar:{n:'Drenar Vida',cl:'nec',t:'atk',r:'common',c:1,tg:'e',v:{d:7},u:{d:10},x:v=>`Causa ${D(v.d)} de dano. Cure metade do dano causado à vida.`,p:(v,t)=>{const h0=t.hp;hit(t,v.d);heal(Math.floor((h0-t.hp)/2))}},
- ossada:{n:'Ossada',cl:'nec',t:'skl',r:'common',c:1,v:{b:4},u:{b:7},x:v=>`Invoque 1 Servo. Ganhe ${B(v.b)} de Bloqueio.`,p:v=>{summon(1);gainBlock(v.b)}},
- raioNecro:{n:'Raio Necrótico',cl:'nec',t:'atk',r:'common',c:1,tg:'e',v:{d:8},u:{d:11},x:v=>`Causa ${D(v.d)} de dano. Aplica 1 de Fraqueza.`,p:(v,t)=>{hit(t,v.d);apply(t,'fraco',1)}},
- lancaOssos:{n:'Lança de Ossos',cl:'nec',t:'atk',r:'common',c:1,tg:'e',fxk:'bone',v:{d:4,k:2},u:{d:5,k:3},x:v=>`Causa ${D(v.d)} de dano, mais ${v.k} para cada Servo.`,p:(v,t)=>hit(t,v.d+v.k*(P().st.servos||0))},
- pactoSombrio:{n:'Pacto Sombrio',cl:'nec',t:'skl',r:'common',c:0,v:{l:3},u:{l:1},x:v=>`Perca ${v.l} de vida. Invoque 1 Servo.`,p:v=>{loseHp(v.l);summon(1)}},
- mortalha:{n:'Mortalha',cl:'nec',t:'skl',r:'common',c:1,v:{b:7},u:{b:10},x:v=>`Ganhe ${B(v.b)} de Bloqueio. Se tiver Servos, ganhe mais 3.`,p:v=>{gainBlock(v.b);if(P().st.servos)addBlock(3)}},
- praga:{n:'Praga',cl:'nec',t:'skl',r:'common',c:1,tg:'e',v:{s:4,w:1},u:{s:6,w:2},x:v=>`Aplica ${v.s} de Sangramento e ${v.w} de Fraqueza.`,p:(v,t)=>{apply(t,'sangra',v.s);apply(t,'fraco',v.w)}},
- cadaver:{n:'Explosão de Cadáver',cl:'nec',t:'atk',r:'common',c:1,v:{d:10},u:{d:14},x:v=>`Sacrifique 1 Servo: causa ${D(v.d)} de dano a TODOS os inimigos.`,p:v=>{if(!servoDie(true)){fx('p','Sem servos','st');return}hitAll(v.d)}},
- colheita:{n:'Colheita',cl:'nec',t:'atk',r:'common',c:2,v:{d:7},u:{d:10},x:v=>`Causa ${D(v.d)} de dano a TODOS os inimigos. Cure 2 para cada inimigo atingido.`,p:v=>{const n=alive().length;hitAll(v.d);heal(2*n)}},
+ drenar:{n:'Drenar Vida',cl:'nec',t:'atk',r:'common',img:'43-drenar-vida',c:1,tg:'e',v:{d:7},u:{d:10},x:v=>`Causa ${D(v.d)} de dano. Cure metade do dano causado à vida.`,p:(v,t)=>{const h0=t.hp;hit(t,v.d);heal(Math.floor((h0-t.hp)/2))}},
+ ossada:{n:'Ossada',cl:'nec',t:'skl',r:'common',img:'44-ossada',c:1,v:{b:4},u:{b:7},x:v=>`Invoque 1 Servo. Ganhe ${B(v.b)} de Bloqueio.`,p:v=>{summon(1);gainBlock(v.b)}},
+ raioNecro:{n:'Raio Necrótico',cl:'nec',t:'atk',r:'common',img:'45-raio-necrotico',c:1,tg:'e',v:{d:8},u:{d:11},x:v=>`Causa ${D(v.d)} de dano. Aplica 1 de Fraqueza.`,p:(v,t)=>{hit(t,v.d);apply(t,'fraco',1)}},
+ lancaOssos:{n:'Lança de Ossos',cl:'nec',t:'atk',r:'common',img:'46-lanca-ossos',c:1,tg:'e',fxk:'bone',v:{d:4,k:2},u:{d:5,k:3},x:v=>`Causa ${D(v.d)} de dano, mais ${v.k} para cada Servo.`,p:(v,t)=>hit(t,v.d+v.k*(P().st.servos||0))},
+ pactoSombrio:{n:'Pacto Sombrio',cl:'nec',t:'skl',r:'common',img:'47-pacto-sombrio',c:0,v:{l:3},u:{l:1},x:v=>`Perca ${v.l} de vida. Invoque 1 Servo.`,p:v=>{loseHp(v.l);summon(1)}},
+ mortalha:{n:'Mortalha',cl:'nec',t:'skl',r:'common',img:'48-mortalha',c:1,v:{b:7},u:{b:10},x:v=>`Ganhe ${B(v.b)} de Bloqueio. Se tiver Servos, ganhe mais 3.`,p:v=>{gainBlock(v.b);if(P().st.servos)addBlock(3)}},
+ praga:{n:'Praga',cl:'nec',t:'skl',r:'common',img:'49-praga',c:1,tg:'e',v:{s:4,w:1},u:{s:6,w:2},x:v=>`Aplica ${v.s} de Sangramento e ${v.w} de Fraqueza.`,p:(v,t)=>{apply(t,'sangra',v.s);apply(t,'fraco',v.w)}},
+ cadaver:{n:'Explosão de Cadáver',cl:'nec',t:'atk',r:'common',img:'50-explosao-cadaver',c:1,v:{d:10},u:{d:14},x:v=>`Sacrifique 1 Servo: causa ${D(v.d)} de dano a TODOS os inimigos.`,p:v=>{if(!servoDie(true)){fx('p','Sem servos','st');return}hitAll(v.d)}},
+ colheita:{n:'Colheita',cl:'nec',t:'atk',r:'common',img:'51-colheita',c:2,v:{d:7},u:{d:10},x:v=>`Causa ${D(v.d)} de dano a TODOS os inimigos. Cure 2 para cada inimigo atingido.`,p:v=>{const n=alive().length;hitAll(v.d);heal(2*n)}},
  exercito:{n:'Exército dos Mortos',cl:'nec',t:'skl',r:'unc',c:2,ex:1,v:{k:3},u:{k:4},x:v=>`Invoque ${v.k} Servos.`,p:v=>summon(v.k)},
  ossosAfiados:{n:'Ossos Afiados',cl:'nec',t:'pwr',r:'unc',c:1,v:{d:2},u:{d:3},x:v=>`Seus Servos causam +${v.d} de dano.`,p:v=>apply(P(),'ossos',v.d)},
  sifao:{n:'Sifão de Almas',cl:'nec',t:'pwr',r:'unc',c:1,v:{h:3},u:{h:5},x:v=>`Sempre que um Servo morrer, cure ${v.h} de vida.`,p:v=>apply(P(),'sifao',v.h)},
@@ -1960,9 +1978,9 @@ function cardHTML(card,{cls='',inCombat=false}={}){
   const kws=[d.inn&&'Inata',d.ret&&'Reter',d.eph&&'Efêmera',d.ex&&'Exaurir'].filter(Boolean);
   const tip=kws.map(k=>`<b>${k}</b>${KW[k]}`).join('')+(d.fala?`<b>Carta Dourada</b><i>&ldquo;${d.fala}&rdquo;</i>`:'');
   const gems=Array.from({length:RG[d.r]||0},()=>'<span class="rg"></span>').join('');
-  if(d.r==='basic'&&d.img)return`<div class="card cl-${cl} t-${d.t} r-basic ferro ${card.up?'upg':''} ${cls} ${!playable?'unplayable':''}" data-cuid="${card.uid}" data-cid="${card.id}" ${tip?`data-tip="${tip}"`:''}>
-    <div class="so-in"><div class="so-face"><img src="cartas/ferro/${d.img}.webp" alt="" draggable="false"><div class="so-shade"></div>
-      <div class="so-body"><div class="so-name ${d.n.length>=15?'nl2':d.n.length>=12?'nl':''}">${d.n}${card.up?'+':''}</div><div class="so-kind"><i></i>Ferro · ${TYPE_N[d.t]}<i></i></div><div class="so-rule">${d.x(v)}</div></div>
+  if((d.r==='basic'||d.r==='common')&&d.img)return`<div class="card cl-${cl} t-${d.t} r-${d.r} ${d.r==='common'?'bronze':'ferro'} ${card.up?'upg':''} ${cls} ${!playable?'unplayable':''}" data-cuid="${card.uid}" data-cid="${card.id}" ${tip?`data-tip="${tip}"`:''}>
+    <div class="so-in"><div class="so-face"><img src="cartas/${d.r==='common'?'bronze':'ferro'}/${d.img}.webp" alt="" draggable="false"><div class="so-shade"></div>
+      <div class="so-body"><div class="so-name ${d.n.length>=15?'nl2':d.n.length>=12?'nl':''}">${d.n}${card.up?'+':''}</div><div class="so-kind"><i></i>${d.r==='common'?'Bronze':'Ferro'} · ${TYPE_N[d.t]}<i></i></div><div class="so-rule">${d.x(v)}</div></div>
       <div class="so-foil"></div><div class="so-sweep"></div></div>
       <svg class="so-corner tl"><use href="#so-corner"/></svg><svg class="so-corner tr"><use href="#so-corner"/></svg><svg class="so-corner bl"><use href="#so-corner"/></svg><svg class="so-corner br"><use href="#so-corner"/></svg>
       <svg class="so-crest"><use href="#so-crest"/></svg><div class="so-gem"></div>
