@@ -27,7 +27,7 @@ function makeRig(W=40,H=64){const OY=16;
   const info={};
   function draw(p){
     x.clearRect(0,0,W,H);p={...p,hy:p.hy+OY,fF:[p.fF[0],p.fF[1]+OY],fB:[p.fB[0],p.fB[1]+OY]};
-    const hip=[p.hx,p.hy],lean=p.lean||0,br=p.br||0,neck0=P(hip,Math.PI-lean,10),neck=[neck0[0],neck0[1]-br],ht=p.ht||0,head=[neck[0]+Math.sin(lean)*2+1+ht*.6,neck[1]-4-Math.abs(ht)*.4+(p.hd||0)];
+    const hip=[p.hx,p.hy],lean=p.lean||0,br=p.br||0,neck0=P(hip,Math.PI-lean,10),neck=[neck0[0],neck0[1]-br],ht=Math.max(-1,Math.min(1,p.ht||0)),hd=Math.max(-1,Math.min(1,p.hd||0)),head=[neck[0]+Math.sin(lean)*2+1+ht*.5,neck[1]-4-Math.abs(ht)*.3+hd*.6];
     const shN=[neck[0]+1,neck[1]+2],shF=[neck[0]-1,neck[1]+2];
     // capa (atrás)
     const cw=p.cape||0;poly([[neck[0]-2,neck[1]+1],[neck[0]+1,neck[1]+1],[hip[0]-1,hip[1]+4],[hip[0]-5-cw,hip[1]+7+Math.abs(cw)*.2],[hip[0]-7-cw*1.3,hip[1]+3]],PAL.capa[1]);
@@ -54,6 +54,10 @@ function makeRig(W=40,H=64){const OY=16;
     line(hip[0]-3,hip[1]+1,hip[0]+3,hip[1]+1,PAL.couro[1]);px(hip[0]+1,hip[1]+1,PAL.ouro[1]);
     // perna da frente
     leg([hip[0]+1,hip[1]+2],p.fF,[PAL.aco[2],PAL.aco[2],PAL.aco[3],PAL.couro[1]]);
+    // gola: malha e aço ligando o elmo aos ombros (a cabeça nunca descola)
+    { const nx=Math.round(neck[0]),ny=Math.round(neck[1]),hx2=Math.round(head[0]),hy2=Math.round(head[1])+3;
+      line(nx-2,ny+1,hx2-2,hy2,PAL.malha[1],2);line(nx,ny+1,hx2,hy2,PAL.malha[2],2);line(nx+2,ny+1,hx2+2,hy2,PAL.malha[1],2);
+      line(nx-3,ny+1,nx+3,ny+1,PAL.aco[2]);px(nx+2,ny,PAL.aco[3]);px(nx-2,ny,PAL.aco[1]); }
     // elmo
     const hx=Math.round(head[0]),hy=Math.round(head[1]);
     poly([[hx-3,hy-3],[hx+2,hy-4],[hx+4,hy-1],[hx+4,hy+3],[hx-3,hy+3]],PAL.aco[2]);line(hx-3,hy-3,hx+2,hy-4,PAL.aco[3]);

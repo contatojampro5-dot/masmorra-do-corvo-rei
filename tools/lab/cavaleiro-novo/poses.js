@@ -104,3 +104,29 @@ function vivo(name){const A=ANIM[name],n=A.n,loop=['parado','andar','cansado'].i
       p[k]=p.smear?tgt:s.x}
     if(!loop||r===passes-1)out.push(p)}
   return comMolas(out)}
+
+/* ===================== personalidade ===================== */
+Object.assign(ANIM,{
+ /* gira a espada na mão: um floreio de quem confia em si */
+ girarEspada:{n:18,f:KF2([[0,{}],[3,{e:'devagar',aF1:30*D,aF2:60*D,sw:80*D,br:.6}],
+   [5,{e:'rapido',aF1:40*D,aF2:70*D,sw:180*D}],[7,{e:'suave',aF1:40*D,aF2:70*D,sw:300*D}],[9,{e:'suave',aF1:35*D,aF2:65*D,sw:420*D}],
+   [11,{e:'devagar',aF1:30*D,aF2:55*D,sw:415*D,ht:-1}],[14,{e:'segura',aF1:30*D,aF2:55*D,sw:415*D,ht:-1}],[18,{e:'devagar',sw:415*D}]])},
+ /* bate a espada no escudo chamando o inimigo */
+ chamar:{n:16,f:KF2([[0,{}],[3,{e:'devagar',aF1:-20*D,aF2:-60*D,sw:-40*D,aB1:70*D,aB2:100*D,lean:0}],
+   [4,{e:'rapido',aF1:20*D,aF2:60*D,sw:70*D,aB1:70*D,aB2:100*D,lean:6*D}],[6,{e:'devagar',aF1:-20*D,aF2:-60*D,sw:-40*D,aB1:70*D,aB2:100*D,lean:0}],
+   [7,{e:'rapido',aF1:20*D,aF2:60*D,sw:70*D,aB1:70*D,aB2:100*D,lean:6*D}],[10,{e:'segura',aF1:20*D,aF2:60*D,sw:70*D,aB1:70*D,aB2:100*D,lean:6*D,ht:-1}],[16,{e:'devagar'}]])},
+ /* alonga os ombros e gira o pescoço */
+ alongar:{n:20,f:KF2([[0,{}],[4,{e:'devagar',br:1.6,lean:-6*D,ht:-1,hd:-1,aF1:-30*D,aF2:-10*D,sw:10*D,aB1:20*D,aB2:40*D}],[7,{e:'segura',br:1.6,lean:-6*D,ht:-1,hd:-1,aF1:-30*D,aF2:-10*D,sw:10*D,aB1:20*D,aB2:40*D}],
+   [10,{e:'suave',br:.4,ht:1,hd:1,lean:8*D}],[13,{e:'suave',ht:-1,hd:0,lean:2*D}],[16,{e:'suave',ht:.5,br:.8}],[20,{e:'devagar'}]])},
+ /* aponta a espada para o inimigo, queixo erguido */
+ apontar:{n:18,f:KF2([[0,{}],[3,{e:'devagar',hx:19,lean:-2*D,aF1:70*D,aF2:88*D,sw:92*D,ht:-1,br:1}],[12,{e:'segura',hx:19,lean:-2*D,aF1:70*D,aF2:88*D,sw:92*D,ht:-1,br:1}],[18,{e:'devagar'}]])},
+ /* postura de luta: quica na ponta dos pés, pronto para tudo */
+ guarda:{n:12,f:(f,n)=>{const T=f/n*2*Math.PI,b=Math.abs(Math.sin(T));return{...BASE,hx:18+Math.sin(T)*.4,hy:32-Math.round(b*1.4),lean:10*D,fF:[23,GY-Math.round(b*.6)],fB:[12,GY],aF1:40*D,aF2:70*D,sw:120*D,aB1:70*D,aB2:110*D,br:.6+b*.6}}},
+ /* passos de luta na guarda */
+ passoFrente:{n:8,f:KF2([[0,{lean:10*D,fF:[23,GY],fB:[12,GY],aF1:40*D,aF2:70*D,sw:120*D,aB1:70*D,aB2:110*D}],
+   [3,{e:'suave',hx:21,hy:31,lean:12*D,fF:[27,GY-2],fB:[13,GY],aF1:40*D,aF2:70*D,sw:120*D,aB1:70*D,aB2:110*D}],
+   [5,{e:'suave',hx:22,hy:32,lean:10*D,fF:[28,GY],fB:[15,GY-1],aF1:40*D,aF2:70*D,sw:120*D,aB1:70*D,aB2:110*D}],[8,{e:'devagar',hx:22,lean:10*D,fF:[27,GY],fB:[16,GY],aF1:40*D,aF2:70*D,sw:120*D,aB1:70*D,aB2:110*D}]])},
+ passoTras:{n:8,f:KF2([[0,{lean:10*D,fF:[23,GY],fB:[12,GY],aF1:40*D,aF2:70*D,sw:120*D,aB1:70*D,aB2:110*D}],
+   [3,{e:'suave',hx:15,hy:31,lean:6*D,fF:[22,GY],fB:[8,GY-2],aF1:40*D,aF2:70*D,sw:120*D,aB1:70*D,aB2:110*D}],
+   [5,{e:'suave',hx:14,hy:32,lean:8*D,fF:[19,GY-1],fB:[8,GY],aF1:40*D,aF2:70*D,sw:120*D,aB1:70*D,aB2:110*D}],[8,{e:'devagar',hx:14,lean:10*D,fF:[19,GY],fB:[8,GY],aF1:40*D,aF2:70*D,sw:120*D,aB1:70*D,aB2:110*D}]])},
+});

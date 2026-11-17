@@ -108,19 +108,19 @@ const near=(off=30)=>E.x-off;
 /* ======== os poderes ======== */
 const POD={
  async rapido(){await play('rapido',0,3,16);await moveTo(K.x+16,90,{ease:'rapido'});hold('rapido',4);stab(K.x+12,GROUND-40);spark(E.x-6,GROUND-30,6);hitFoe(4,5);hitstop(60);await sleep(140);await play('rapido',6,9,14);await moveTo(HOME,200);K.anim='parado'},
- async golpe(){await play('golpe',0,5,14);await moveTo(near(30),160,{ease:'rapido'});trailOn=true;await swing('golpe',6,7,9,110);trailOn=false;spark(E.x-6,GROUND-32,10);hitFoe(6,9);hitstop(90);await play('golpe',8,9,12);await voltar()},
+ async golpe(){await play('golpe',0,5,14);await moveTo(near(30),160,{ease:'rapido'});trailOn=true;await swing('golpe',6,7,9,110);trailOn=false;spark(E.x-6,GROUND-32,10);hitFoe(6,9);hitstop(90);await play('golpe',8,9,12);await voltar();talvezProvocar()},
  async talho(){await play('golpe',0,5,16);await moveTo(near(30),150,{ease:'rapido'});trailOn=true;trailCol='#dfe9ff';await swing('golpe',6,7,8,95);trailOn=false;spark(E.x-6,GROUND-34,7);hitFoe(4,5);hitstop(60);
    K.ov=f=>({...seq('golpe')[7],sw:(95+ (f/6)*140)*D,aF1:(60+f/6*120)*D,aF2:(80+f/6*110)*D});for(let f=0;f<=6;f++){K.f=f;await sleep(16)}
    trailOn=true;trailCol='#ffd9a8';K.ov=f=>({...seq('golpe')[7],sw:(235-(f/6)*150)*D,aF1:(180-f/6*130)*D,aF2:(190-f/6*120)*D,lean:26*D});for(let f=0;f<=6;f++){K.f=f;await sleep(28)}trailOn=false;trailCol='#dfe9ff';
-   spark(E.x-6,GROUND-28,7,'#ffd9a8');hitFoe(4,7);hitstop(70);K.ov=null;await voltar()},
+   spark(E.x-6,GROUND-28,7,'#ffd9a8');hitFoe(4,7);hitstop(70);K.ov=null;await voltar();talvezProvocar()},
  async pesado(){await play('pesado',0,3,12);const go=moveTo(near(26),420,{jump:30,ease:'suave'});await play('pesado',4,8,13);await go;trailOn=true;await swing('pesado',8,9,8,100);trailOn=false;
-   crack(E.x-14);ring(E.x-14,GROUND,34);dust(E.x-14,12,1.6);spark(E.x-10,GROUND-20,14);hitFoe(14,14);hitstop(130);await play('pesado',10,12,12);await voltar()},
+   crack(E.x-14);ring(E.x-14,GROUND,34);dust(E.x-14,12,1.6);spark(E.x-10,GROUND-20,14);hitFoe(14,14);hitstop(130);await play('pesado',10,12,12);await voltar();talvezProvocar()},
  async epico(){aura(1);await play('epico',0,8,10);aura(2);await sleep(200);const go=moveTo(near(26),560,{jump:52,ease:'suave'});await play('epico',9,13,11);await go;aura(0);trailOn=true;trailCol='#fff3c0';await swing('epico',13,14,9,120);trailOn=false;trailCol='#dfe9ff';
-   flash=7;flashCol='#fff3d0';crack(E.x-14);ring(E.x-14,GROUND,60,'#fff1b8',24);ring(E.x-14,GROUND,38,'#ffffff',16);dust(E.x-14,18,2.2);spark(E.x-10,GROUND-24,28,'#fff1b8',3.2,1.6);hitFoe(32,22,'#ffe08a');hitstop(170);await play('epico',15,18,10);await voltar()},
+   flash=7;flashCol='#fff3d0';crack(E.x-14);ring(E.x-14,GROUND,60,'#fff1b8',24);ring(E.x-14,GROUND,38,'#ffffff',16);dust(E.x-14,18,2.2);spark(E.x-10,GROUND-24,28,'#fff1b8',3.2,1.6);hitFoe(32,22,'#ffe08a');hitstop(170);await play('epico',15,18,10);await voltar();talvezProvocar()},
  async empurrao(){await play('escudo',0,3,14);await moveTo(near(24),170,{ease:'rapido'});spark(E.x-8,GROUND-30,12,'#cfe6ff');ring(E.x-8,GROUND-26,14,'#bfe0ff',12);hitFoe(5,18);hitstop(80);await sleep(160);await moveTo(HOME,260,{jump:8,ease:'devagar'});K.anim='parado';K.f=0},
  async giratorio(){await play('golpe',0,4,14);await moveTo(near(28),150,{ease:'rapido'});trailOn=true;trailCol='#e9d8ff';
    for(let volta=0;volta<2;volta++){K.ov=f=>{const a=(200-f*30)*D;return{...seq('golpe')[7],sw:a,aF1:a-30*D,aF2:a-10*D,lean:(18+Math.sin(f)*6)*D}};for(let f=0;f<12;f++){K.f=f;await sleep(22);if(f===6){spark(E.x-6,GROUND-30,6,'#e9d8ff');hitFoe(5,6)}}}
-   trailOn=false;trailCol='#dfe9ff';K.ov=null;hitstop(60);await voltar()},
+   trailOn=false;trailCol='#dfe9ff';K.ov=null;hitstop(60);await voltar();talvezProvocar()},
  async investida(){await play('golpe',0,3,16);K.anim='andar';const run=moveTo(E.x+24,360,{ease:'rapido'});for(let i=0;i<5;i++){K.f=(i*2)%8;await sleep(48);if(i===3){trailOn=true;await swing('golpe',6,7,6,70);spark(E.x,GROUND-30,12);hitFoe(11,12);hitstop(80)}}await run;trailOn=false;dust(K.x,8);await sleep(160);await moveTo(HOME,420,{jump:18,ease:'devagar'});dust(K.x,6);K.anim='parado';K.f=0},
  async escudo(){await play('escudo',0,4,14);shieldUp=true;ring(K.x+8,GROUND-30,16,'#bfe0ff',14);num(K.x,GROUND-60,'+5 Bloqueio','#bfe0ff')},
  async bateEscudo(){if(!shieldUp)await POD.escudo();await goblinAtaca(async()=>{await play('bateEscudo',0,2,22);const sh=[K.x-20+R.info.shield[0],GROUND-60+R.info.shield[1]];spark(sh[0]+2,sh[1],14,'#e8f4ff');ring(sh[0]+2,sh[1],10,'#bfe0ff',10);num(K.x,GROUND-60,'Bloqueado','#bfe0ff');hitstop(70);
@@ -134,11 +134,22 @@ async function goblinAtaca(reacao,recua=false,erra=false){const x0=E.x,t0=perfor
   await new Promise(r=>{const f=()=>{if(stop>0){requestAnimationFrame(f);return}const t=Math.min(1,(performance.now()-t0)/280);E.lunge=(alvo-x0)*(t*t);if(t<1)requestAnimationFrame(f);else r()};f()});
   E.lunge=alvo-x0;await reacao();const l0=E.lunge,t1=performance.now();
   await new Promise(r=>{const f=()=>{if(stop>0){requestAnimationFrame(f);return}const t=Math.min(1,(performance.now()-t1)/(recua?220:360));E.lunge=l0*(1-t);if(t<1)requestAnimationFrame(f);else r()};f()});E.lunge=0}
+/* ======== personalidade: manias quando está parado ======== */
+let mania=null,maniaT=performance.now()+3500,maniaLig=true;const MANIAS=['girarEspada','chamar','alongar','apontar','guarda'];let ultMania='';
+async function fazerMania(nome){const tok=mania={};const n=seq(nome).length,fps=nome==='guarda'?10:12,reps=nome==='guarda'?3:1;
+  for(let r=0;r<reps;r++)for(let f=0;f<n;f++){if(mania!==tok||busy)return;K.anim=nome;K.ov=null;K.f=f;
+    if(nome==='chamar'&&(f===4||f===7)){const sh=[K.x-20+R.info.shield[0],GROUND-60+R.info.shield[1]];spark(sh[0]+1,sh[1],4,'#e8f4ff',2,.5)}
+    await sleep(1000/fps)}
+  if(mania===tok){mania=null;K.anim='parado';K.f=0}}
+function talvezProvocar(){if(maniaLig&&Math.random()<.35){maniaT=performance.now()+600;setTimeout(()=>{if(!busy&&!mania)fazerMania(Math.random()<.5?'apontar':'girarEspada')},650)}}
+setInterval(()=>{if(!maniaLig||busy||mania||shieldUp||performance.now()<maniaT)return;let m;do{m=MANIAS[Math.floor(Math.random()*MANIAS.length)]}while(m===ultMania);ultMania=m;maniaT=performance.now()+4000+Math.random()*4000;fazerMania(m)},300);
+POD.passoFrente=async()=>{await play('passoFrente',0,7,14);K.x+=4;K.anim='parado';K.f=0};
+POD.passoTras=async()=>{await play('passoTras',0,7,14);K.x-=4;await moveTo(HOME,200);K.anim='parado';K.f=0};
 /* ======== botões ======== */
-const B=[['rapido','a','Rápido'],['golpe','a','Golpe'],['talho','a','Talho Duplo'],['pesado','a','Pesado'],['epico','a','Épico'],['empurrao','a','Empurrão de Escudo'],['giratorio','a','Giratório'],['investida','a','Investida'],
+const B=[['passoFrente','x','Passo à frente'],['passoTras','x','Passo para trás'],['rapido','a','Rápido'],['golpe','a','Golpe'],['talho','a','Talho Duplo'],['pesado','a','Pesado'],['epico','a','Épico'],['empurrao','a','Empurrão de Escudo'],['giratorio','a','Giratório'],['investida','a','Investida'],
  ['escudo','d','Erguer escudo'],['bateEscudo','d','Goblin bate no escudo'],['bateSem','d','Goblin bate sem escudo'],['aparar','d','Aparar'],['esquiva','d','Esquiva']];
-const bar=document.getElementById('bar');bar.innerHTML=B.map(([k,c,t])=>`<button class="${c}" data-k="${k}">${t}</button>`).join('')+ACTS.map((a,i)=>`<button class="x${i?'':' on'}" data-a="${i}">Ato ${i+1}</button>`).join('');
-bar.addEventListener('click',async e=>{const b=e.target.closest('button');if(!b)return;if(b.dataset.a){act=+b.dataset.a;bar.querySelectorAll('[data-a]').forEach(x=>x.classList.toggle('on',x===b));document.getElementById('title').textContent='Arena do Cavaleiro · '+ACTS[act].n;return}
+const bar=document.getElementById('bar');bar.innerHTML=B.map(([k,c,t])=>`<button class="${c}" data-k="${k}">${t}</button>`).join('')+ACTS.map((a,i)=>`<button class="x${i?'':' on'}" data-a="${i}">Ato ${i+1}</button>`).join('')+'<button class="x on" data-m="1">Manias: ligadas</button>';
+bar.addEventListener('click',async e=>{const b=e.target.closest('button');if(!b)return;if(b.dataset.m){maniaLig=!maniaLig;b.classList.toggle('on',maniaLig);b.textContent='Manias: '+(maniaLig?'ligadas':'desligadas');return}mania=null;maniaT=performance.now()+5000;if(b.dataset.a){act=+b.dataset.a;bar.querySelectorAll('[data-a]').forEach(x=>x.classList.toggle('on',x===b));document.getElementById('title').textContent='Arena do Cavaleiro · '+ACTS[act].n;return}
   if(busy)return;busy=true;try{if(b.dataset.k!=='escudo'&&b.dataset.k!=='bateEscudo')shieldUp=false;await POD[b.dataset.k]()}finally{busy=false;if(!shieldUp){K.ov=null;K.anim='parado';K.f=0}}});
 window.POD=POD;fit();document.getElementById('title').textContent='Arena do Cavaleiro · '+ACTS[0].n;requestAnimationFrame(loop);document.title='Arena do Cavaleiro';window.ARENA_OK=1;
 </script></body></html>
