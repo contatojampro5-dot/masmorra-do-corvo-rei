@@ -1,0 +1,12 @@
+<!doctype html><html><head><meta charset="utf-8"><style>body{margin:0;background:#111;color:#e8d9b8;font:14px Georgia}h2{margin:10px 16px 2px;font-size:16px;color:#e8c27a;letter-spacing:.05em}.row{display:flex;gap:6px;padding:4px 16px;align-items:flex-end}canvas{image-rendering:pixelated}.big{display:flex;gap:18px;padding:10px 16px;align-items:flex-end}.big div{text-align:center;font-size:12px}</style></head><body>
+<script src="rig.js"></script><script src="poses.js"></script><script>
+const R=makeRig();const sc=(c,k,bg)=>{const o=document.createElement('canvas');o.width=c.width*k;o.height=c.height*k;const x=o.getContext('2d');if(bg){x.fillStyle=bg;x.fillRect(0,0,o.width,o.height)}x.imageSmoothingEnabled=false;x.drawImage(c,0,0,o.width,o.height);return o};
+const cp=c=>{const o=document.createElement('canvas');o.width=c.width;o.height=c.height;o.getContext('2d').drawImage(c,0,0);return o};
+let h=document.createElement('h2');h.textContent='O Cavaleiro novo — de perto (sem luz e com a luz de cada ato)';document.body.appendChild(h);
+const big=document.createElement('div');big.className='big';document.body.appendChild(big);
+const idle=cp(R.draw(ANIM.parado.f(0,8)));
+[['sem luz',idle,'#2a2420'],['Ato 1 · tochas',lightPass(idle,{dir:-1,col:[255,160,70],amb:[60,40,40]}),'#2a1a10'],['Ato 2 · catacumbas',lightPass(idle,{dir:1,col:[140,210,255],amb:[40,60,60]}),'#101820'],['Ato 3 · torre',lightPass(idle,{dir:-1,col:[255,90,50],amb:[90,40,120]}),'#1c0a12']].forEach(([t,c,bg])=>{const d=document.createElement('div');d.appendChild(sc(c,7,bg));d.appendChild(document.createElement('br'));d.append(t);big.appendChild(d)});
+for(const [k,A] of Object.entries(ANIM)){h=document.createElement('h2');h.textContent=k[0].toUpperCase()+k.slice(1)+' · '+A.n+' quadros';document.body.appendChild(h);const r=document.createElement('div');r.className='row';
+  for(let f=0;f<A.n;f++){r.appendChild(sc(lightPass(cp(R.draw(A.f(f,A.n))),{dir:-1,col:[255,160,70],amb:[60,40,40]}),3,'#2a1a10'))}document.body.appendChild(r)}
+document.title='ok';
+</script></body></html>
