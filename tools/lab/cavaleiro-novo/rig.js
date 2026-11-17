@@ -38,7 +38,11 @@ function makeRig(W=40,H=64){const OY=16;
       for(let X=sx-2;X<=sx+2;X+=2)line(X,sy-s+1,X,sy+(X===sx?s:1),PAL.madeira[0]);
       line(sx-3,sy-s,sx+3,sy-s,PAL.aco[1]);line(sx+3,sy-s,sx+3,sy+1,PAL.aco[2]);line(sx+3,sy+1,sx,sy+s+1,PAL.aco[1]);line(sx-3,sy-s,sx-3,sy+1,PAL.aco[0]);line(sx-3,sy+1,sx,sy+s+1,PAL.aco[0]);
       line(sx-2,sy-2,sx+2,sy-2,PAL.couro[1]);line(sx-2,sy+1,sx+2,sy+1,PAL.couro[1]);px(sx-2,sy-2,PAL.ouro[1]);px(sx+2,sy-2,PAL.ouro[1]);px(sx-2,sy+1,PAL.ouro[1]);px(sx+2,sy+1,PAL.ouro[1]); }
-    line(shF[0],shF[1],eS[0],eS[1],PAL.malha[0],2);line(eS[0],eS[1],hS[0],hS[1],PAL.malha[0],2);
+    // braço esquerdo segurando o escudo: braço por trás, antebraço com braçadeira passando pelas correias, mão de ferro na alça
+    { const sx=Math.round(hS[0]+1),sy=Math.round(hS[1]-1),ex=sx-3,ey=sy+1;
+      line(shF[0],shF[1],eS[0],eS[1],PAL.malha[1],2);line(eS[0],eS[1],ex,ey,PAL.malha[1],2);
+      line(ex,ey,sx+1,sy-1,PAL.aco[2],2);px(ex+1,ey-1,PAL.aco[3]);px(sx-1,sy,PAL.aco[1]);
+      px(sx+1,sy-2,PAL.aco[3]);px(sx+2,sy-2,PAL.aco[3]);px(sx+1,sy-1,PAL.aco[2]);px(sx+2,sy-1,PAL.aco[2]);px(sx+3,sy-2,PAL.aco[1]); }
     // perna de trás (mais escura)
     leg([hip[0]-1,hip[1]+2],p.fB,[PAL.aco[0],PAL.aco[0],PAL.aco[1],PAL.couro[0]]);
     // tronco: malha por baixo, tabardo vermelho por cima
