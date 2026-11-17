@@ -24,6 +24,7 @@ function makeRig(W=40,H=64){const OY=16;
     return[k1[0]>k2[0]?k1:k2,f]}
   function leg(h,f,cols){const[k,ft]=ik(h,f);const Q=(a,b,col)=>{line(a[0],a[1],b[0],b[1],col,2)};Q(h,k,cols[0]);Q(k,ft,cols[1]);
     px(k[0]+1,k[1],cols[2]);const fx=Math.round(ft[0]),fy=Math.round(ft[1]);line(fx-1,fy+1,fx+2,fy+1,cols[3]);px(fx+2,fy,cols[3]);return k}
+  const info={};
   function draw(p){
     x.clearRect(0,0,W,H);p={...p,hy:p.hy+OY,fF:[p.fF[0],p.fF[1]+OY],fB:[p.fB[0],p.fB[1]+OY]};
     const hip=[p.hx,p.hy],lean=p.lean||0,br=p.br||0,neck0=P(hip,Math.PI-lean,10),neck=[neck0[0],neck0[1]-br],ht=p.ht||0,head=[neck[0]+Math.sin(lean)*2+1+ht*.6,neck[1]-4-Math.abs(ht)*.4+(p.hd||0)];
@@ -33,7 +34,7 @@ function makeRig(W=40,H=64){const OY=16;
     line(hip[0]-5-cw,hip[1]+7,hip[0]-7-cw*1.3,hip[1]+3,PAL.capa[0]);
     // ESCUDO no braço ESQUERDO (o de longe): segurado à frente, por isso vemos só a madeira de dentro e as correias
     const [eS,hS]=limb(shF,p.aB1,3,p.aB2,3);
-    { const s=p.shR||5,sx=Math.round(hS[0]+1),sy=Math.round(hS[1]-1);
+    { const s=p.shR||5,sx=Math.round(hS[0]+1),sy=Math.round(hS[1]-1);info.shield=[sx+3,sy];
       const sh=[[sx-3,sy-s],[sx+3,sy-s],[sx+3,sy+1],[sx,sy+s+1],[sx-3,sy+1]];poly(sh,PAL.madeira[1]);
       for(let X=sx-2;X<=sx+2;X+=2)line(X,sy-s+1,X,sy+(X===sx?s:1),PAL.madeira[0]);
       line(sx-3,sy-s,sx+3,sy-s,PAL.aco[1]);line(sx+3,sy-s,sx+3,sy+1,PAL.aco[2]);line(sx+3,sy+1,sx,sy+s+1,PAL.aco[1]);line(sx-3,sy-s,sx-3,sy+1,PAL.aco[0]);line(sx-3,sy+1,sx,sy+s+1,PAL.aco[0]);
@@ -63,10 +64,11 @@ function makeRig(W=40,H=64){const OY=16;
     const [eF,hF]=limb(shN,p.aF1,4,p.aF2,4);
     if(p.smear){const[a0,a1]=p.smear,st=Math.sign(a1-a0)*.06;for(let a=a0;Math.sign(a1-a)===Math.sign(st);a+=st)for(let r=7;r<=14;r++){const q=P(hF,a,r),t=(a-a0)/(a1-a0);px(q[0],q[1],t>.7?PAL.aco[4]:t>.35?'#c8d4e4':'#8a96aa')}}
     const sa=p.sw,tip=P(hF,sa,13),g1=P(hF,sa+Math.PI/2,2),g2=P(hF,sa-Math.PI/2,2),pm=P(hF,sa+Math.PI,2);
+    info.hand=[hF[0],hF[1]];info.tip=[tip[0],tip[1]];info.hip=[hip[0],hip[1]];
     line(hF[0],hF[1],tip[0],tip[1],PAL.aco[3]);line(g1[0],g1[1],g2[0],g2[1],PAL.ouro[1]);px(pm[0],pm[1],PAL.ouro[2]);const m1=P(hF,sa,7);px(m1[0],m1[1],PAL.aco[4]);px(tip[0],tip[1],PAL.aco[4]);
     line(shN[0],shN[1],eF[0],eF[1],PAL.malha[2],2);line(eF[0],eF[1],hF[0],hF[1],PAL.malha[2],2);px(hF[0],hF[1],PAL.couro[1]);px(shN[0],shN[1],PAL.aco[3]);
     return c}
-  return{canvas:c,draw,W,H}}
+  return{canvas:c,draw,W,H,info}}
 /* luz do ambiente: borda virada para a luz ganha a cor dela, o lado oposto escurece */
 function lightPass(src,{dir=-1,col=[255,160,70],amb=[70,60,90],k=.75}={}){
   const W=src.width,H=src.height,s=src.getContext('2d').getImageData(0,0,W,H),o=new ImageData(W,H);

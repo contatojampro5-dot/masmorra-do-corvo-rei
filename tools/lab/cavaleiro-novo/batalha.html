@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Arena do Cavaleiro</title>
+<style>
+html,body{margin:0;height:100%;background:#070504;overflow:hidden;font-family:Georgia,serif}
+#wrap{position:fixed;inset:0;display:flex;flex-direction:column}
+#stage{position:relative;flex:1;min-height:0;display:flex;align-items:center;justify-content:center}
+canvas{image-rendering:pixelated;display:block}
+#nums{position:absolute;inset:0;pointer-events:none}
+.num{position:absolute;font:800 22px Georgia;color:#ffd6c4;text-shadow:0 2px 0 #000,0 0 6px #000;transform:translate(-50%,0);white-space:nowrap}
+#title{position:absolute;top:8px;left:0;right:0;text-align:center;font:600 15px Georgia;letter-spacing:.14em;color:#e8c27a;text-shadow:0 2px 6px #000;pointer-events:none}
+#bar{display:flex;flex-wrap:wrap;gap:5px;justify-content:center;padding:6px max(8px,env(safe-area-inset-left)) calc(8px + env(safe-area-inset-bottom));background:#0d0907;border-top:1px solid #3a2a1a}
+#bar button{font:600 12px Georgia;color:#f3e6cc;background:#2a1d12;border:1px solid #8a6a3a;border-radius:7px;padding:7px 9px;min-height:36px}
+#bar .a{border-color:#c0503a;background:#3a1812}#bar .d{border-color:#3f8fe0;background:#12203a}#bar .x{border-color:#555;background:#1a1612;color:#c9b48a}#bar .on{outline:2px solid #ffd76a}
+</style></head><body>
+<div id="wrap"><div id="stage"><canvas id="c" width="240" height="116"></canvas><div id="nums"></div><div id="title">Arena do Cavaleiro</div></div>
+<div id="bar"></div></div>
+<script src="rig.js"></script><script src="poses.js"></script>
+<script>
+/* ======== palco ======== */
+const C=document.getElementById('c'),X=C.getContext('2d'),W=240,H=116,GROUND=98,HOME=70,FOE_X=172;
+function fit(){const st=document.getElementById('stage'),k=Math.max(1,Math.floor(Math.min(st.clientWidth/W,st.clientHeight/H)*4)/4);C.style.width=W*k+'px';C.style.height=H*k+'px';SCALE=k}
+let SCALE=3;addEventListener('resize',fit);
+const R=makeRig(),cp=c=>{const o=document.createElement('canvas');o.width=c.width;o.height=c.height;o.getContext('2d').drawImage(c,0,0);return o};
+const ACTS=[{n:'Ato 1 · Masmorra',bg:['#2a1a10','#0e0805'],col:[255,160,70],amb:[60,40,40],dir:-1,torch:[26,42]},{n:'Ato 2 · Catacumbas',bg:['#101a24','#05070a'],col:[140,210,255],amb:[40,60,60],dir:1,torch:[214,40]},{n:'Ato 3 · Torre',bg:['#26101a','#0a0408'],col:[255,90,50],amb:[90,40,120],dir:-1,torch:[26,42]}];
+let act=0;const VIVO={};const seq=k=>VIVO[k]=VIVO[k]||vivo(k);
+/* ======== estado ======== */
+const K={x:HOME,y:0,anim:'parado',f:0,ov:null,lit:null,glow:0},E={x:FOE_X,y:0,dx:0,rot:0,flash:0,lunge:0,hp:999};
+let FX=[],trail=[],trailOn=false,trailCol='#dfe9ff',stop=0,flash=0,flashCol='#fff',busy=false,idleT=0,shieldUp=false;
+const sleep=ms=>new Promise(r=>{const t0=performance.now();const f=()=>{if(performance.now()-t0>=ms&&!stop)r();else requestAnimationFrame(f)};f()});
+/* ======== efeitos (todos em pixel) ======== */
+const P=(x,y,c)=>{X.fillStyle=c;X.fillRect(Math.round(x),Math.round(y),1,1)};
+function spark(x,y,n,col='#ffe9a8',sp=2.2,up=1){for(let i=0;i<n;i++){const a=(Math.random()-.5)*sp+(Math.random()<.5?0:Math.PI),v=1+Math.random()*2.6;FX.push({k:'p',x,y,vx:Math.cos(a)*v,vy:Math.sin(a)*v-up,g:.18,life:16+Math.random()*12,col})}}
+function dust(x,n=8,big=1){for(let i=0;i<n;i++){const s=i<n/2?-1:1;FX.push({k:'d',x:x+(Math.random()-.5)*6,y:GROUND,vx:s*(.4+Math.random()*1.1)*big,vy:-.2-Math.random()*.5,life:22+Math.random()*10,r:1+Math.random()*big})}}
+function ring(x,y,r,col='#ffd27a',life=18){FX.push({k:'r',x,y,r0:2,r1:r,life,max:life,col})}
+function crack(x){FX.push({k:'c',x,life:60,max:60,seed:Math.random()*99})}
+function stab(x,y){FX.push({k:'s',x,y,life:8,max:8})}
+function aura(on){K.glow=on}
+function num(x,y,t,col){const d=document.createElement('div');d.className='num';d.textContent=t;d.style.color=col||'#ffd6c4';const r=C.getBoundingClientRect(),st=document.getElementById('stage').getBoundingClientRect();
+  d.style.left=(r.left-st.left+x*SCALE)+'px';d.style.top=(r.top-st.top+y*SCALE)+'px';document.getElementById('nums').appendChild(d);
+  d.animate([{transform:'translate(-50%,0) scale(.6)',opacity:0},{transform:'translate(-50%,-14px) scale(1.15)',opacity:1,offset:.2},{transform:'translate(-50%,-40px)',opacity:0}],{duration:900,easing:'ease-out'}).onfinish=()=>d.remove()}
+function hitFoe(dmg,push=8,col){E.flash=6;E.dx=push;E.rot=push*.06;num(E.x,GROUND-44,'-'+dmg,col);try{}catch(e){}}
+function hitstop(ms){stop=ms}
+/* ======== o goblin ======== */
+function drawFoe(){const x=Math.round(E.x+E.dx+E.lunge),y=GROUND,bob=Math.sin(performance.now()/260)*.8;X.save();X.translate(x,y);X.rotate(E.rot);
+  const g=E.flash>0?'#fff':'#5e8a3a',gd=E.flash>0?'#ddd':'#3e6026',sk=E.flash>0?'#fff':'#6f4a2a';
+  X.fillStyle='rgba(0,0,0,.35)';X.fillRect(-9,-1,18,2);
+  X.fillStyle=gd;X.fillRect(-4,-9,3,9);X.fillRect(2,-9,3,9);
+  X.fillStyle=sk;X.fillRect(-6,-19+bob,12,11);X.fillStyle=g;X.fillRect(-6,-21+bob,12,3);
+  X.fillStyle=g;X.fillRect(-7,-30+bob,12,10);X.fillRect(-11,-28+bob,4,3);X.fillRect(4,-28+bob,4,2);
+  X.fillStyle=E.flash>0?'#fff':'#ff4a2a';X.fillRect(-5,-26+bob,2,2);
+  X.fillStyle=E.flash>0?'#fff':'#7a5030';const cl=E.lunge<0?-8:0;X.fillRect(-11+cl,-24+bob,3,10);X.fillRect(-12+cl,-27+bob,5,4);
+  X.restore();if(E.flash>0)E.flash--;E.dx*=.82;E.rot*=.8}
+/* ======== desenho de um quadro ======== */
+function frame(){
+  const A=ACTS[act];
+  const g=X.createLinearGradient(0,0,0,H);g.addColorStop(0,A.bg[0]);g.addColorStop(1,A.bg[1]);X.fillStyle=g;X.fillRect(0,0,W,H);
+  const fl=.85+Math.random()*.15,rg=X.createRadialGradient(A.torch[0],A.torch[1],2,A.torch[0],A.torch[1],90*fl);rg.addColorStop(0,`rgba(${A.col},.32)`);rg.addColorStop(1,'rgba(0,0,0,0)');X.fillStyle=rg;X.fillRect(0,0,W,H);
+  X.fillStyle=`rgb(${A.col})`;X.fillRect(A.torch[0]-1,A.torch[1]-5,3,5);X.fillStyle='#3a2a1a';X.fillRect(A.torch[0],A.torch[1],2,10);
+  X.fillStyle='#1a120c';X.fillRect(0,GROUND,W,H-GROUND);X.fillStyle='rgba(0,0,0,.35)';X.fillRect(0,GROUND,W,1);
+  for(let i=0;i<W;i+=23)P(i+(act*7)%11,GROUND+3+(i%3),'#2a1e14');
+  // rachaduras ficam no chão
+  for(const f of FX)if(f.k==='c'){X.globalAlpha=Math.min(1,f.life/20);X.fillStyle='#050302';let x=f.x-14,y=GROUND+1;for(let i=0;i<28;i++){x+=1;y=GROUND+1+((Math.sin(i*1.7+f.seed)*1.6)|0);X.fillRect(x,y,1,1)}X.fillRect(f.x-3,GROUND+2,1,3);X.fillRect(f.x+5,GROUND+2,1,2);X.globalAlpha=1}
+  drawFoe();
+  // o Cavaleiro
+  const pose=K.ov?K.ov(K.f):seq(K.anim)[Math.min(K.f,seq(K.anim).length-1)];
+  const spr=lightPass(cp(R.draw(pose)),{dir:A.dir,col:A.col,amb:A.amb});
+  const ox=Math.round(K.x-20),oy=Math.round(GROUND-60+K.y);
+  if(K.glow>0){const t=performance.now()/120;X.globalAlpha=.25+.15*Math.sin(t);X.fillStyle='#ffd27a';X.beginPath();X.arc(ox+R.info.tip[0],oy+R.info.tip[1],5+K.glow*3,0,7);X.fill();X.globalAlpha=1;
+    if(Math.random()<.6)FX.push({k:'p',x:ox+R.info.tip[0]+(Math.random()-.5)*6,y:oy+R.info.tip[1]+(Math.random()-.5)*6,vx:0,vy:-.4,g:0,life:14,col:'#fff1b8'})}
+  X.globalAlpha=.35;X.fillStyle='#000';X.beginPath();X.ellipse(K.x,GROUND,9-Math.min(6,-K.y/6),1.6,0,0,7);X.fill();X.globalAlpha=1;
+  X.drawImage(spr,ox,oy);
+  // reflexo no chão
+  X.save();X.globalAlpha=.14;X.translate(0,GROUND*2+1);X.scale(1,-1);X.drawImage(spr,ox,oy-2*K.y);X.restore();
+  // risco da espada: segue a ponta de verdade
+  const tip=[ox+R.info.tip[0],oy+R.info.tip[1]],hand=[ox+R.info.hand[0],oy+R.info.hand[1]];
+  if(trailOn){trail.push({t:tip,h:hand,a:1})}
+  trail.forEach(q=>q.a-=.11);trail=trail.filter(q=>q.a>0);
+  for(let i=1;i<trail.length;i++){const a=trail[i-1],b=trail[i];const n=8;for(let s=0;s<=n;s++){const u=s/n;
+      const x1=a.h[0]+(a.t[0]-a.h[0])*.45,y1=a.h[1]+(a.t[1]-a.h[1])*.45,x2=b.h[0]+(b.t[0]-b.h[0])*.45,y2=b.h[1]+(b.t[1]-b.h[1])*.45;
+      const ex=a.t[0]+(b.t[0]-a.t[0])*u,ey=a.t[1]+(b.t[1]-a.t[1])*u,ix=x1+(x2-x1)*u,iy=y1+(y2-y1)*u;
+      for(let k=0;k<=6;k++){const v=k/6;X.globalAlpha=Math.min(1,b.a)*(v>.7?.95:.45);X.fillStyle=v>.75?'#ffffff':trailCol;X.fillRect(Math.round(ix+(ex-ix)*v),Math.round(iy+(ey-iy)*v),1,1)}}}
+  X.globalAlpha=1;
+  // partículas e ondas
+  for(const f of FX){if(f.k==='p'){f.x+=f.vx;f.y+=f.vy;f.vy+=f.g;f.life--;X.globalAlpha=Math.min(1,f.life/8);P(f.x,f.y,f.col)}
+    else if(f.k==='d'){f.x+=f.vx;f.y+=f.vy;f.vx*=.94;f.life--;X.globalAlpha=Math.min(.6,f.life/20);X.fillStyle='#7a6a54';X.fillRect(Math.round(f.x),Math.round(f.y-f.r),Math.ceil(f.r*2),Math.ceil(f.r))}
+    else if(f.k==='r'){f.life--;const t=1-f.life/f.max,r=f.r0+(f.r1-f.r0)*t;X.globalAlpha=1-t;X.strokeStyle=f.col;X.lineWidth=1;X.beginPath();X.ellipse(f.x,f.y,r,r*.28,0,0,7);X.stroke()}
+    else if(f.k==='s'){f.life--;const t=1-f.life/f.max;X.globalAlpha=1-t;X.fillStyle='#fff';X.fillRect(f.x-4,f.y,Math.round(26*Math.min(1,t*2)),1);X.fillStyle='#ffe9b8';X.fillRect(f.x+Math.round(20*t),f.y-1,6,3)}
+    else if(f.k==='c'){f.life--}}
+  X.globalAlpha=1;FX=FX.filter(f=>f.life>0);
+  if(flash>0){X.globalAlpha=flash/10;X.fillStyle=flashCol;X.fillRect(0,0,W,H);X.globalAlpha=1;flash--}
+}
+/* ======== relógio ======== */
+let last=performance.now(),acc=0,FPS=14;
+function loop(t){requestAnimationFrame(loop);const dt=t-last;last=t;
+  if(stop>0){stop=Math.max(0,stop-dt);frame();return}
+  acc+=dt;if(!busy){if(acc>1000/12){acc=0;K.f=(K.f+1)%seq(K.anim).length}}
+  frame()}
+/* ======== movimento do corpo pela arena ======== */
+function moveTo(x,ms,{jump=0,ease='suave'}={}){const x0=K.x,t0=performance.now();return new Promise(r=>{const f=()=>{if(stop>0){requestAnimationFrame(f);return}
+  const t=Math.min(1,(performance.now()-t0)/ms),e=ease==='rapido'?t*t:ease==='devagar'?1-(1-t)*(1-t):t<.5?2*t*t:1-Math.pow(-2*t+2,2)/2;K.x=x0+(x-x0)*e;K.y=-jump*4*t*(1-t);if(t<1)requestAnimationFrame(f);else{K.y=0;r()}};f()})}
+async function play(anim,a,b,fps=14){K.anim=anim;K.ov=null;for(let f=a;f<=b;f++){K.f=f;await sleep(1000/fps)}}
+/* o corte passa por todo o arco (quadros intermediários) para o risco sair curvo */
+async function swing(anim,fa,fb,steps=8,ms=120){const A=seq(anim)[fa],Bp=seq(anim)[fb];K.anim=anim;K.ov=t=>{const o=mix(A,Bp,t/steps);o.smear=undefined;return o};for(let i=0;i<=steps;i++){K.f=i;await sleep(ms/steps)}K.ov=null;K.f=fb}
+function hold(anim,f){K.anim=anim;K.ov=null;K.f=f}
+async function voltar(){hold('golpe',12);await moveTo(HOME,380,{jump:16,ease:'devagar'});dust(K.x,6);K.anim='parado';K.f=0}
+const near=(off=30)=>E.x-off;
+/* ======== os poderes ======== */
+const POD={
+ async rapido(){await play('rapido',0,3,16);await moveTo(K.x+16,90,{ease:'rapido'});hold('rapido',4);stab(K.x+12,GROUND-40);spark(E.x-6,GROUND-30,6);hitFoe(4,5);hitstop(60);await sleep(140);await play('rapido',6,9,14);await moveTo(HOME,200);K.anim='parado'},
+ async golpe(){await play('golpe',0,5,14);await moveTo(near(30),160,{ease:'rapido'});trailOn=true;await swing('golpe',6,7,9,110);trailOn=false;spark(E.x-6,GROUND-32,10);hitFoe(6,9);hitstop(90);await play('golpe',8,9,12);await voltar()},
+ async talho(){await play('golpe',0,5,16);await moveTo(near(30),150,{ease:'rapido'});trailOn=true;trailCol='#dfe9ff';await swing('golpe',6,7,8,95);trailOn=false;spark(E.x-6,GROUND-34,7);hitFoe(4,5);hitstop(60);
+   K.ov=f=>({...seq('golpe')[7],sw:(95+ (f/6)*140)*D,aF1:(60+f/6*120)*D,aF2:(80+f/6*110)*D});for(let f=0;f<=6;f++){K.f=f;await sleep(16)}
+   trailOn=true;trailCol='#ffd9a8';K.ov=f=>({...seq('golpe')[7],sw:(235-(f/6)*150)*D,aF1:(180-f/6*130)*D,aF2:(190-f/6*120)*D,lean:26*D});for(let f=0;f<=6;f++){K.f=f;await sleep(28)}trailOn=false;trailCol='#dfe9ff';
+   spark(E.x-6,GROUND-28,7,'#ffd9a8');hitFoe(4,7);hitstop(70);K.ov=null;await voltar()},
+ async pesado(){await play('pesado',0,3,12);const go=moveTo(near(26),420,{jump:30,ease:'suave'});await play('pesado',4,8,13);await go;trailOn=true;await swing('pesado',8,9,8,100);trailOn=false;
+   crack(E.x-14);ring(E.x-14,GROUND,34);dust(E.x-14,12,1.6);spark(E.x-10,GROUND-20,14);hitFoe(14,14);hitstop(130);await play('pesado',10,12,12);await voltar()},
+ async epico(){aura(1);await play('epico',0,8,10);aura(2);await sleep(200);const go=moveTo(near(26),560,{jump:52,ease:'suave'});await play('epico',9,13,11);await go;aura(0);trailOn=true;trailCol='#fff3c0';await swing('epico',13,14,9,120);trailOn=false;trailCol='#dfe9ff';
+   flash=7;flashCol='#fff3d0';crack(E.x-14);ring(E.x-14,GROUND,60,'#fff1b8',24);ring(E.x-14,GROUND,38,'#ffffff',16);dust(E.x-14,18,2.2);spark(E.x-10,GROUND-24,28,'#fff1b8',3.2,1.6);hitFoe(32,22,'#ffe08a');hitstop(170);await play('epico',15,18,10);await voltar()},
+ async empurrao(){await play('escudo',0,3,14);await moveTo(near(24),170,{ease:'rapido'});spark(E.x-8,GROUND-30,12,'#cfe6ff');ring(E.x-8,GROUND-26,14,'#bfe0ff',12);hitFoe(5,18);hitstop(80);await sleep(160);await moveTo(HOME,260,{jump:8,ease:'devagar'});K.anim='parado';K.f=0},
+ async giratorio(){await play('golpe',0,4,14);await moveTo(near(28),150,{ease:'rapido'});trailOn=true;trailCol='#e9d8ff';
+   for(let volta=0;volta<2;volta++){K.ov=f=>{const a=(200-f*30)*D;return{...seq('golpe')[7],sw:a,aF1:a-30*D,aF2:a-10*D,lean:(18+Math.sin(f)*6)*D}};for(let f=0;f<12;f++){K.f=f;await sleep(22);if(f===6){spark(E.x-6,GROUND-30,6,'#e9d8ff');hitFoe(5,6)}}}
+   trailOn=false;trailCol='#dfe9ff';K.ov=null;hitstop(60);await voltar()},
+ async investida(){await play('golpe',0,3,16);K.anim='andar';const run=moveTo(E.x+24,360,{ease:'rapido'});for(let i=0;i<5;i++){K.f=(i*2)%8;await sleep(48);if(i===3){trailOn=true;await swing('golpe',6,7,6,70);spark(E.x,GROUND-30,12);hitFoe(11,12);hitstop(80)}}await run;trailOn=false;dust(K.x,8);await sleep(160);await moveTo(HOME,420,{jump:18,ease:'devagar'});dust(K.x,6);K.anim='parado';K.f=0},
+ async escudo(){await play('escudo',0,4,14);shieldUp=true;ring(K.x+8,GROUND-30,16,'#bfe0ff',14);num(K.x,GROUND-60,'+5 Bloqueio','#bfe0ff')},
+ async bateEscudo(){if(!shieldUp)await POD.escudo();await goblinAtaca(async()=>{await play('bateEscudo',0,2,22);const sh=[K.x-20+R.info.shield[0],GROUND-60+R.info.shield[1]];spark(sh[0]+2,sh[1],14,'#e8f4ff');ring(sh[0]+2,sh[1],10,'#bfe0ff',10);num(K.x,GROUND-60,'Bloqueado','#bfe0ff');hitstop(70);
+   await moveTo(K.x-8,120,{ease:'devagar'});dust(K.x,4,.8);await play('bateEscudo',3,9,14);await moveTo(HOME,200)});K.anim='escudo';K.f=7},
+ async bateSem(){shieldUp=false;K.anim='parado';await goblinAtaca(async()=>{flash=4;flashCol='#ff3a2a';spark(K.x+6,GROUND-36,8,'#ff8a7a');num(K.x,GROUND-60,'-8','#ff9a8a');hitstop(80);const mv=moveTo(K.x-12,220,{ease:'devagar'});await play('ferido',0,5,12);await mv;await moveTo(HOME,260)});K.anim='parado';K.f=0},
+ async aparar(){shieldUp=false;await goblinAtaca(async()=>{trailOn=true;trailCol='#ffe9b8';await play('aparar',0,3,22);trailOn=false;spark(K.x+14,GROUND-42,16,'#fff1b8',2.6,1.4);num(K.x,GROUND-60,'Aparou!','#ffe9b8');E.dx=12;hitstop(90);await play('aparar',4,9,14)},true);K.anim='parado';K.f=0},
+ async esquiva(){shieldUp=false;await goblinAtaca(async()=>{const mv=moveTo(HOME-26,260,{jump:10,ease:'devagar'});await play('esquiva',1,6,20);await mv;dust(K.x,4);num(K.x,GROUND-60,'Esquivou','#c8ffd0');await play('esquiva',7,9,14);await moveTo(HOME,240)},false,true);K.anim='parado';K.f=0},
+};
+/* o goblin avança e bate; a reação do Cavaleiro acontece no momento do golpe */
+async function goblinAtaca(reacao,recua=false,erra=false){const x0=E.x,t0=performance.now(),alvo=K.x+(erra?4:18);
+  await new Promise(r=>{const f=()=>{if(stop>0){requestAnimationFrame(f);return}const t=Math.min(1,(performance.now()-t0)/280);E.lunge=(alvo-x0)*(t*t);if(t<1)requestAnimationFrame(f);else r()};f()});
+  E.lunge=alvo-x0;await reacao();const l0=E.lunge,t1=performance.now();
+  await new Promise(r=>{const f=()=>{if(stop>0){requestAnimationFrame(f);return}const t=Math.min(1,(performance.now()-t1)/(recua?220:360));E.lunge=l0*(1-t);if(t<1)requestAnimationFrame(f);else r()};f()});E.lunge=0}
+/* ======== botões ======== */
+const B=[['rapido','a','Rápido'],['golpe','a','Golpe'],['talho','a','Talho Duplo'],['pesado','a','Pesado'],['epico','a','Épico'],['empurrao','a','Empurrão de Escudo'],['giratorio','a','Giratório'],['investida','a','Investida'],
+ ['escudo','d','Erguer escudo'],['bateEscudo','d','Goblin bate no escudo'],['bateSem','d','Goblin bate sem escudo'],['aparar','d','Aparar'],['esquiva','d','Esquiva']];
+const bar=document.getElementById('bar');bar.innerHTML=B.map(([k,c,t])=>`<button class="${c}" data-k="${k}">${t}</button>`).join('')+ACTS.map((a,i)=>`<button class="x${i?'':' on'}" data-a="${i}">Ato ${i+1}</button>`).join('');
+bar.addEventListener('click',async e=>{const b=e.target.closest('button');if(!b)return;if(b.dataset.a){act=+b.dataset.a;bar.querySelectorAll('[data-a]').forEach(x=>x.classList.toggle('on',x===b));document.getElementById('title').textContent='Arena do Cavaleiro · '+ACTS[act].n;return}
+  if(busy)return;busy=true;try{if(b.dataset.k!=='escudo'&&b.dataset.k!=='bateEscudo')shieldUp=false;await POD[b.dataset.k]()}finally{busy=false;if(!shieldUp){K.ov=null;K.anim='parado';K.f=0}}});
+window.POD=POD;fit();document.getElementById('title').textContent='Arena do Cavaleiro · '+ACTS[0].n;requestAnimationFrame(loop);document.title='Arena do Cavaleiro';window.ARENA_OK=1;
+</script></body></html>
