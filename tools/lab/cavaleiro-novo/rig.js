@@ -38,6 +38,7 @@ function makeRig(W=40,H=64){const OY=16;
       const sh=[[sx-3,sy-s],[sx+3,sy-s],[sx+3,sy+1],[sx,sy+s+1],[sx-3,sy+1]];poly(sh,PAL.madeira[1]);
       for(let X=sx-2;X<=sx+2;X+=2)line(X,sy-s+1,X,sy+(X===sx?s:1),PAL.madeira[0]);
       line(sx-3,sy-s,sx+3,sy-s,PAL.aco[1]);line(sx+3,sy-s,sx+3,sy+1,PAL.aco[2]);line(sx+3,sy+1,sx,sy+s+1,PAL.aco[1]);line(sx-3,sy-s,sx-3,sy+1,PAL.aco[0]);line(sx-3,sy+1,sx,sy+s+1,PAL.aco[0]);
+      if(p.spikes){for(const [a,b] of [[sx+4,sy-s+1],[sx+4,sy-1],[sx+2,sy+3],[sx-4,sy-s+1],[sx-4,sy-1]]){px(a,b,PAL.aco[4]);px(a+(a>sx?1:-1),b,PAL.aco[3])}}
       line(sx-2,sy-2,sx+2,sy-2,PAL.couro[1]);line(sx-2,sy+1,sx+2,sy+1,PAL.couro[1]);px(sx-2,sy-2,PAL.ouro[1]);px(sx+2,sy-2,PAL.ouro[1]);px(sx-2,sy+1,PAL.ouro[1]);px(sx+2,sy+1,PAL.ouro[1]); }
     // braço esquerdo segurando o escudo: braço por trás, antebraço com braçadeira passando pelas correias, mão de ferro na alça
     { const sx=Math.round(hS[0]+1),sy=Math.round(hS[1]-1),ex=sx-3,ey=sy+1;
@@ -52,6 +53,13 @@ function makeRig(W=40,H=64){const OY=16;
     line(neck[0]+3,neck[1]+1,hip[0]+3,hip[1]+6,PAL.tab[3]);line(neck[0]-2,neck[1]+1,hip[0]-3,hip[1]+6,PAL.tab[1]);
     const cx=Math.round((neck[0]+hip[0])/2+.5),cy=Math.round((neck[1]+hip[1])/2+1);line(cx,cy-2,cx,cy+3,PAL.ouro[2]);line(cx-1,cy-1,cx+1,cy-1,PAL.ouro[2]);
     line(hip[0]-3,hip[1]+1,hip[0]+3,hip[1]+1,PAL.couro[1]);px(hip[0]+1,hip[1]+1,PAL.ouro[1]);
+    // desgaste: riscos no aço, amassados e tabardo rasgado (sem sangue)
+    const wr=p.wear||0,nk=[Math.round(neck[0]),Math.round(neck[1])],hp2=[Math.round(hip[0]),Math.round(hip[1])];
+    if(wr>=1){line(nk[0]-1,nk[1]+3,nk[0]+2,nk[1]+6,'#d8c8b0');line(nk[0]+2,nk[1]+2,nk[0]+3,nk[1]+4,'#d8c8b0');px(hp2[0]-2,hp2[1]+4,PAL.tab[0]);px(hp2[0]+2,hp2[1]+5,PAL.tab[0])}
+    if(wr>=2){px(nk[0]+1,nk[1]+4,'#2a1010');px(nk[0]+2,nk[1]+4,'#2a1010');px(nk[0]+1,nk[1]+5,'#2a1010');px(nk[0]+3,nk[1]+5,'#e8d8c0');
+      for(const dx of [-3,-1,1,3])px(hp2[0]+dx,hp2[1]+6,'#140808');px(hp2[0]-2,hp2[1]+5,'#140808');px(hp2[0]+2,hp2[1]+5,'#140808')}
+    if(wr>=3){for(const [dx,dy] of [[-3,5],[-3,4],[0,6],[0,5],[0,4],[3,5],[3,4],[2,3],[-2,3]])px(hp2[0]+dx,hp2[1]+dy,'#100606');
+      line(nk[0]-2,nk[1]+2,nk[0],nk[1]+8,'#e8d8c0');px(nk[0]-2,nk[1]+1,PAL.malha[0]);px(nk[0]-3,nk[1]+2,PAL.malha[0]);px(nk[0]+3,nk[1]+1,PAL.malha[0])}
     // perna da frente
     leg([hip[0]+1,hip[1]+2],p.fF,[PAL.aco[2],PAL.aco[2],PAL.aco[3],PAL.couro[1]]);
     // gola: malha e aço ligando o elmo aos ombros (a cabeça nunca descola)
@@ -62,8 +70,11 @@ function makeRig(W=40,H=64){const OY=16;
     const hx=Math.round(head[0]),hy=Math.round(head[1]);
     poly([[hx-3,hy-3],[hx+2,hy-4],[hx+4,hy-1],[hx+4,hy+3],[hx-3,hy+3]],PAL.aco[2]);line(hx-3,hy-3,hx+2,hy-4,PAL.aco[3]);
     line(hx+1,hy+(ht<-.5?-1:0),hx+4,hy+(ht<-.5?-2:ht>.5?1:0),PAL.aco[0]);px(hx+3,hy+2,PAL.aco[1]);px(hx+4,hy-1,PAL.aco[3]);px(hx-1,hy-3,PAL.aco[4]);
+    if(wr>=1){line(hx-2,hy-2,hx,hy+1,'#c8d0dc')}
+    if(wr>=2){px(hx+2,hy-3,'#1a1e28');px(hx+3,hy-3,'#1a1e28');px(hx+2,hy-2,PAL.aco[0]);px(hx+4,hy+2,'#1a1e28')}
+    if(wr>=3){px(hx-2,hy+1,'#1a1e28');px(hx-1,hy+2,'#1a1e28');px(hx+1,hy-4,'#1a1e28');px(hx+4,hy+1,PAL.aco[0])}
     // penacho para trás
-    const pl=p.plume||0;line(hx-1,hy-4,hx-4-pl*.5,hy-6,PAL.pluma[1],2);line(hx-4-pl*.5,hy-6,hx-8-pl,hy-4+pl*.3,PAL.pluma[0],2);px(hx,hy-5,PAL.pluma[2]);px(hx-3,hy-6,PAL.pluma[2]);
+    const pl=p.plume||0;if((p.wear||0)>=3){line(hx-1,hy-4,hx-3-pl*.3,hy-6,PAL.pluma[1],2);px(hx-4,hy-4,PAL.pluma[0]);px(hx-5,hy-3,PAL.pluma[0])}else{line(hx-1,hy-4,hx-4-pl*.5,hy-6,PAL.pluma[1],2);line(hx-4-pl*.5,hy-6,hx-8-pl,hy-4+pl*.3,PAL.pluma[0],2)}px(hx,hy-5,PAL.pluma[2]);px(hx-3,hy-6,PAL.pluma[2]);
     // ESPADA na mão DIREITA (o braço de perto): desenhada por cima de tudo, todo golpe passa na frente do corpo
     const [eF,hF]=limb(shN,p.aF1,4,p.aF2,4);
     if(p.smear){const[a0,a1]=p.smear,st=Math.sign(a1-a0)*.06;for(let a=a0;Math.sign(a1-a)===Math.sign(st);a+=st)for(let r=7;r<=14;r++){const q=P(hF,a,r),t=(a-a0)/(a1-a0);px(q[0],q[1],t>.7?PAL.aco[4]:t>.35?'#c8d4e4':'#8a96aa')}}
