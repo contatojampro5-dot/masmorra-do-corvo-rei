@@ -13,7 +13,7 @@ function pincel(x){const st={a:1};
   const ell=(cx,cy,rx,ry,col)=>{if(rx<=0||ry<=0)return;for(let y=Math.floor(cy-ry);y<=Math.ceil(cy+ry);y++){const t=(y+.5-cy)/ry;if(Math.abs(t)>1)continue;const w=rx*Math.sqrt(1-t*t);for(let X=Math.round(cx-w);X<Math.round(cx+w);X++)px(X,y,col)}};
   /* bola com volume: escuro embaixo, meio, brilho em cima */
   const bola=(cx,cy,rx,ry,c)=>{ell(cx,cy,rx,ry,c[0]);ell(cx,cy-.6,rx-.7,ry-.9,c[1]);if(c[2])ell(cx-rx*.25,cy-ry*.45,rx*.45,ry*.35,c[2])};
-  return{px,line,poly,ell,bola,st,info:{}}}
+  const info={};return{px,line,poly,ell,bola,st,info,depois:fn=>(info.post=info.post||[]).push(fn)}}
 const P=(o,a,l)=>[o[0]+Math.cos(a)*l,o[1]+Math.sin(a)*l]; // 0 = direita, positivo = gira para baixo
 const lerp=(a,b,t)=>a+(b-a)*t;
 /* perna de 2 ossos: joelho dobra para dir (+1 frente, -1 trás) */
@@ -377,6 +377,10 @@ function quadro(id,pose,luz){const B=BICHOS[id],c=tela(),x=c.getContext('2d'),pe
   let L=luz&&typeof lightPass==='function'?lightPass(m,luz):m;
   /* transparência em pontilhado, aplicada depois da luz (fantasma sumindo, gárgula esfarelando) */
   if(pose.al!==undefined&&pose.al<1){const q=L.getContext('2d'),d=q.getImageData(0,0,W,H);for(let y=0;y<H;y++)for(let x=0;x<W;x++)if((BAYER[(y&3)*4+(x&3)]+.5)/16>=pose.al)d.data[(y*W+x)*4+3]=0;q.putImageData(d,0,0)}
+  /* camada que fica por cima da luz (fogo negro, brilhos próprios): desenhada à parte, girada e espelhada do mesmo jeito */
+  if(pen.info.post){const c2=tela(),p2=pincel(c2.getContext('2d'));pen.info.post.forEach(fn=>fn(p2));let o2=c2;
+    if(pose.rot){const r=tela(),q=r.getContext('2d');q.imageSmoothingEnabled=false;q.translate(pose.px+(pose.tx||0),pose.py+(pose.ty||0));q.rotate(pose.rot);q.drawImage(c2,-pose.px,-pose.py);o2=r}
+    const lx=L.getContext('2d');lx.save();lx.translate(W,0);lx.scale(-1,1);lx.drawImage(o2,0,0);lx.restore()}
   /* ponto de onde sai o tiro (arco, boca, mão), já espelhado */
   const b=pen.info.boca;L.boca=b?[W-b[0],b[1]]:null;
   return L}

@@ -12,7 +12,7 @@ function humano(pen,p,o){const hip=[p.hx+(p.sh||0),p.hy],lean=p.lean||0,neck=P(h
   return{hip,neck,shF,shB,fF,fB,perna,braco}}
 function machado(pen,h,ang,cabo,lam,cor){const s=P(h,ang+PI,3),e=P(h,ang,cabo);pen.line(s[0],s[1],e[0],e[1],'#5c3a1e',2);
   const b0=P(e,ang+PI,lam*.55),lado=ang-PI/2;const pts=[b0,P(b0,lado,lam*.9),P(P(e,ang,1.5),lado,lam*1.1),P(e,ang,1.5)];pen.poly(pts,cor[0]);pen.line(pts[1][0],pts[1][1],pts[2][0],pts[2][1],cor[1]);pen.px(pts[2][0],pts[2][1],'#ffffff');return e}
-function arco(pen,c,a0,a1,r0,r1){if(a0===a1)return;const st=Math.sign(a1-a0)*.05;for(let a=a0;Math.sign(a1-a)===Math.sign(st);a+=st){const t=(a-a0)/(a1-a0),w=Math.max(1,Math.round(t*2.5));for(let r=r1-w;r<=r1;r++){const q=P(c,a,r);pen.px(q[0],q[1],r===r1?(t>.6?'#ffffff':'#c8d0e0'):'#8a96aa')}}}
+function arco(pen,c,a0,a1,r0,r1,cor=['#ffffff','#c8d0e0','#8a96aa']){if(a0===a1)return;const st=Math.sign(a1-a0)*.05;for(let a=a0;Math.sign(a1-a)===Math.sign(st);a+=st){const t=(a-a0)/(a1-a0),w=Math.max(1,Math.round(t*2.5));for(let r=r1-w;r<=r1;r++){const q=P(c,a,r);pen.px(q[0],q[1],r===r1?(t>.6?cor[0]:cor[1]):cor[2])}}}
 function poeira(pen,x,y,t,cor='#8a7a60'){if(t<=0||t>=1)return;for(let i=0;i<8;i++){const s=i<4?-1:1,dx=s*(2+i%4*2.5)*t*1.6,dy=-Math.sin(t*PI)*(1+i%3)*1.5;pen.px(x+dx,y+dy,cor);pen.px(x+dx+s,y+dy,cor)}}
 function racha(pen,x,t){if(t<=0)return;for(let i=-6;i<=6;i++){pen.px(x+i,GY+((i*7)%3===0?-1:0),'#120a06')}pen.px(x-7,GY-1,'#120a06');pen.px(x+7,GY,'#120a06')}
 
@@ -243,12 +243,19 @@ const CNE={nome:'Cavaleiro Negro',nivel:4,
     if(p.brilho>0){pen.px(sp[1][0],sp[1][1],'#fff');pen.px(sp[1][0]-1,sp[1][1]+1,'#bfe0ff')}
     // espada na mão da frente (por cima)
     const fb=B.braco(B.shF,p.aF,p.aF2,A[2],A[2]),sa=p.aF+p.aF2+(p.crava?0:0);const swa=p.crava>0?lerp(sa,PI/2,p.crava):sa;
-    if(p.tr)arco(pen,fb.h,p.tr,swa,9,16);
-    const t=P(fb.h,swa,15),g1=P(fb.h,swa+PI/2,2.2),g2=P(fb.h,swa-PI/2,2.2),pm=P(fb.h,swa+PI,2.5);pen.line(fb.h[0],fb.h[1],t[0],t[1],'#8a92a8',2);pen.line(fb.h[0],fb.h[1],t[0],t[1],'#c8d0e0');pen.px(t[0],t[1],'#ffffff');
-    pen.line(g1[0],g1[1],g2[0],g2[1],A[3]);pen.px(pm[0],pm[1],V[2]);pen.px(fb.h[0],fb.h[1],A[3]);
+    if(p.tr){const a0=p.tr,h=fb.h;pen.depois(pn=>arco(pn,h,a0,swa,9,16,['#c070ff','#4a1a6a','#140810']))}
+    // ESPADA NEGRA envolta em fogo negro (pedido do Theo): lâmina escura, fio roxo, labaredas pretas com borda roxa e brasas vermelhas
+    const t=P(fb.h,swa,15),g1=P(fb.h,swa+PI/2,2.4),g2=P(fb.h,swa-PI/2,2.4),pm=P(fb.h,swa+PI,2.5),up=-PI/2;
+    const ph=p.ph;pen.depois(pn=>{
+      for(let i=0;i<8;i++){const r=2.5+i*1.75,q=P(fb.h,swa,r),fl=Math.sin(ph*1.7+i*2.1),hh=3+fl*1.4+(i>1&&i<6?1.5:0),dx=Math.sin(ph*1.1+i)*.8;
+        const b=[q[0]+dx,q[1]-hh],o=[q[0]+dx*1.3,q[1]-hh-1.2];pn.line(q[0]-.5,q[1],o[0],o[1],'#5a2a7a');pn.line(q[0]+.5,q[1],o[0]+.6,o[1]+.4,'#5a2a7a');pn.line(q[0],q[1],b[0],b[1],'#060408',2);
+        if(((ph|0)+i)%5===0)pn.px(o[0]+.5,o[1]-1.8,'#d0303a');else if(((ph|0)+i)%5===2)pn.px(o[0],o[1]-1.5,'#9a5ad0')}
+      pn.line(fb.h[0],fb.h[1],t[0],t[1],'#060408',2);const fio=P(fb.h,swa+PI/2,.6);pn.line(fio[0],fio[1],t[0],t[1],'#7a4aa0');pn.px(t[0],t[1],'#d090ff');
+      for(let i=0;i<3;i++){const e=P(t,-PI/2+Math.sin(ph*1.3+i)*.4,1.5+i*1.3);pn.px(e[0],e[1],i===2?'#d0303a':'#2a0a30')}});
+    pen.line(g1[0],g1[1],g2[0],g2[1],A[0],2);pen.px(g1[0],g1[1],'#6a3a8a');pen.px(g2[0],g2[1],'#6a3a8a');pen.px(pm[0],pm[1],'#c0302a');pen.px(fb.h[0],fb.h[1],A[3]);
     poeira(pen,p.hx+4,GY,p.pz);racha(pen,p.hx+10,p.rc)},
   A:{
-   parado:{n:16,fps:9,loop:1,f:(f,n)=>{const b=(sw(f,n,1)+1)/2;return{hy:33+(b>.6?1:0),lean:(4+b*1.5)*D,capa:1+sw(f,n,1,1)*1.2,pena:sw(f,n,1,.5)*1.5,olho:f===12?.4:1,aF2:(-60+b*4)*D}}},
+   parado:{n:16,fps:9,loop:1,f:(f,n)=>{const b=(sw(f,n,1)+1)/2;return{ph:f*1.6,hy:33+(b>.6?1:0),lean:(4+b*1.5)*D,capa:1+sw(f,n,1,1)*1.2,pena:sw(f,n,1,.5)*1.5,olho:f===12?.4:1,aF2:(-60+b*4)*D}}},
    entrada:{nome:'Entrada',n:24,fps:11,f:null},
    ataque:{nome:'Golpe Brutal',n:18,fps:13,hits:[9],f:null},
    especial:{nome:'Investida Blindada',n:18,fps:14,hits:[8],f:null},
@@ -266,5 +273,6 @@ CNE.A.morte.f=kf(CNE.DEF,[[0,{}],[2,{e:'rapido',hx:17,lean:-12*D,ht:-1,fF:[23,GY
   [13,{e:'segura',hx:19,hy:39,lean:12*D,ht:1.5,fF:[26,GY],fB:[14,GY-.5],aF:70*D,aF2:20*D,crava:1,olho:0}],[17,{e:'rapido',hx:19,hy:39,lean:12*D,ht:1.5,fF:[26,GY],fB:[14,GY],aF:70*D,aF2:20*D,crava:1,rot:PI/2,px:31,py:GY-1,dead:1,pz:.1}],
   [19,{hx:19,hy:39,lean:12*D,ht:1.5,fF:[26,GY],fB:[14,GY],aF:70*D,aF2:20*D,crava:1,rot:PI/2*.95,px:31,py:GY-1,dead:1,pz:.6}],[24,{hx:19,hy:39,lean:12*D,ht:1.5,fF:[26,GY],fB:[14,GY],aF:70*D,aF2:20*D,crava:1,rot:PI/2,px:31,py:GY-1,dead:1}]]);
 
+for(const k of ['entrada','ataque','especial','buff','ferido','morte']){const g=CNE.A[k].f;CNE.A[k].f=f=>({...g(f),ph:f*1.6})}
 Object.assign(BICHOS,{bruxa:BRU,carrasco:CRR,mimico:MIM,orc:ORC,cavaleiro:CNE});
 })();
