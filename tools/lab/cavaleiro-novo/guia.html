@@ -5,7 +5,7 @@ const sc=(c,k,bg)=>{const o=document.createElement('canvas');o.width=c.width*k;o
 let h=document.createElement('h2');h.textContent='Regra fixa: ele olha para a DIREITA (para os inimigos)';document.body.appendChild(h);
 const w=document.createElement('div');w.className='w';const big=sc(lightPass(cp(R.draw(ANIM.parado.f(0,16))),{dir:-1,col:[255,160,70],amb:[60,40,40]}),9,'#2a1a10');w.appendChild(big);document.body.appendChild(w);
 const L=(t,x,y,c)=>{const d=document.createElement('div');d.className='lb';d.style.left=x+'px';d.style.top=y+'px';d.style.color=c;d.innerHTML=t;w.appendChild(d)};
-L('ESCUDO → braço da FRENTE<br>(sempre na frente do corpo)',250,190,'#ffd76a');L('ESPADA → braço de TRÁS<br>(fica entre o corpo e o escudo)',200,400,'#bfe0ff');L('◀ capa e penacho para trás',4,250,'#e08a8a');L('inimigo ▶',300,40,'#ff9a8a');
+L('ESCUDO → braço ESQUERDO (o de longe)<br>vemos só a madeira de dentro',250,190,'#ffd76a');L('ESPADA → mão DIREITA (a de perto)<br>por cima de tudo',200,400,'#bfe0ff');L('◀ capa e penacho para trás',4,250,'#e08a8a');L('inimigo ▶',300,40,'#ff9a8a');
 h=document.createElement('h2');h.textContent='Golpe: a espada sobe por trás da cabeça, passa POR CIMA e desce na FRENTE (lado do inimigo)';document.body.appendChild(h);
 const r=document.createElement('div');r.className='row';document.body.appendChild(r);
 const seq=comMolas([...Array(12)].map((_,f)=>ANIM.golpe.f(f,12)));[0,2,3,4,5,6,7,9].forEach(f=>{const d=document.createElement('div');d.appendChild(sc(lightPass(cp(R.draw(seq[f])),{dir:-1,col:[255,160,70],amb:[60,40,40]}),4,'#2a1a10'));d.append('quadro '+(f+1));r.appendChild(d)});

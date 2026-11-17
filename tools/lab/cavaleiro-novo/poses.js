@@ -1,5 +1,5 @@
 const D=Math.PI/180;const GY=44;
-const BASE={hx:18,hy:30,lean:4*D,fF:[21,GY],fB:[15,GY],aB1:30*D,aB2:80*D,aF1:20*D,aF2:40*D,sw:55*D,cape:0,plume:0,shR:5,shF:1};
+const BASE={hx:18,hy:30,lean:4*D,fF:[21,GY],fB:[15,GY],aB1:55*D,aB2:95*D,aF1:20*D,aF2:40*D,sw:55*D,cape:0,plume:0,shR:5,shF:1};
 const lerp=(a,b,t)=>a+(b-a)*t;
 const mix=(a,b,t)=>{const o={};for(const k in a){const A=a[k],B=b[k]??A;o[k]=Array.isArray(A)?[lerp(A[0],B[0],t),lerp(A[1],B[1],t)]:typeof A==='number'?lerp(A,B,t):A}if(b.smear)o.smear=t>.5?b.smear:a.smear;return o};
 const ease=t=>t<.5?2*t*t:1-Math.pow(-2*t+2,2)/2;
