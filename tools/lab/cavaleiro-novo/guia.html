@@ -8,9 +8,9 @@ const L=(t,x,y,c)=>{const d=document.createElement('div');d.className='lb';d.sty
 L('ESCUDO → braço ESQUERDO (o de longe)<br>vemos só a madeira de dentro',250,190,'#ffd76a');L('ESPADA → mão DIREITA (a de perto)<br>por cima de tudo',200,400,'#bfe0ff');L('◀ capa e penacho para trás',4,250,'#e08a8a');L('inimigo ▶',300,40,'#ff9a8a');
 h=document.createElement('h2');h.textContent='Golpe: a espada sobe por trás da cabeça, passa POR CIMA e desce na FRENTE (lado do inimigo)';document.body.appendChild(h);
 const r=document.createElement('div');r.className='row';document.body.appendChild(r);
-const seq=comMolas([...Array(12)].map((_,f)=>ANIM.golpe.f(f,12)));[0,2,3,4,5,6,7,9].forEach(f=>{const d=document.createElement('div');d.appendChild(sc(lightPass(cp(R.draw(seq[f])),{dir:-1,col:[255,160,70],amb:[60,40,40]}),4,'#2a1a10'));d.append('quadro '+(f+1));r.appendChild(d)});
+const seq=vivo('golpe');[0,2,4,5,6,7,9,12].forEach(f=>{const d=document.createElement('div');d.appendChild(sc(lightPass(cp(R.draw(seq[f])),{dir:-1,col:[255,160,70],amb:[60,40,40]}),4,'#2a1a10'));d.append('quadro '+(f+1));r.appendChild(d)});
 h=document.createElement('h2');h.textContent='Pesado e Épico: mesma regra — tudo desce para a direita';document.body.appendChild(h);
 const r2=document.createElement('div');r2.className='row';document.body.appendChild(r2);
-const s2=comMolas([...Array(14)].map((_,f)=>ANIM.pesado.f(f,14)));[1,4,6,7,8,10].forEach(f=>{const d=document.createElement('div');d.appendChild(sc(lightPass(cp(R.draw(s2[f])),{dir:-1,col:[255,160,70],amb:[60,40,40]}),4,'#2a1a10'));d.append('pesado '+(f+1));r2.appendChild(d)});
+const s2=vivo('pesado');[2,5,7,8,9,12].forEach(f=>{const d=document.createElement('div');d.appendChild(sc(lightPass(cp(R.draw(s2[f])),{dir:-1,col:[255,160,70],amb:[60,40,40]}),4,'#2a1a10'));d.append('pesado '+(f+1));r2.appendChild(d)});
 document.title='ok';
 </script></body></html>

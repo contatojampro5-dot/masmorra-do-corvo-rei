@@ -6,7 +6,7 @@ let h=document.createElement('h2');h.textContent='O Cavaleiro novo — de perto 
 const big=document.createElement('div');big.className='big';document.body.appendChild(big);
 const idle=cp(R.draw(ANIM.parado.f(0,8)));
 [['sem luz',idle,'#2a2420'],['Ato 1 · tochas',lightPass(idle,{dir:-1,col:[255,160,70],amb:[60,40,40]}),'#2a1a10'],['Ato 2 · catacumbas',lightPass(idle,{dir:1,col:[140,210,255],amb:[40,60,60]}),'#101820'],['Ato 3 · torre',lightPass(idle,{dir:-1,col:[255,90,50],amb:[90,40,120]}),'#1c0a12']].forEach(([t,c,bg])=>{const d=document.createElement('div');d.appendChild(sc(c,6,bg));d.appendChild(document.createElement('br'));d.append(t);big.appendChild(d)});
-for(const [k,A] of Object.entries(ANIM)){h=document.createElement('h2');h.textContent=k[0].toUpperCase()+k.slice(1)+' · '+A.n+' quadros';document.body.appendChild(h);const r=document.createElement('div');r.className='row';
-  const seq=comMolas([...Array(A.n)].map((_,f)=>A.f(f,A.n)));for(let f=0;f<A.n;f++){r.appendChild(sc(lightPass(cp(R.draw(seq[f])),{dir:-1,col:[255,160,70],amb:[60,40,40]}),3,'#2a1a10'))}document.body.appendChild(r)}
+for(const [k,A] of Object.entries(ANIM)){if(A.n>24&&k==='parado'){h=document.createElement('h2');h.textContent='Parado · 48 quadros (mostrando 1 a cada 3)';document.body.appendChild(h);const r=document.createElement('div');r.className='row';const seq=vivo(k);for(let f=0;f<A.n;f+=3)r.appendChild(sc(lightPass(cp(R.draw(seq[f])),{dir:-1,col:[255,160,70],amb:[60,40,40]}),3,'#2a1a10'));document.body.appendChild(r);continue}h=document.createElement('h2');h.textContent=k[0].toUpperCase()+k.slice(1)+' · '+A.n+' quadros';document.body.appendChild(h);const r=document.createElement('div');r.className='row';
+  const seq=vivo(k);for(let f=0;f<A.n;f++){r.appendChild(sc(lightPass(cp(R.draw(seq[f])),{dir:-1,col:[255,160,70],amb:[60,40,40]}),3,'#2a1a10'))}document.body.appendChild(r)}
 document.title='ok';
 </script></body></html>
