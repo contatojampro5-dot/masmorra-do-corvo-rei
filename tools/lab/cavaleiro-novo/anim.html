@@ -2,16 +2,17 @@
 <script src="rig.js"></script><script src="poses.js"></script><script>
 const C=document.getElementById('c'),X=C.getContext('2d');C.style.width=innerWidth+'px';C.style.height=innerHeight+'px';const R=makeRig();
 const cp=c=>{const o=document.createElement('canvas');o.width=c.width;o.height=c.height;o.getContext('2d').drawImage(c,0,0);return o};
-const SEQ=[['parado','Parado',2],['andar','Andar',2],['rapido','Rápido (até 5)',2],['golpe','Golpe (6 a 9)',2],['pesado','Pesado (10 a 19)',2],['epico','Épico (20+)',1],['escudo','Erguer escudo',1],['bateEscudo','Pancada no escudo',2],['ferido','Ferido',2]];
+const SEQ=[['parado','Parado, respirando',2],['olhar','Olha para cima',1],['ajeitar','Ajeita a espada',1],['andar','Andar',2],['rapido','Rápido (até 5)',2],['golpe','Golpe (6 a 9)',2],['pesado','Pesado (10 a 19)',1],['epico','Épico (20+)',1],['escudo','Erguer escudo',1],['bateEscudo','Pancada no escudo',2],['escudoAlto','Escudo no alto',1],['aparar','Aparar com a espada',2],['esquiva','Esquiva para trás',2],['ferido','Ferido',1],['cansado','Cansado (pouca vida)',3],['vitoria','Vitória',1],['caindo','Caindo',1]];
 const acts=[{bg:['#2a1a10','#120a06'],col:[255,160,70],amb:[60,40,40],dir:-1,torch:[60,70]},{bg:['#101a24','#06080c'],col:[140,210,255],amb:[40,60,60],dir:1,torch:[180,70]},{bg:['#24101a','#0a0408'],col:[255,90,50],amb:[90,40,120],dir:-1,torch:[60,70]}];
-let si=0,f=0,loop=0,act=0,last=0;
-function frame(t){requestAnimationFrame(frame);if(t-last<1000/11)return;last=t;
+let si=0,f=0,loop=0,act=0,last=0;const M={c:0,cv:0,pl:0,pv:0,px:null,py:null};
+function mola(s){const nx=s.hx+Math.sin(s.lean||0)*10,ny=s.hy-(s.br||0),vx=M.px===null?0:nx-M.px,vy=M.py===null?0:ny-M.py;M.px=nx;M.py=ny;const tc=(s.cape||0)*.6+vx*2.2-vy*.6,tp=(s.plume||0)*.6+vx*1.8+vy*.8;M.cv+=(tc-M.c)*.35;M.cv*=.72;M.c+=M.cv;M.pv+=(tp-M.pl)*.4;M.pv*=.7;M.pl+=M.pv;return{...s,cape:Math.max(-4,Math.min(9,M.c)),plume:Math.max(-4,Math.min(7,M.pl))}}
+function frame(t){requestAnimationFrame(frame);if(t-last<1000/12)return;last=t;
   const [k,name,loops]=SEQ[si],A=ANIM[k],L=acts[act];
   const g=X.createLinearGradient(0,0,0,135);g.addColorStop(0,L.bg[0]);g.addColorStop(1,L.bg[1]);X.fillStyle=g;X.fillRect(0,0,240,135);
   const fl=.85+Math.random()*.15;const rg=X.createRadialGradient(L.torch[0],L.torch[1],2,L.torch[0],L.torch[1],70*fl);rg.addColorStop(0,`rgba(${L.col},.35)`);rg.addColorStop(1,'rgba(0,0,0,0)');X.fillStyle=rg;X.fillRect(0,0,240,135);
   X.fillStyle=`rgb(${L.col})`;X.fillRect(L.torch[0]-1,L.torch[1]-4,2,4);X.fillStyle='#3a2a1a';X.fillRect(L.torch[0]-1,L.torch[1],2,8);
   X.fillStyle='#1a120c';X.fillRect(0,108,240,27);X.fillStyle='rgba(0,0,0,.35)';X.fillRect(0,108,240,2);
-  const spr=lightPass(cp(R.draw(A.f(f,A.n))),{dir:L.dir,col:L.col,amb:L.amb});
+  const spr=lightPass(cp(R.draw(mola(A.f(f,A.n)))),{dir:L.dir,col:L.col,amb:L.amb});
   X.globalAlpha=.35;X.fillStyle='#000';X.beginPath();X.ellipse(120,108,11,2,0,0,7);X.fill();X.globalAlpha=1;
   X.drawImage(spr,100,48);
   // reflexo no chão molhado

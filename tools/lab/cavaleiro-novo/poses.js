@@ -36,3 +36,24 @@ const ANIM={
    [15,{hx:23,hy:35,lean:30*D,fF:[32,GY],fB:[14,GY],aF1:75*D,aF2:95*D,sw:110*D,cape:4,plume:4}],[18,{}]])},
  ferido:{n:6,f:KF([[0,{}],[2,{hx:15,hy:32,lean:-20*D,fF:[21,GY],fB:[11,GY],aF1:-40*D,aF2:-20*D,sw:10*D,cape:5,plume:6,aB1:60*D}],[6,{}]])},
 };
+
+/* ---------- mais vida ---------- */
+const sinw=(f,n,k=1,ph=0)=>Math.sin(f/n*2*Math.PI*k+ph);
+Object.assign(ANIM,{
+ parado:{n:16,f:(f,n)=>{const b=(sinw(f,n)+1)/2,w=sinw(f,n,1,1.2);return{...BASE,hy:30+(b>.55?1:0),br:b*1.2,hx:18+w*.6,fF:[21,GY],fB:[15,GY],lean:(4+w*1.5)*D,sw:BASE.sw+(b-.5)*5*D,aB2:BASE.aB2+(b-.5)*6*D,aF1:BASE.aF1+(b-.5)*4*D}}},
+ olhar:{n:16,f:KF([[0,{}],[4,{ht:-1,hd:-1,lean:0,br:.6}],[10,{ht:-1,hd:-1,lean:0,br:.3}],[13,{ht:.4,br:.8}],[16,{}]])},
+ ajeitar:{n:14,f:KF([[0,{}],[3,{aF1:-10*D,aF2:-30*D,sw:20*D,br:.7}],[5,{aF1:-5*D,aF2:-20*D,sw:-60*D,br:.9}],[7,{aF1:-10*D,aF2:-25*D,sw:-90*D,br:.6}],[10,{aF1:15*D,aF2:35*D,sw:60*D,br:.3}],[14,{}]])},
+ cansado:{n:10,f:(f,n)=>{const b=(sinw(f,n)+1)/2;return{...BASE,hx:17,hy:33+(b>.5?1:0),lean:18*D,br:b*1.6,hd:1,ht:.6,fF:[21,GY],fB:[13,GY],aF1:30*D,aF2:20*D,sw:15*D,aB1:20*D,aB2:30*D}}},
+ aparar:{n:10,f:KF([[0,{}],[2,{hx:17,hy:31,lean:-6*D,fF:[21,GY],fB:[12,GY],aF1:-60*D,aF2:-110*D,sw:-150*D,br:.8}],
+   [3,{hx:15,hy:32,lean:-12*D,fF:[20,GY],fB:[11,GY],aF1:-70*D,aF2:-120*D,sw:-140*D,smear:[-150*D,-140*D]}],[6,{hx:16,hy:31,lean:-8*D,fF:[20,GY],fB:[11,GY],aF1:-60*D,aF2:-110*D,sw:-150*D}],[10,{}]])},
+ escudoAlto:{n:10,f:KF([[0,{}],[3,{hx:17,hy:33,lean:-6*D,fF:[22,GY],fB:[11,GY],aB1:150*D,aB2:170*D,shR:6,aF1:-10*D,aF2:10*D,sw:30*D,ht:-1}],[5,{hx:16,hy:35,lean:-8*D,fF:[22,GY],fB:[10,GY],aB1:150*D,aB2:172*D,shR:6,aF1:-10*D,aF2:10*D,sw:30*D,ht:-1}],[7,{hx:17,hy:33,lean:-6*D,fF:[22,GY],fB:[11,GY],aB1:150*D,aB2:170*D,shR:6,aF1:-10*D,aF2:10*D,sw:30*D,ht:-1}],[10,{}]])},
+ esquiva:{n:10,f:KF([[0,{}],[2,{hy:32,lean:-6*D,fF:[22,GY],fB:[15,GY]}],[4,{hx:12,hy:26,lean:-14*D,fF:[16,38],fB:[9,37],aB1:60*D,aB2:110*D,sw:20*D}],[6,{hx:9,hy:32,lean:-6*D,fF:[13,GY],fB:[5,GY]}],[8,{hx:12,hy:31,fF:[16,GY],fB:[8,GY]}],[10,{}]])},
+ vitoria:{n:14,f:KF([[0,{}],[3,{hy:32,br:.5}],[6,{hy:29,lean:-4*D,aF1:-170*D,aF2:-175*D,sw:-178*D,br:1.4,ht:-1,hd:-1,fF:[23,GY],fB:[13,GY]}],[11,{hy:29,lean:-4*D,aF1:-172*D,aF2:-176*D,sw:-178*D,br:1,ht:-1,hd:-1,fF:[23,GY],fB:[13,GY]}],[14,{hy:29,lean:-4*D,aF1:-172*D,aF2:-176*D,sw:-178*D,br:1.3,ht:-1,hd:-1,fF:[23,GY],fB:[13,GY]}]])},
+ caindo:{n:16,f:KF([[0,{}],[3,{hx:16,hy:32,lean:-16*D,ht:-1,fF:[21,GY],fB:[12,GY],aF1:-30*D,sw:-20*D}],[6,{hx:18,hy:37,lean:14*D,ht:.8,hd:1,fF:[24,GY],fB:[13,GY],aF1:50*D,aF2:70*D,sw:95*D}],[10,{hx:18,hy:37,lean:20*D,ht:1,hd:1,fF:[24,GY],fB:[13,GY],aF1:55*D,aF2:80*D,sw:100*D,br:.2}],[13,{hx:20,hy:40,lean:60*D,ht:1,hd:2,fF:[24,GY],fB:[14,GY],aF1:70*D,aF2:90*D,sw:90*D}],[16,{hx:22,hy:41,lean:80*D,ht:1,hd:2,fF:[25,GY],fB:[15,GY],aF1:80*D,aF2:90*D,sw:90*D}]])},
+});
+/* física das partes soltas: capa e penacho como molas, puxadas pelo movimento do pescoço */
+function comMolas(seq){const out=[];let c=0,cv=0,pl=0,pv=0,px=null,py=null;
+  for(let r=0;r<2;r++)for(let i=0;i<seq.length;i++){const s=seq[i],nx=s.hx+Math.sin(s.lean||0)*10,ny=s.hy-(s.br||0);const vx=px===null?0:nx-px,vy=py===null?0:ny-py;px=nx;py=ny;
+    const tc=(s.cape||0)*.6+vx*2.2-vy*.6,tp=(s.plume||0)*.6+vx*1.8+vy*.8;cv+=(tc-c)*.35;cv*=.72;c+=cv;pv+=(tp-pl)*.4;pv*=.7;pl+=pv;
+    if(r===1)out.push({...s,cape:Math.max(-4,Math.min(9,c)),plume:Math.max(-4,Math.min(7,pl))})}
+  return out}
