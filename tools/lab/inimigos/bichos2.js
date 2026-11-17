@@ -54,6 +54,7 @@ function esqueleto(pen,p,arma){const k=Pecas(),hip=[p.hx,p.hy],lean=p.lean||0,ne
     const dir=p.mira,hBow=P(shF,dir,7.5),corda=P(hBow,dir+PI,2+p.puxa*6.5);
     const eF=[lerp(shF[0],hBow[0],.5),lerp(shF[1],hBow[1],.5)+.6],eB=[lerp(shB[0],corda[0],.5),lerp(shB[1],corda[1],.5)+1.8];
     k.linha(shB,eB,OSSO[0]);k.linha(eB,corda,OSSO[0]);
+    pen.info.boca=P(hBow,dir,1);
     const t1=P(P(hBow,dir-PI/2,6.5),dir+PI,1.6),t2=P(P(hBow,dir+PI/2,6.5),dir+PI,1.6);
     k.fn([hBow,t1,t2,corda],(pen,[b,a1,a2,c])=>{const q1=P(b,dir-PI/2,3.6),q2=P(b,dir+PI/2,3.6);pen.line(a1[0],a1[1],q1[0]+Math.cos(dir),q1[1]+Math.sin(dir),'#7e5430');pen.line(q1[0]+Math.cos(dir),q1[1]+Math.sin(dir),q2[0]+Math.cos(dir),q2[1]+Math.sin(dir),'#5c3a1e');pen.line(q2[0]+Math.cos(dir),q2[1]+Math.sin(dir),a2[0],a2[1],'#7e5430');
       pen.line(a1[0],a1[1],c[0],c[1],'#d8d0bc');pen.line(c[0],c[1],a2[0],a2[1],'#d8d0bc');
@@ -153,6 +154,7 @@ const GOS={nome:'Gosma Ácida',nivel:2,
     // gotas espalhadas
     if(p.spl>0){for(let i=0;i<8;i++){const a=PI+(i+.5)/8*PI,r=rw+2+p.spl*8,x=cx+Math.cos(a)*r,y=base-1+Math.sin(a)*(rh*.6+p.spl*6)+p.spl*p.spl*5;pen.ell(x,y,1,1.2,C[1]);pen.px(x,y-1,C[2])}}
     // cuspe saindo
+    pen.info.boca=[cx+rw+2,my-1];
     if(p.cus>0)pen.bola(cx+rw+2+p.cus*6,my-1,1.8,1.6,['#2e6a1e','#8ad04a','#d0ff8a'])},
   A:{
    parado:{n:16,fps:10,loop:1,f:(f,n)=>({sq:sw(f,n,2)*.06,jg:sw(f,n,1)*.6,bo:f/n,olho:f===13?.3:1})},

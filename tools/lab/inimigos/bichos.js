@@ -13,7 +13,7 @@ function pincel(x){const st={a:1};
   const ell=(cx,cy,rx,ry,col)=>{if(rx<=0||ry<=0)return;for(let y=Math.floor(cy-ry);y<=Math.ceil(cy+ry);y++){const t=(y+.5-cy)/ry;if(Math.abs(t)>1)continue;const w=rx*Math.sqrt(1-t*t);for(let X=Math.round(cx-w);X<Math.round(cx+w);X++)px(X,y,col)}};
   /* bola com volume: escuro embaixo, meio, brilho em cima */
   const bola=(cx,cy,rx,ry,c)=>{ell(cx,cy,rx,ry,c[0]);ell(cx,cy-.6,rx-.7,ry-.9,c[1]);if(c[2])ell(cx-rx*.25,cy-ry*.45,rx*.45,ry*.35,c[2])};
-  return{px,line,poly,ell,bola,st}}
+  return{px,line,poly,ell,bola,st,info:{}}}
 const P=(o,a,l)=>[o[0]+Math.cos(a)*l,o[1]+Math.sin(a)*l]; // 0 = direita, positivo = gira para baixo
 const lerp=(a,b,t)=>a+(b-a)*t;
 /* perna de 2 ossos: joelho dobra para dir (+1 frente, -1 trás) */
@@ -371,12 +371,14 @@ const SEQ={};
 function seq(id,nome){const k=id+'|'+nome;if(SEQ[k])return SEQ[k];const B=BICHOS[id],A=B.A[nome];if(!A)return null;
   const raw=[...Array(A.n)].map((_,f)=>({...B.DEF,...A.f(f,A.n)}));return SEQ[k]=molas(raw,B.molas,A.loop)}
 /* desenha um quadro: virado para a esquerda (para o herói), com a luz do ato */
-function quadro(id,pose,luz){const B=BICHOS[id],c=tela(),x=c.getContext('2d');B.draw(pincel(x),pose);
+function quadro(id,pose,luz){const B=BICHOS[id],c=tela(),x=c.getContext('2d'),pen=pincel(x);B.draw(pen,pose);
   let out=c;if(pose.rot){const r=tela(),q=r.getContext('2d');q.imageSmoothingEnabled=false;q.translate(pose.px+(pose.tx||0),pose.py+(pose.ty||0));q.rotate(pose.rot);q.drawImage(c,-pose.px,-pose.py);out=r}
   const m=tela(),mx=m.getContext('2d');mx.translate(W,0);mx.scale(-1,1);mx.drawImage(out,0,0);
   let L=luz&&typeof lightPass==='function'?lightPass(m,luz):m;
   /* transparência em pontilhado, aplicada depois da luz (fantasma sumindo, gárgula esfarelando) */
   if(pose.al!==undefined&&pose.al<1){const q=L.getContext('2d'),d=q.getImageData(0,0,W,H);for(let y=0;y<H;y++)for(let x=0;x<W;x++)if((BAYER[(y&3)*4+(x&3)]+.5)/16>=pose.al)d.data[(y*W+x)*4+3]=0;q.putImageData(d,0,0)}
+  /* ponto de onde sai o tiro (arco, boca, mão), já espelhado */
+  const b=pen.info.boca;L.boca=b?[W-b[0],b[1]]:null;
   return L}
 window.BICHOS=BICHOS;window.BICHO={seq,quadro,W,H,GY,util:{pincel,P,lerp,ik,kf,sw,olhoX,asaMorcego,asaPena,bipede,D,PI,EZ}};
 })();
