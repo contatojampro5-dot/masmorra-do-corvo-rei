@@ -1,0 +1,16 @@
+<!doctype html><html><head><meta charset="utf-8"><style>body{margin:0;background:#141010;color:#f0e2c4;font:15px Georgia}h2{margin:12px 18px 4px;color:#e8c27a;font-size:18px}.w{position:relative;display:inline-block;margin:6px 18px}canvas{image-rendering:pixelated;display:block}.lb{position:absolute;font:600 14px Georgia;white-space:nowrap;text-shadow:0 1px 3px #000}.row{display:flex;gap:10px;padding:0 18px;align-items:flex-end}.row div{text-align:center;font-size:12px;color:#c9b48a}</style></head><body>
+<script src="rig.js"></script><script src="poses.js"></script><script>
+const R=makeRig();const cp=c=>{const o=document.createElement('canvas');o.width=c.width;o.height=c.height;o.getContext('2d').drawImage(c,0,0);return o};
+const sc=(c,k,bg)=>{const o=document.createElement('canvas');o.width=c.width*k;o.height=c.height*k;const x=o.getContext('2d');x.fillStyle=bg;x.fillRect(0,0,o.width,o.height);x.imageSmoothingEnabled=false;x.drawImage(c,0,0,o.width,o.height);return o};
+let h=document.createElement('h2');h.textContent='Regra fixa: ele olha para a DIREITA (para os inimigos)';document.body.appendChild(h);
+const w=document.createElement('div');w.className='w';const big=sc(lightPass(cp(R.draw(ANIM.parado.f(0,16))),{dir:-1,col:[255,160,70],amb:[60,40,40]}),9,'#2a1a10');w.appendChild(big);document.body.appendChild(w);
+const L=(t,x,y,c)=>{const d=document.createElement('div');d.className='lb';d.style.left=x+'px';d.style.top=y+'px';d.style.color=c;d.innerHTML=t;w.appendChild(d)};
+L('ESCUDO → braço da FRENTE<br>(sempre na frente do corpo)',250,190,'#ffd76a');L('ESPADA → braço de TRÁS<br>(fica entre o corpo e o escudo)',200,400,'#bfe0ff');L('◀ capa e penacho para trás',4,250,'#e08a8a');L('inimigo ▶',300,40,'#ff9a8a');
+h=document.createElement('h2');h.textContent='Golpe: a espada sobe por trás da cabeça, passa POR CIMA e desce na FRENTE (lado do inimigo)';document.body.appendChild(h);
+const r=document.createElement('div');r.className='row';document.body.appendChild(r);
+const seq=comMolas([...Array(12)].map((_,f)=>ANIM.golpe.f(f,12)));[0,2,3,4,5,6,7,9].forEach(f=>{const d=document.createElement('div');d.appendChild(sc(lightPass(cp(R.draw(seq[f])),{dir:-1,col:[255,160,70],amb:[60,40,40]}),4,'#2a1a10'));d.append('quadro '+(f+1));r.appendChild(d)});
+h=document.createElement('h2');h.textContent='Pesado e Épico: mesma regra — tudo desce para a direita';document.body.appendChild(h);
+const r2=document.createElement('div');r2.className='row';document.body.appendChild(r2);
+const s2=comMolas([...Array(14)].map((_,f)=>ANIM.pesado.f(f,14)));[1,4,6,7,8,10].forEach(f=>{const d=document.createElement('div');d.appendChild(sc(lightPass(cp(R.draw(s2[f])),{dir:-1,col:[255,160,70],amb:[60,40,40]}),4,'#2a1a10'));d.append('pesado '+(f+1));r2.appendChild(d)});
+document.title='ok';
+</script></body></html>

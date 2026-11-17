@@ -33,11 +33,6 @@ function makeRig(W=40,H=64){const OY=16;
     line(hip[0]-5-cw,hip[1]+7,hip[0]-7-cw*1.3,hip[1]+3,PAL.capa[0]);
     // perna de trás (mais escura)
     leg([hip[0]-1,hip[1]+2],p.fB,[PAL.aco[0],PAL.aco[0],PAL.aco[1],PAL.couro[0]]);
-    // braço de trás com a espada
-    const [eF,hF]=limb(shF,p.aF1,4,p.aF2,4);line(shF[0],shF[1],eF[0],eF[1],PAL.malha[0],2);line(eF[0],eF[1],hF[0],hF[1],PAL.malha[0],2);
-    if(p.smear){const[a0,a1]=p.smear,st=Math.sign(a1-a0)*.06;for(let a=a0;Math.sign(a1-a)===Math.sign(st);a+=st)for(let r=7;r<=14;r++){const q=P(hF,a,r),t=(a-a0)/(a1-a0);px(q[0],q[1],t>.7?PAL.aco[4]:t>.35?'#c8d4e4':'#8a96aa')}}
-    const sa=p.sw,tip=P(hF,sa,13),g1=P(hF,sa+Math.PI/2,2),g2=P(hF,sa-Math.PI/2,2),pm=P(hF,sa+Math.PI,2);
-    line(hF[0],hF[1],tip[0],tip[1],PAL.aco[3]);line(g1[0],g1[1],g2[0],g2[1],PAL.ouro[1]);px(pm[0],pm[1],PAL.ouro[2]);const m1=P(hF,sa,7);px(m1[0],m1[1],PAL.aco[4]);px(tip[0],tip[1],PAL.aco[4]);
     // tronco: malha por baixo, tabardo vermelho por cima
     poly([[neck[0]-3,neck[1]],[neck[0]+3,neck[1]],[hip[0]+3,hip[1]+2],[hip[0]-3,hip[1]+2]],PAL.malha[1]);
     poly([[neck[0]-2,neck[1]+1],[neck[0]+3+(br>.6?1:0),neck[1]+1],[hip[0]+3,hip[1]+6],[hip[0]-3,hip[1]+6]],PAL.tab[2]);
@@ -46,6 +41,11 @@ function makeRig(W=40,H=64){const OY=16;
     line(hip[0]-3,hip[1]+1,hip[0]+3,hip[1]+1,PAL.couro[1]);px(hip[0]+1,hip[1]+1,PAL.ouro[1]);
     // perna da frente
     leg([hip[0]+1,hip[1]+2],p.fF,[PAL.aco[2],PAL.aco[2],PAL.aco[3],PAL.couro[1]]);
+    // braço da ESPADA (lado de trás do corpo): desenhado na frente do tronco e atrás do escudo
+    const [eF,hF]=limb(shF,p.aF1,4,p.aF2,4);line(shF[0],shF[1],eF[0],eF[1],PAL.malha[0],2);line(eF[0],eF[1],hF[0],hF[1],PAL.malha[0],2);
+    if(p.smear){const[a0,a1]=p.smear,st=Math.sign(a1-a0)*.06;for(let a=a0;Math.sign(a1-a)===Math.sign(st);a+=st)for(let r=7;r<=14;r++){const q=P(hF,a,r),t=(a-a0)/(a1-a0);px(q[0],q[1],t>.7?PAL.aco[4]:t>.35?'#c8d4e4':'#8a96aa')}}
+    const sa=p.sw,tip=P(hF,sa,13),g1=P(hF,sa+Math.PI/2,2),g2=P(hF,sa-Math.PI/2,2),pm=P(hF,sa+Math.PI,2);
+    line(hF[0],hF[1],tip[0],tip[1],PAL.aco[3]);line(g1[0],g1[1],g2[0],g2[1],PAL.ouro[1]);px(pm[0],pm[1],PAL.ouro[2]);const m1=P(hF,sa,7);px(m1[0],m1[1],PAL.aco[4]);px(tip[0],tip[1],PAL.aco[4]);
     // elmo
     const hx=Math.round(head[0]),hy=Math.round(head[1]);
     poly([[hx-3,hy-3],[hx+2,hy-4],[hx+4,hy-1],[hx+4,hy+3],[hx-3,hy+3]],PAL.aco[2]);line(hx-3,hy-3,hx+2,hy-4,PAL.aco[3]);
