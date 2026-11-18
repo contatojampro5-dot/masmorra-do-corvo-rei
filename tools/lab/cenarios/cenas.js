@@ -35,7 +35,7 @@ function gotas(U,xs,yTop,FL,cor='rgba(170,200,230,.85)',chance=.08){const{P,k}=U
 function vela(U,X,Y,fase,cor='rgb(255,190,110)'){const{P,t,B}=U,h=2+Math.round((sin(t*.03+fase)*.5+.5)*2);P('#ff9a3a',X,Y-h,1,h);P('#fff1b8',X,Y-1);B(X,Y-2,10,cor,.35+U.fl(fase)*.12)}
 function fogueira(U,X,Y,esc=1){const{P,t,B}=U;for(let d=-5;d<=5;d++){const hh=Math.round((16-Math.abs(d)*2.6)*esc*(.65+.35*(sin(t*.021+d*1.7)*.5+.5)+sin(t*.05+d)*.08));if(hh<=0)continue;const sw=Math.round(sin(t*.006+d*.4)*1.2);
   P('#c8401a',X+d+sw,Y-hh,1,hh);if(Math.abs(d)<4)P('#f5902a',X+d+sw,Y-Math.round(hh*.75),1,Math.round(hh*.75));if(Math.abs(d)<2)P('#ffe07a',X+d+sw,Y-Math.round(hh*.42),1,Math.round(hh*.42))}
-  B(X,Y-8,70*esc,'rgb(255,140,50)',.22+U.fl(1)*.1);particulas(U,'brasa'+X,()=>[X+(Math.random()-.5)*8*esc,Y-12*esc],.9,p=>p.l>.6?'#ffe07a':'#ff7a26',.013,-.55,'rgb(255,150,60)');
+  B(X,Y-8,70*esc,'rgb(255,140,50)',.22+U.fl(1)*.1);particulas(U,'brasa'+X,()=>[X+(Math.random()-.5)*8*esc,Y-12*esc],.45,p=>p.l>.6?'#ffe07a':'#ff7a26',.03,-.5,'rgb(255,150,60)');
   particulas(U,'fumo'+X,()=>[X+(Math.random()-.5)*4,Y-20*esc],.12,p=>`rgba(90,80,80,${p.l*.4})`,.004,-.22)}
 /* ---- as cenas ---- */
 const C={};
@@ -71,6 +71,7 @@ C.santuario=U=>{const{P,t,B}=U;
   particulas(U,'brilho',()=>[Math.random()*320,145],.4,p=>p.l>.5?'#ffffff':'#9af0ff',.01,-.3,'rgb(150,220,255)')};
 C.goblins=U=>{const{P,t,B}=U;fogueira(U,160,138,1.25);
   const cs=['#ffcf5a','#ff8a5a','#7aff8a','#ff5a5a','#5ad0ff'];
+  for(const px of [70,114,206,230]){const top=Math.max(34,U.y0+8)-4;P('#2a1a10',px-1,top,3,142-top);P('#4a3018',px-1,top,1,142-top);P('#3a2414',px-3,top-2,7,3)}
   const bY=Math.max(34,U.y0+8);for(let i=0;i<9;i++){const x0=70+i*20,y0=bY+sin(i*.7)*6,o=sin(t*.002+i*.8)*2;if(i<8){const x1=x0+20,y1=bY+sin((i+1)*.7)*6;for(let s2=0;s2<=10;s2++){const u=s2/10;P('#2a2018',x0+(x1-x0)*u,y0+(y1-y0)*u+sin(u*PI)*5+o*sin(u*PI))}}
     P(cs[i%5],x0-1,y0+o,3,4);B(x0,y0+2+o,8,U.rgb(cs[i%5]),.35+sin(t*.006+i)*.15)}
   for(const[x,f]of[[40,0],[250,3]])B(x,FL_(U)-8,16,'rgb(255,150,60)',.25+U.fl(f)*.15);

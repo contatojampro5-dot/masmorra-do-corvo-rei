@@ -55,7 +55,7 @@ const CSS=`
 .cr p{margin:0;font:400 clamp(17px,3vh,22px) var(--f-sc);color:#e8d9b8}.cr p small{display:block;font:italic 15px var(--f-body);color:#8a7c66}
 .cr .fim{margin-top:60px;font:400 clamp(30px,6vh,48px) var(--f-disp);color:#f2d17e}
 .cr-x{position:fixed;right:16px;bottom:14px;z-index:401;font:600 10px var(--f-num);letter-spacing:.28em;text-transform:uppercase;color:#7a6e5a;pointer-events:none}
-@media (orientation:portrait),(max-width:620px){#modal .mbox.cp{grid-template-columns:1fr;grid-template-rows:auto auto 1fr}.cp .oa-h{grid-column:1}.cp .oa-tabs{flex-direction:row;border-right:0;border-bottom:1px solid #3d3020;padding:0 6px;overflow-x:auto}
+@media (orientation:portrait),(max-width:620px){#modal .mbox.cp{grid-template-columns:minmax(0,1fr);grid-template-rows:auto auto 1fr}.cp .oa-h{flex-wrap:wrap;gap:6px 12px}.cp-prog{order:3;width:100%;margin-left:0}.cp .oa-tabs{min-width:0}.cp-body{min-width:0}.cp .oa-h{grid-column:1}.cp .oa-tabs{flex-direction:row;border-right:0;border-bottom:1px solid #3d3020;padding:0 6px;overflow-x:auto}
   .cp .oa-tab::before{left:20%;right:20%;top:auto;bottom:0;width:auto;height:3px;transform:scaleX(0)}.cp .oa-tab.on::before{transform:scaleX(1)}.cp-best,.ts{grid-template-columns:1fr}.cp-det{position:relative}.cp-grid{grid-template-columns:repeat(auto-fill,minmax(96px,1fr))}.cp-cell .card{zoom:.66}.cp-prog .cp-bar{display:none}}
 `;
 const st=document.createElement('style');st.textContent=CSS;document.head.appendChild(st);
@@ -156,7 +156,8 @@ ACT.creditos=()=>{if(document.querySelector('.cr'))return;const d=document.creat
   const x=document.createElement('div');x.className='cr-x';x.textContent='Toque para fechar';const fim=()=>{d.remove();x.remove()};d.onclick=fim;d.querySelector('.cr-in').addEventListener('animationend',fim);document.body.append(d,x);
   const k=e=>{if(e.key==='Escape'){fim();removeEventListener('keydown',k)}};addEventListener('keydown',k)};
 /* ---------- ligar ---------- */
-function instalar(){const _r=render;render=function(){const r=_r.apply(this,arguments);anotar();return r};
+function instalar(){try{const sv=typeof loadSave==='function'&&loadSave();if(sv){(sv.deck||[]).forEach(k=>marca('c',k.id));(sv.relics||[]).forEach(r=>marca('r',r));if(sv.combat)(sv.combat.enemies||[]).forEach(e=>marca('e',e.id));if(sujo){sujo=false;localStorage.setItem(VK,JSON.stringify(V))}}}catch(e){}
+  const _r=render;render=function(){const r=_r.apply(this,arguments);anotar();return r};
   const _c=ACT.cenas;ACT.cenas=function(){const r=_c.apply(this,arguments);const p=document.querySelector('#modal .panel');if(p&&!p.querySelector('[data-act=trilha]')){const b=document.createElement('button');b.className='choice';b.dataset.act='trilha';b.innerHTML='<b>Trilha sonora</b><span>Ouça as 15 músicas do jogo.</span>';p.insertBefore(b,p.firstChild)}return r};
   const _cm=closeModal;closeModal=function(){if(document.querySelector('#modal .mbox.cp')){pararTrilha(true);cancelAnimationFrame(S.raf)}return _cm.apply(this,arguments)}}
 if(document.readyState==='complete')setTimeout(instalar,0);else addEventListener('load',()=>setTimeout(instalar,0));

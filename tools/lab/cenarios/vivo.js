@@ -25,7 +25,7 @@ function montar(){const f=document.getElementById('field');if(!ligado()||!f||!f.
     for(const c of [px,gl])Object.assign(c.style,{position:'absolute',pointerEvents:'none',zIndex:0});px.style.imageRendering='pixelated';gl.style.mixBlendMode='screen';f.insertBefore(px,f.firstChild);f.insertBefore(gl,f.firstChild)}
   if(S.nome!==nome||S.px!==px){S.nome=nome;S.px=px;S.gl=gl;preparar(L,nome)}
   posicionar(f);ligar()}
-function posicionar(f){if(!S.px)return;const fw=f.clientWidth,fh=f.clientHeight,s=Math.max(fw/W,fh/H),by=parseFloat(f.style.getPropertyValue('--by'))||0,bw=W*s;
+function posicionar(f){if(!S.px)return;const fw=f.clientWidth,fh=f.clientHeight,bs=parseFloat(f.style.getPropertyValue('--bs')),s=bs?bs/H:Math.max(fw/W,fh/H),by=parseFloat(f.style.getPropertyValue('--by'))||0,bw=W*s;
   for(const c of [S.px,S.gl])Object.assign(c.style,{left:((fw-bw)/2)+'px',top:by+'px',width:bw+'px',height:H*s+'px'});S.y0=Math.max(0,Math.min(100,-by/s));S.y1=Math.min(H,(fh-by)/s)}
 function tirar(){document.querySelectorAll('canvas.cv-px,canvas.cv-gl').forEach(c=>c.remove());S.px=S.gl=null;S.nome=''}
 function preparar(L,nome){S.pts=L.pts.map(p=>({...p,ph:R()*7,q:p.k==='l'?quente(p.c):0}));S.fl=L.fl;S.sp=[];S.ff=[];S.gotas=[];S.ond=[];S.bol=[];S.aranha=null;S.voo=null;S.amb=AMB[nome]||['poeira'];S.est={};S.quente=['goblins','forja','forjaHef','dragao','orc','salao','taverna','carrasco','mina','labirinto','entrada'].includes(nome);
@@ -50,7 +50,7 @@ function desenha(t,k){const x=S.px.getContext('2d'),g=S.gl.getContext('2d'),FL=S
     else if(p.k==='f'){const cols=p.big?[-3,-2,-1,0,1,2,3]:[-1,0,1],top=p.big?15:7;
       for(const d of cols){const hh=Math.max(1,Math.round((top-Math.abs(d)*(p.big?3:2.4))*p.s*(.55+.45*(Math.sin(t*.023+d*1.9+p.ph)*.5+.5))));
         P(x,'#ff7a26',p.x+d,p.y-hh-1,1,Math.max(1,hh*.35));if(Math.abs(d)<=1)P(x,'#ffe7a0',p.x+d,p.y-Math.round(hh*.55),1,1)}
-      if(k&&R()<(p.big?.9:.35)*k)S.sp.push({x:p.x+(R()*6-3)*p.s,y:p.y-(p.big?12:6)*p.s,vx:R()*.3-.15,vy:-(.25+R()*.45),l:1,c:R()<.3?'#fff1b8':'#ffa040'});
+      if(k&&R()<(p.big?.35:.15)*k)S.sp.push({x:p.x+(R()*6-3)*p.s,y:p.y-(p.big?12:6)*p.s,vx:R()*.3-.15,vy:-(.25+R()*.45),l:1,c:R()<.3?'#fff1b8':'#ffa040'});
       if(p.big&&S.amb.includes('fumaca')&&k&&R()<.07*k)S.sp.push({x:p.x+R()*6-3,y:p.y-18*p.s,vx:R()*.1,vy:-.18,l:1,fum:1,r:2})}
     else if(p.k==='cr'){bola(g,p.x*sx,(p.y+p.h*.5)*sx,p.h*.9*sx,COR(p.c),.12+Math.sin(t*.002+p.ph)*.08);if(Math.sin(t*.0031+p.ph*3)>.96)P(x,'#ffffff',p.x+Math.round(Math.sin(p.ph)*2),p.y+1)}
     else if(p.k==='e'){const pis=Math.sin(t*.0009+p.ph*5)>.985;if(pis){P(x,'#06040a',p.x,p.y);P(x,'#06040a',p.x+3,p.y)}else bola(g,(p.x+1.5)*sx,p.y*sx,3*sx,COR(p.c),.25+f*.12)}}
@@ -58,7 +58,7 @@ function desenha(t,k){const x=S.px.getContext('2d'),g=S.gl.getContext('2d'),FL=S
   for(const v of S.ff){v.ph+=.05*k;v.vx+=(R()-.5)*.05*k;v.vy+=(R()-.5)*.05*k;v.vx*=.96;v.vy*=.96;v.x+=v.vx*k;v.y+=v.vy*k;if(v.x<0)v.x=W;if(v.x>W)v.x=0;if(v.y<v.y0||v.y>v.y1)v.vy*=-1;
     const a=.5+.5*Math.sin(v.ph);if(a>.15){P(x,v.c,v.x,v.y);bola(g,v.x*sx,v.y*sx,3.5,COR(v.c),a*.5)}}
   // faíscas e fumaça
-  for(let i=S.sp.length-1;i>=0;i--){const e=S.sp[i];e.x+=(e.vx+Math.sin((t+i*70)*.004)*.12)*k;e.y+=e.vy*k;e.l-=(e.fum?.006:.02)*k;if(e.l<=0||e.y<0){S.sp.splice(i,1);continue}
+  for(let i=S.sp.length-1;i>=0;i--){const e=S.sp[i];e.x+=(e.vx+Math.sin((t+i*70)*.004)*.12)*k;e.y+=e.vy*k;e.l-=(e.fum?.006:.035)*k;if(e.l<=0||e.y<0){S.sp.splice(i,1);continue}
     if(e.fum){e.r+=.06*k;bola(g,e.x*sx,e.y*sx,e.r*sx*2.2,'rgb(70,60,60)',e.l*.25)}else if(R()<e.l+.2)P(x,e.c,e.x,e.y)}
   if(S.sp.length>260)S.sp.splice(0,S.sp.length-260);
   const cena=window.CV_CENAS&&CV_CENAS[S.nome];
