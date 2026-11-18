@@ -1,0 +1,60 @@
+<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Aliados animados</title>
+<style>:root{--bg:#120d0a;--card:#1e1610;--line:#4a3a28;--ouro:#e8c25a;--txt:#e8d9b8}body{margin:0;background:var(--bg);color:var(--txt);font:14px Georgia,serif}
+header{padding:14px 16px 4px}h1{margin:0;color:var(--ouro);font-size:22px}header p{margin:4px 0 0;opacity:.75;max-width:900px}
+.bar{display:flex;gap:6px;flex-wrap:wrap;padding:8px 16px}button,select{background:#2c2016;color:var(--txt);border:1px solid var(--line);border-radius:6px;padding:5px 9px;font:13px Georgia;cursor:pointer}button.on{background:#5a3a1a;border-color:var(--ouro)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(420px,1fr));gap:12px;padding:8px 16px 20px}.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px}
+.card h2{margin:0 0 6px;font-size:17px;color:var(--ouro)}.card canvas{width:100%;image-rendering:pixelated;border-radius:6px;display:block}.acao{height:20px;font-size:14px;opacity:.9;margin:5px 0;color:#f0e0c0}
+.grupo{margin-top:5px}.grupo b{display:block;font-size:11px;letter-spacing:.08em;text-transform:uppercase;opacity:.55;margin:4px 0 3px}.bts{display:flex;flex-wrap:wrap;gap:4px}.armas button{font-size:12px;padding:3px 7px}
+.servo{margin-top:6px;font-size:13px}</style></head><body>
+<header><h1>Aliados animados</h1><p>Os 6 guerreiros que se juntam ao herói no caminho. Cada um com as suas manias, golpes e jeito de lutar (ver docs/lore.md). Parados, eles fazem manias sozinhos.</p></header>
+<div class="bar"><button data-ato="1" class="on">Ato 1</button><button data-ato="2">Ato 2</button><button data-ato="3">Ato 3</button><button id="demo">▶ Mostrar tudo</button></div>
+<div class="grid" id="g"></div>
+<script src="../cavaleiro-novo/rig.js"></script><script src="../inimigos/bichos.js"></script><script src="../inimigos/bichos2.js"></script><script src="../inimigos/bichos3.js"></script><script src="../inimigos/bichos4.js"></script><script src="../inimigos/bichos5.js"></script><script src="../inimigos/bichos6.js"></script><script src="../inimigos/bichos7.js"></script>
+<script src="base.js"></script><script src="aliados.js"></script><script>
+const LUZ={1:{dir:-1,col:[255,160,70],amb:[60,40,40]},2:{dir:1,col:[140,210,255],amb:[40,60,60]},3:{dir:-1,col:[255,90,50],amb:[90,40,120]}};
+const FUNDO={1:['#2a1a10','#3a2618'],2:['#101a1e','#1a2a2e'],3:['#24101a','#3a1a24']};
+const GRUPOS=[['Ataques',['ataque','especial','lutando','chuva','carregado','corvo','fogo','gelo','raio','meteoro','investida','terremoto','arremesso','contra','ceifar','erguer','exercito','drenar','explosao','maldicao']],
+  ['Defesa e apoio',['defesa','rolar','teleporte','espelho','nevoa','buff','armadilha','provocar']],['Parado (manias)',['mania1','mania2','mania3']],['Chegada e saída',['entrada','vitoria','despedida']]];
+const NOMES={ferido:'Apanha',morte:'Cai'},CORT={flecha:'#e8dcc0',faisca:'#8ad8ff',grande:'#b0e8ff'};
+const ESC_SERVO=[['dragao','Dragão Jovem'],['orc','Orc Berserker'],['reigoblin','Rei Goblin'],['minotauro','Minotauro'],['golem','Golem Ancestral'],['cavaleiro','Cavaleiro Negro'],['rainha','Rainha Aranha'],['goblin','Goblin'],['esqueleto','Esqueleto Guerreiro'],['cao','Cão Infernal'],['gargula','Gárgula'],['lich','O Lich']];
+let ato=1;const K=6,cards=[];
+for(const [id,B] of Object.entries(ALIADOS)){const d=document.createElement('div');d.className='card';const bid='a_'+id;
+  d.innerHTML=`<h2>${B.nome}</h2><canvas width="${B.W*K}" height="${B.H*K}"></canvas><div class="acao"></div>`+(id==='xx'?`<div class="servo">Criatura derrotada para erguer: <select>${ESC_SERVO.map(([k,n])=>`<option value="${k}">${n}</option>`).join('')}</select></div>`:'');
+  const st={id:bid,B,cv:d.querySelector('canvas'),acao:d.querySelector('.acao'),anim:'parado',f:0,t:0,arma:0,cache:{},tiros:[],fx:[],fim:null,servo:'dragao',sf:0,st2:0,voltas:0,mania:4000+Math.random()*3000,ocup:false,ergueu:0};
+  if(id==='nec')d.querySelector('select').onchange=e=>{st.servo=e.target.value;st.ergueu=0};
+  (B.armas||[]).forEach((n,i)=>{const b=document.createElement('button');b.textContent=(i+1)+'. '+n;if(!i)b.className='on';b.onclick=()=>{st.arma=i;st.cache={};d.querySelectorAll('.armas button').forEach((x,j)=>x.classList.toggle('on',j===i))};d.querySelector('.armas').appendChild(b)});
+  for(const [g,lista] of GRUPOS){const ks=lista.filter(k=>B.A[k]);if(!ks.length)continue;const gd=document.createElement('div');gd.className='grupo';gd.innerHTML=`<b>${g}</b><div class="bts"></div>`;ks.forEach(k=>{const b=document.createElement('button');b.textContent=B.A[k].nome||NOMES[k]||k;b.onclick=()=>toca(st,k);gd.querySelector('.bts').appendChild(b)});d.appendChild(gd)}
+  document.getElementById('g').appendChild(d);cards.push(st)}
+document.querySelectorAll('[data-ato]').forEach(b=>b.onclick=()=>{ato=+b.dataset.ato;document.querySelectorAll('[data-ato]').forEach(x=>x.classList.toggle('on',x===b));cards.forEach(c=>c.cache={})});
+function toca(st,n){return new Promise(r=>{if(n==='erguer'||n==='vitoria')st.ergueu=0;st.anim=n;st.f=0;st.t=0;st.fim=r;st.acao.textContent=st.B.A[n].nome||NOMES[n]||n})}
+const sc={};function cnv(w,h){const c=document.createElement('canvas');c.width=w;c.height=h;return c}
+/* a criatura derrotada levantando: a queda dela ao contrário, de frente para o lado do herói, verde de morto-vivo */
+function servoQuadro(id,ergue,sf){const B=BICHOS[id],m=BICHO.seq(id,'morte'),pr=BICHO.seq(id,'parado');let pose;
+  if(ergue<1)pose=m[Math.max(0,Math.round((1-ergue)*(m.length-1)))];else pose=pr[sf%pr.length];
+  const q=BICHO.quadro(id,pose,LUZ[ato]),c=cnv(q.width,q.height),x=c.getContext('2d');x.translate(q.width,0);x.scale(-1,1);x.drawImage(q,0,0);x.setTransform(1,0,0,1,0,0);
+  x.globalCompositeOperation='source-atop';x.fillStyle='rgba(60,220,120,.38)';x.fillRect(0,0,c.width,c.height);x.globalCompositeOperation='source-over';return{c,B}}
+let last=performance.now();
+function loop(t){const dt=Math.min(80,t-last);last=t;
+  for(const st of cards){const A=st.B.A[st.anim],sq=BICHO.seq(st.id,st.anim);st.t+=dt;const step=1000/A.fps;
+    if(st.anim==='parado'&&!st.demo){st.mania-=dt;if(st.mania<=0){st.mania=6000+Math.random()*5000;toca(st,'mania'+(1+Math.floor(Math.random()*3)))}}
+    while(st.t>=step){st.t-=step;st.f++;if(A.hits&&A.hits.includes(st.f))st.pend=A.tiro||'golpe';
+      if(st.f>=sq.length){if(A.loop){st.f=0;if(st.anim!=='parado'&&++st.voltas>=2){st.voltas=0;const r=st.fim;st.fim=null;st.anim='parado';st.acao.textContent='';if(r)r()}}else if(st.anim==='morte'||st.anim==='vitoria'){st.f=sq.length-1;if(st.fim){const r=st.fim;st.fim=null;r()}}else{if(A.ergue)st.ergueu=1;const r=st.fim;st.fim=null;st.anim='parado';st.f=0;st.acao.textContent='';if(r)r()}}}
+    st.st2+=dt;if(st.st2>100){st.st2=0;st.sf++}
+    const pose={...BICHO.seq(st.id,st.anim)[st.f],arma:st.arma},key=st.anim+'|'+st.f+'|'+st.arma;let q=st.cache[key];if(!q)q=st.cache[key]=BICHO.quadro(st.id,pose,LUZ[ato]);
+    if(st.pend){const b=q.boca||[30,30];if(st.pend==='golpe'){for(let i=0;i<14;i++){const a=Math.random()*6.28;st.fx.push({x:HB.ALVO[0],y:HB.ALVO[1],vx:Math.cos(a)*1.2,vy:Math.sin(a)*1.2-.4,l:16,col:'#ffe9a8'})}}else st.tiros.push({x:b[0],y:b[1],k:st.pend});st.pend=null;st.bate=6}
+    const x=st.cv.getContext('2d'),BW=st.B.W,BH=st.B.H,GG=st.B.GY;x.imageSmoothingEnabled=false;const F=FUNDO[ato];x.fillStyle=F[0];x.fillRect(0,0,BW*K,BH*K);x.fillStyle=F[1];x.fillRect(0,(GG+1)*K,BW*K,BH*K);
+    // boneco de treino (alvo)
+    const bx=HB.ALVO[0],bd=st.bate>0?(st.bate--%2?1:-1):0;x.fillStyle='#5a4030';x.fillRect((bx-.5)*K,(GG-18)*K,2*K,18*K);x.fillStyle='#b89a5a';x.fillRect((bx-3+bd)*K,(GG-17)*K,7*K,9*K);x.fillStyle='#8a7040';x.fillRect((bx-3+bd)*K,(GG-13)*K,7*K,K);x.fillStyle='#c8aa6a';x.fillRect((bx-1.5+bd)*K,(GG-22)*K,4*K,4*K);x.fillStyle='#c0302a';x.fillRect((bx+bd)*K,(GG-14)*K,K,K);
+    // servo erguido pelo Necromante
+    if(st.id==='h_nec'){const e=(pose.ergue||0)>0?pose.ergue:st.ergueu?1:0;if(e>0){const{c,B}=servoQuadro(st.servo,e,st.sf),s=(B.W||64)>64?.55:.8,gy=B.GY||44,X=(st.B.servoX-c.width*s/2)*K,Y=(GG-gy*s)*K;x.drawImage(c,X,Y,c.width*s*K,c.height*s*K)}}
+    x.drawImage(q,0,0,BW*K,BH*K);if(q.flash>0){x.fillStyle=`rgba(255,250,240,${q.flash*.5})`;x.fillRect(0,0,BW*K,BH*K)}
+    st.tiros=st.tiros.filter(tt=>{tt.x+=2.4;if(tt.x>HB.ALVO[0]-2){st.bate=6;for(let i=0;i<10;i++){const a=Math.random()*6.28;st.fx.push({x:tt.x,y:tt.y,vx:Math.cos(a),vy:Math.sin(a)-.4,l:14,col:CORT[tt.k]||'#fff'})}return false}
+      x.fillStyle=CORT[tt.k]||'#fff';if(tt.k==='flecha'){x.fillRect(Math.round(tt.x-8)*K,Math.round(tt.y)*K,8*K,K);x.fillStyle='#ffffff';x.fillRect(Math.round(tt.x)*K,Math.round(tt.y)*K,K,K)}else{const r=tt.k==='grande'?3:1.5;x.fillRect(Math.round(tt.x-r)*K,Math.round(tt.y-r)*K,Math.round(r*2)*K,Math.round(r*2)*K);x.fillStyle='#ffffff';x.fillRect(Math.round(tt.x)*K,Math.round(tt.y)*K,K,K)}return true});
+    st.fx=st.fx.filter(p=>p.l-->0);for(const p of st.fx){p.x+=p.vx;p.y+=p.vy;p.vy+=.06;x.globalAlpha=Math.min(1,p.l/8);x.fillStyle=p.col;x.fillRect(Math.round(p.x)*K,Math.round(p.y)*K,K,K)}x.globalAlpha=1}
+  requestAnimationFrame(loop)}
+requestAnimationFrame(loop);
+const espera=ms=>new Promise(r=>setTimeout(r,ms));
+async function demo(st){st.demo=1;let a=0;for(;;){st.arma=a%6;st.cache={};st.cv.parentNode.querySelectorAll('.armas button').forEach((x,j)=>x.classList.toggle('on',j===st.arma));
+  for(const n of Object.keys(st.B.A)){if(['parado','morte','vitoria','despedida'].includes(n))continue;await espera(450);await toca(st,n)}await espera(400);await toca(st,'vitoria');await espera(1500);await toca(st,'despedida');await espera(1200);st.anim='parado';st.f=0;st.acao.textContent='';st.ergueu=0;a++}}
+document.getElementById('demo').onclick=()=>cards.forEach((c,i)=>setTimeout(()=>demo(c),i*150));if(location.hash==='#demo')document.getElementById('demo').click();
+</script></body></html>
