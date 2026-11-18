@@ -34,6 +34,7 @@ const CSS=`
 .cp-det canvas{width:100%;aspect-ratio:4/3;image-rendering:pixelated;border-radius:6px;background:linear-gradient(#0e0b14,#1a1410)}
 .cp-det h3{margin:0;font:400 26px var(--f-disp);color:#f2d17e}.cp-det .an{font:italic 14px var(--f-body);color:#c8b088;min-height:18px}
 .cp-det dl{margin:0;display:grid;grid-template-columns:auto 1fr;gap:3px 10px;font-size:14px}.cp-det dt{color:#7a6e5a;font:600 10px var(--f-num);letter-spacing:.2em;text-transform:uppercase;padding-top:3px}.cp-det dd{margin:0;color:#d8c8a8}
+.cp-lock{display:flex;flex-direction:column;align-items:center;gap:8px;padding:50px 20px;border:1px dashed #4a3a26;border-radius:8px;color:#8a7c66;text-align:center}.cp-lock svg{width:40px;height:40px;fill:#c8a050;color:#c8a050}.cp-chip svg{width:13px;height:13px;fill:#c8a050;vertical-align:-1px;margin-right:4px}.cp-lock b{font:400 22px var(--f-sc);color:#f0e0c0}.cp-lock p{margin:0}
 .cp-ev{display:flex;flex-direction:column;gap:8px}.cp-ei{padding:10px 14px;border:1px solid #2e2418;border-radius:6px;background:#100c09}.cp-ei b{font:400 18px var(--f-sc);color:#f0e0c0}.cp-ei p{margin:4px 0 0;color:#8a7c66;font-size:14px;line-height:1.4}.cp-ei.nao b,.cp-ei.nao p{color:#4a4030}
 /* trilha */
 .ts{display:grid;grid-template-columns:minmax(220px,36%) 1fr;gap:18px;align-items:start}
@@ -66,6 +67,9 @@ function anotar(){if(typeof G==='undefined'||!G)return;try{(G.deck||[]).forEach(
   if(sujo){sujo=false;try{localStorage.setItem(VK,JSON.stringify(V))}catch(e){}}}
 document.addEventListener('click',e=>{const c=e.target.closest&&e.target.closest('[data-cid]');if(c)marca('c',c.dataset.cid)},true);
 const visto=(t,id)=>DEVOK||!!V[t][id];
+/* cartas de herói ainda trancado (Pacote das Trevas) não aparecem, mesmo vistas */
+const trancado=cl=>{try{return typeof heroLocked==='function'&&!!CHARS[cl]&&heroLocked(cl)}catch(e){return false}};
+const cartaLiberada=id=>{const d=CARDS[id];if(!d)return false;const cl=d.cl||(d.r==='lend'?'any':'cav');return !trancado(cl)&&visto('c',id)};
 /* ---------- dados ---------- */
 const CL_N={cav:'Cavaleiro',cac:'Caçadora',mag:'Mago',tan:'Guardião',nec:'Necromante',any:'Aliados'};
 const R_N={basic:'Ferro',common:'Bronze',unc:'Prata',rare:'Ouro',ouro:'Super Carta Dourada',arma:'Arma',lend:'Aliado',special:'Maldição/Status',none:'Status'};
@@ -86,7 +90,7 @@ const ABAS=[['cartas','Cartas','<svg viewBox="0 0 24 24" fill="none" stroke="cur
  ['eventos','Eventos','<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 4h11l3 3v13H5z"/><path d="M8 10h8M8 14h8M8 18h5"/></svg>'],
  ['musica','Trilha sonora','<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 18V5l11-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="17" cy="16" r="3"/></svg>']];
 const S={aba:'cartas',cl:'cav',up:false,sel:null,raf:0,t:0};
-function contagem(){const cs=cartas(),ce=cs.filter(c=>visto('c',c.id)).length,rs=Object.keys(RELICS),re=rs.filter(r=>visto('r',r)).length,es=Object.keys(ENEMIES),ee=es.filter(e=>visto('e',e)).length,vs=Object.keys(EVENTS),ve=vs.filter(v=>visto('v',v)).length;
+function contagem(){const cs=cartas().filter(c=>!trancado(c.cl)),ce=cs.filter(c=>cartaLiberada(c.id)).length,rs=Object.keys(RELICS),re=rs.filter(r=>visto('r',r)).length,es=Object.keys(ENEMIES),ee=es.filter(e=>visto('e',e)).length,vs=Object.keys(EVENTS),ve=vs.filter(v=>visto('v',v)).length;
   return{n:ce+re+ee+ve,t:cs.length+rs.length+es.length+vs.length}}
 ACT.compendio=(aba)=>{anotar();if(typeof aba==='string')S.aba=aba;const m=$('#modal'),c=contagem();
   m.innerHTML=`<div class="mbox cp"><div class="oa-h"><h2>Compêndio</h2><div class="cp-prog">${c.n} de ${c.t} descobertos<span class="cp-bar"><i style="width:${(c.n/c.t*100).toFixed(1)}%"></i></span></div><button class="btn small" data-act="cpfechar">Fechar</button></div>
@@ -96,10 +100,9 @@ ACT.cpcl=el=>{S.cl=el.dataset.cl;ACT.compendio()};ACT.cpup=()=>{S.up=!S.up;ACT.c
 ACT.cpsel=el=>{S.sel=el.dataset.id;S.selAn=0;S.selF=0;document.querySelectorAll('.cp-bi').forEach(b=>b.classList.toggle('on',b.dataset.id===S.sel));detalhe()};
 ACT.cpfechar=()=>{pararTrilha(true);cancelAnimationFrame(S.raf);closeModal()};
 function corpo(){
-  if(S.aba==='cartas'){const cs=cartas().filter(c=>S.cl==='outras'?false:c.cl===S.cl),lista=S.cl==='outras'?outras().map(id=>({id})):cs,ach=lista.filter(c=>visto('c',c.id)).length;
-    return`<div class="cp-chips">${Object.keys(CL_N).map(k=>`<button class="cp-chip ${S.cl===k?'on':''}" data-act="cpcl" data-cl="${k}">${CL_N[k]}</button>`).join('')}<button class="cp-chip ${S.cl==='outras'?'on':''}" data-act="cpcl" data-cl="outras">Maldições</button>
-      <button class="cp-chip ${S.up?'on':''}" data-act="cpup" style="margin-left:auto">${S.up?'Vendo melhoradas +':'Ver melhoradas'}</button><span class="cp-chip" style="cursor:default">${ach}/${lista.length}</span></div>
-      <div class="cp-grid">${lista.map(c=>`<div class="cp-cell">${visto('c',c.id)?safeCard(c.id):'<div class="cp-q">?</div>'}</div>`).join('')}</div>`}
+  if(S.aba==='cartas'){const cs=cartas().filter(c=>S.cl==='outras'?false:c.cl===S.cl),lista=S.cl==='outras'?outras().map(id=>({id})):cs,ach=lista.filter(c=>cartaLiberada(c.id)).length;
+    if(trancado(S.cl))return chips()+`<div class="cp-lock">${typeof LOCK_SVG!=='undefined'?LOCK_SVG:''}<b>Pacote das Trevas</b><p>As cartas do ${CL_N[S.cl]} aparecem aqui quando o herói for liberado.</p></div>`;
+    return chips(ach,lista.length)+`<div class="cp-grid">${lista.map(c=>`<div class="cp-cell">${cartaLiberada(c.id)?safeCard(c.id):'<div class="cp-q">?</div>'}</div>`).join('')}</div>`}
   if(S.aba==='reliquias')return`<div class="cp-rel">${Object.keys(RELICS).map(k=>visto('r',k)?`<div class="cp-ri">${sealHTML(k)}<div><b>${RELICS[k].n}</b><span>${RELICS[k].d}</span></div></div>`:`<div class="cp-ri nao">${sealHTML(k).replace(/data-tip="[^"]*"/,'')}<div><b>???</b><span>Ainda não encontrada.</span></div></div>`).join('')}</div>`;
   if(S.aba==='bestiario'){const A=atoDe(),grupos={1:[],2:[],3:[],0:[]};Object.keys(ENEMIES).forEach(id=>grupos[A[id]||0].push(id));const nomes={1:'Ato 1 · A Masmorra',2:'Ato 2 · As Catacumbas',3:'Ato 3 · A Torre',0:'Outras criaturas'};
     if(!S.sel)S.sel=Object.keys(ENEMIES).find(id=>visto('e',id))||Object.keys(ENEMIES)[0];
@@ -108,6 +111,8 @@ function corpo(){
       <div class="cp-det" id="cpdet"></div></div>`}
   if(S.aba==='eventos')return`<div class="cp-ev">${Object.keys(EVENTS).map(k=>visto('v',k)?`<div class="cp-ei"><b>${EVENTS[k].t}</b><p>${EVENTS[k].txt}</p></div>`:`<div class="cp-ei nao"><b>???</b><p>Um acontecimento que você ainda não viveu no caminho.</p></div>`).join('')}</div>`;
   if(S.aba==='musica')return trilhaHTML();return''}
+function chips(ach,tot){return`<div class="cp-chips">${Object.keys(CL_N).map(k=>`<button class="cp-chip ${S.cl===k?'on':''}" data-act="cpcl" data-cl="${k}">${trancado(k)&&typeof LOCK_SVG!=='undefined'?LOCK_SVG:''}${CL_N[k]}</button>`).join('')}<button class="cp-chip ${S.cl==='outras'?'on':''}" data-act="cpcl" data-cl="outras">Maldições</button>
+      ${tot!=null?`<button class="cp-chip ${S.up?'on':''}" data-act="cpup" style="margin-left:auto">${S.up?'Vendo melhoradas +':'Ver melhoradas'}</button><span class="cp-chip" style="cursor:default">${ach}/${tot}</span>`:''}</div>`}
 function safeCard(id){try{return cardHTML({id,uid:'cp_'+id,up:S.up})}catch(e){return`<div class="cp-q" style="font-size:16px;font-family:var(--f-sc);color:#a89878;padding:8px;text-align:center">${CARDS[id].n}</div>`}}
 function depois(){cancelAnimationFrame(S.raf);if(S.aba==='bestiario'){detalhe();let last=0;const loop=t=>{if(!document.querySelector('.mbox.cp')||S.aba!=='bestiario')return;S.raf=requestAnimationFrame(loop);if(t-last<100)return;last=t;S.t++;
     document.querySelectorAll('.cp-bi canvas').forEach(cv=>{const id=cv.dataset.b;if(!temB(id))return;const n=BICHO.seq(id,'parado').length;pinta(cv,id,'parado',(S.t+id.length*3)%n,cv.dataset.sil==='1')});
