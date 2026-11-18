@@ -3,17 +3,17 @@
    Precisa de lightPass (tools/lab/cavaleiro-novo/rig.js). */
 (function(){
 const W=64,H=48,GY=44,D=Math.PI/180,PI=Math.PI;
-function tela(){const c=document.createElement('canvas');c.width=W;c.height=H;return c}
+function tela(w=W,h=H){const c=document.createElement('canvas');c.width=w;c.height=h;return c}
 const BAYER=[0,8,2,10,12,4,14,6,3,11,1,9,15,7,13,5];
-function pincel(x){const st={a:1};
-  const px=(a,b,col)=>{a=Math.round(a);b=Math.round(b);if(a<0||b<0||a>=W||b>=H)return;if(st.a<1&&(BAYER[(b&3)*4+(a&3)]+.5)/16>=st.a)return;x.fillStyle=col;x.fillRect(a,b,1,1)};
+function pincel(x,PW=W,PH=H){const st={a:1};
+  const px=(a,b,col)=>{a=Math.round(a);b=Math.round(b);if(a<0||b<0||a>=PW||b>=PH)return;if(st.a<1&&(BAYER[(b&3)*4+(a&3)]+.5)/16>=st.a)return;x.fillStyle=col;x.fillRect(a,b,1,1)};
   const line=(x0,y0,x1,y1,col,w=1)=>{const n=Math.max(Math.abs(x1-x0),Math.abs(y1-y0),1);for(let i=0;i<=n;i++){const t=i/n,X=x0+(x1-x0)*t,Y=y0+(y1-y0)*t;for(let a=0;a<w;a++)for(let b=0;b<w;b++)px(X+a-(w>1?Math.floor(w/2):0),Y+b-(w>1?Math.floor(w/2):0),col)}};
   const poly=(pts,col)=>{let minY=1e9,maxY=-1e9;pts.forEach(p=>{minY=Math.min(minY,p[1]);maxY=Math.max(maxY,p[1])});
     for(let y=Math.floor(minY);y<=Math.ceil(maxY);y++){const xs=[];for(let i=0;i<pts.length;i++){const[a,b]=pts[i],[c,d]=pts[(i+1)%pts.length];if((b<=y+.5&&d>y+.5)||(d<=y+.5&&b>y+.5))xs.push(a+(y+.5-b)/(d-b)*(c-a))}xs.sort((p,q)=>p-q);for(let k=0;k<xs.length;k+=2)for(let X=Math.round(xs[k]);X<Math.round(xs[k+1]);X++)px(X,y,col)}};
   const ell=(cx,cy,rx,ry,col)=>{if(rx<=0||ry<=0)return;for(let y=Math.floor(cy-ry);y<=Math.ceil(cy+ry);y++){const t=(y+.5-cy)/ry;if(Math.abs(t)>1)continue;const w=rx*Math.sqrt(1-t*t);for(let X=Math.round(cx-w);X<Math.round(cx+w);X++)px(X,y,col)}};
   /* bola com volume: escuro embaixo, meio, brilho em cima */
   const bola=(cx,cy,rx,ry,c)=>{ell(cx,cy,rx,ry,c[0]);ell(cx,cy-.6,rx-.7,ry-.9,c[1]);if(c[2])ell(cx-rx*.25,cy-ry*.45,rx*.45,ry*.35,c[2])};
-  const info={};return{px,line,poly,ell,bola,st,info,depois:fn=>(info.post=info.post||[]).push(fn)}}
+  const info={};return{px,line,poly,ell,bola,st,info,depois:fn=>(info.post=info.post||[]).push(fn),antes:fn=>(info.pre=info.pre||[]).push(fn)}}
 const P=(o,a,l)=>[o[0]+Math.cos(a)*l,o[1]+Math.sin(a)*l]; // 0 = direita, positivo = gira para baixo
 const lerp=(a,b,t)=>a+(b-a)*t;
 /* perna de 2 ossos: joelho dobra para dir (+1 frente, -1 trás) */
@@ -371,18 +371,22 @@ const SEQ={};
 function seq(id,nome){const k=id+'|'+nome;if(SEQ[k])return SEQ[k];const B=BICHOS[id],A=B.A[nome];if(!A)return null;
   const raw=[...Array(A.n)].map((_,f)=>({...B.DEF,...A.f(f,A.n)}));return SEQ[k]=molas(raw,B.molas,A.loop)}
 /* desenha um quadro: virado para a esquerda (para o herói), com a luz do ato */
-function quadro(id,pose,luz){const B=BICHOS[id],c=tela(),x=c.getContext('2d'),pen=pincel(x);B.draw(pen,pose);
-  let out=c;if(pose.rot){const r=tela(),q=r.getContext('2d');q.imageSmoothingEnabled=false;q.translate(pose.px+(pose.tx||0),pose.py+(pose.ty||0));q.rotate(pose.rot);q.drawImage(c,-pose.px,-pose.py);out=r}
-  const m=tela(),mx=m.getContext('2d');mx.translate(W,0);mx.scale(-1,1);mx.drawImage(out,0,0);
+function quadro(id,pose,luz){const B=BICHOS[id],QW=B.W||W,QH=B.H||H,c=tela(QW,QH),x=c.getContext('2d'),pen=pincel(x,QW,QH);B.draw(pen,pose);
+  const gira=src=>{if(!pose.rot)return src;const r=tela(QW,QH),q=r.getContext('2d');q.imageSmoothingEnabled=false;q.translate(pose.px+(pose.tx||0),pose.py+(pose.ty||0));q.rotate(pose.rot);q.drawImage(src,-pose.px,-pose.py);return r};
+  const camada=fns=>{const c2=tela(QW,QH),p2=pincel(c2.getContext('2d'),QW,QH);fns.forEach(fn=>fn(p2));return gira(c2)};
+  const espelha=(dst,src)=>{const lx=dst.getContext('2d');lx.save();lx.translate(QW,0);lx.scale(-1,1);lx.drawImage(src,0,0);lx.restore()};
+  const m=tela(QW,QH);espelha(m,gira(c));
   let L=luz&&typeof lightPass==='function'?lightPass(m,luz):m;
   /* transparência em pontilhado, aplicada depois da luz (fantasma sumindo, gárgula esfarelando) */
-  if(pose.al!==undefined&&pose.al<1){const q=L.getContext('2d'),d=q.getImageData(0,0,W,H);for(let y=0;y<H;y++)for(let x=0;x<W;x++)if((BAYER[(y&3)*4+(x&3)]+.5)/16>=pose.al)d.data[(y*W+x)*4+3]=0;q.putImageData(d,0,0)}
-  /* camada que fica por cima da luz (fogo negro, brilhos próprios): desenhada à parte, girada e espelhada do mesmo jeito */
-  if(pen.info.post){const c2=tela(),p2=pincel(c2.getContext('2d'));pen.info.post.forEach(fn=>fn(p2));let o2=c2;
-    if(pose.rot){const r=tela(),q=r.getContext('2d');q.imageSmoothingEnabled=false;q.translate(pose.px+(pose.tx||0),pose.py+(pose.ty||0));q.rotate(pose.rot);q.drawImage(c2,-pose.px,-pose.py);o2=r}
-    const lx=L.getContext('2d');lx.save();lx.translate(W,0);lx.scale(-1,1);lx.drawImage(o2,0,0);lx.restore()}
+  if(pose.al!==undefined&&pose.al<1){const q=L.getContext('2d'),d=q.getImageData(0,0,QW,QH);for(let y=0;y<QH;y++)for(let x2=0;x2<QW;x2++)if((BAYER[(y&3)*4+(x2&3)]+.5)/16>=pose.al)d.data[(y*QW+x2)*4+3]=0;q.putImageData(d,0,0)}
+  /* rastro de sombras (cópias roxas atrás, para mergulhos e investidas) */
+  if(pose.rastro>0){const F=tela(QW,QH),fx=F.getContext('2d'),tint=tela(QW,QH),tx=tint.getContext('2d');tx.drawImage(L,0,0);tx.globalCompositeOperation='source-in';tx.fillStyle='#4a1a6a';tx.fillRect(0,0,QW,QH);
+    for(let k=3;k>=1;k--){fx.globalAlpha=pose.rastro*(.55-k*.13);fx.drawImage(tint,Math.round(-(pose.rdx||0)*k),Math.round(-(pose.rdy||0)*k))}fx.globalAlpha=1;fx.drawImage(L,0,0);L=F}
+  /* camada de baixo (selo atrás, névoa) e de cima (brilhos próprios): sem a luz da tocha */
+  if(pen.info.pre){const F=tela(QW,QH),fx=F.getContext('2d');espelha(F,camada(pen.info.pre));fx.drawImage(L,0,0);L=F}
+  if(pen.info.post)espelha(L,camada(pen.info.post));
   /* ponto de onde sai o tiro (arco, boca, mão), já espelhado */
-  const b=pen.info.boca;L.boca=b?[W-b[0],b[1]]:null;
+  const b=pen.info.boca;L.boca=b?[QW-b[0],b[1]]:null;L.flash=pose.flash||0;
   return L}
 window.BICHOS=BICHOS;window.BICHO={seq,quadro,W,H,GY,util:{pincel,P,lerp,ik,kf,sw,olhoX,asaMorcego,asaPena,bipede,D,PI,EZ}};
 })();
