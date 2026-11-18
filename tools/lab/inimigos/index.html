@@ -11,13 +11,13 @@ header{padding:14px 16px 4px}h1{margin:0;color:var(--ouro);font-size:22px}header
 .acao{height:18px;font-size:13px;opacity:.85;margin:4px 0}.bts{display:flex;flex-wrap:wrap;gap:4px}
 </style></head><body>
 <header><h1>Inimigos</h1><p>Bonecos articulados no estilo do Cavaleiro novo. Toque nos botões para ver cada movimento.</p></header>
-<div class="bar"><button data-ato="1" class="on">Ato 1 · tochas</button><button data-ato="2">Ato 2 · catacumbas</button><button data-ato="3">Ato 3 · torre</button><button id="demo">▶ Mostrar tudo</button></div><div class="bar" id="niveis"><button data-nv="1">Nível 1 · Fracos</button><button data-nv="2">Nível 2 · Médios</button><button data-nv="3">Nível 3 · Fortes</button><button data-nv="4">Nível 4 · Elites</button><button data-nv="5">Nível 5 · Elites do topo</button><button data-nv="6">Nível 6 · Chefes</button></div>
+<div class="bar"><button data-ato="1" class="on">Ato 1 · tochas</button><button data-ato="2">Ato 2 · catacumbas</button><button data-ato="3">Ato 3 · torre</button><button id="demo">▶ Mostrar tudo</button></div><div class="bar" id="niveis"><button data-nv="1">Nível 1 · Fracos</button><button data-nv="2">Nível 2 · Médios</button><button data-nv="3">Nível 3 · Fortes</button><button data-nv="4">Nível 4 · Elites</button><button data-nv="5">Nível 5 · Elites do topo</button><button data-nv="6">Nível 6 · Chefes</button><button data-nv="7">Nível 7 · Chefe final</button></div>
 <div class="grid" id="g"></div>
-<script src="../cavaleiro-novo/rig.js"></script><script src="bichos.js"></script><script src="bichos2.js"></script><script src="bichos3.js"></script><script src="bichos4.js"></script><script src="bichos5.js"></script><script src="bichos6.js"></script><script>
+<script src="../cavaleiro-novo/rig.js"></script><script src="bichos.js"></script><script src="bichos2.js"></script><script src="bichos3.js"></script><script src="bichos4.js"></script><script src="bichos5.js"></script><script src="bichos6.js"></script><script src="bichos7.js"></script><script>
 const LUZ={1:{dir:-1,col:[255,160,70],amb:[60,40,40]},2:{dir:1,col:[140,210,255],amb:[40,60,60]},3:{dir:-1,col:[255,90,50],amb:[90,40,120]}};
 const FUNDO={1:['#2a1a10','#3a2618'],2:['#101a1e','#1a2a2e'],3:['#24101a','#3a1a24']};
 const NOMES={parado:'Parado',ataque:'Ataque',especial:'Especial',buff:'Apoio',defesa:'Defesa',remontar:'Remontar',entrada:'Entrada',especial2:'Especial 2',fase2:'Fase 2',ferido:'Apanha',morte:'Cai'};
-let nivel=+(new URLSearchParams(location.search).get('nivel')||6);
+let nivel=+(new URLSearchParams(location.search).get('nivel')||7);
 let ato=1;const K=4,cards=[];
 for(const [id,B] of Object.entries(BICHOS)){const d=document.createElement('div');d.className='card';d.dataset.nv=B.nivel;
   d.innerHTML=`<h2>${B.nome}</h2><canvas width="${64*K}" height="${48*K}"></canvas><div class="acao"></div><div class="bts"></div>`;
