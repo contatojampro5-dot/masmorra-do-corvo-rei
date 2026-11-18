@@ -10,6 +10,36 @@ const PAL={
  pluma:['#7a1018','#b0202a','#e04a3a'],
  pele:['#5a3626','#8a5a40'],
 };
+/* ESPADAS do Cavaleiro (mesma ordem do jogo, wIdx): lâmina [base, fio, sombra], guarda, pomo, risco do golpe, faísca e efeito */
+const ESPADAS=[
+ {n:'Espada do Cavaleiro',lam:['#a7b3c7','#dfe6ef','#6f7c96'],gu:'#b0802a',pm:'#e8c25a',risco:'#dfe9ff',faisca:'#ffe9a8',fx:''},
+ {n:'Lâmina Negra',lam:['#2a2634','#7a6a9a','#100c16'],gu:'#3a3644',pm:'#c0182a',risco:'#a890e0',faisca:'#c8b0ff',fx:'runas',cor:'#8a6aff'},
+ {n:'Lâmina Negra Ardente',lam:['#221c24','#ff6a1a','#0c0a10'],gu:'#2a2630',pm:'#ff4a1a',risco:'#ffb060',faisca:'#ffb040',fx:'brasas'},
+ {n:'Lâmina Negra em Chamas',lam:['#1a1418','#ff8a2a','#08060a'],gu:'#2a2630',pm:'#ff4a1a',risco:'#ff7a2a',faisca:'#ffd060',fx:'chamas'},
+ {n:'Lâmina Sombria',lam:['#1e1628','#c08aff','#0c0814'],gu:'#2a2040',pm:'#a060ff',risco:'#c08aff',faisca:'#e0c0ff',fx:'sombria',cor:'#c08aff'},
+ {n:'Lâmina do Vazio',lam:['#140c22','#b080ff','#06040c'],gu:'#2a2040',pm:'#a060ff',risco:'#7a4ae0',faisca:'#b080ff',fx:'vazio'}];
+/* brilho próprio da espada, por cima da luz (runas, brasas, chamas, vazio). x = contexto 2D do quadro do cavaleiro, t = tempo em ms */
+function brilhoEspada(x,info,esp,t){const E=ESPADAS[esp||0];if(!E||!E.fx||!info.hand||!info.tip)return;const h=info.hand,tp=info.tip,L=Math.hypot(tp[0]-h[0],tp[1]-h[1])||1,ux=(tp[0]-h[0])/L,uy=(tp[1]-h[1])/L,nx=-uy,ny=ux;
+  const at=r=>[h[0]+ux*r,h[1]+uy*r],px=(a,b,c,al=1)=>{if(al<=0)return;x.globalAlpha=Math.min(1,al);x.fillStyle=c;x.fillRect(Math.round(a),Math.round(b),1,1)},s=t/1000;
+  const halo=(cor,al,raio=1)=>{for(let r=1;r<=L;r++){const q=at(r);for(let d=1;d<=raio;d++){px(q[0]+nx*d,q[1]+ny*d,cor,al/d);px(q[0]-nx*d,q[1]-ny*d,cor,al/d)}}};
+  // lâmina escura redesenhada por cima da luz (a tocha não clareia o aço negro)
+  for(let r=1;r<=L;r++){const q=at(r);px(q[0],q[1],E.lam[0])}for(let r=3;r<=L-1;r+=2){const q=at(r);px(q[0]+nx*.8,q[1]+ny*.8,E.lam[1],.9)}
+  if(E.fx==='runas'||E.fx==='sombria'){const fort=E.fx==='sombria';if(fort)halo('#7a3ab0',.35,2);
+    [3.5,6,8.5,11].forEach((r,i)=>{const q=at(r),a=.55+.45*Math.sin(s*4+i*1.7);px(q[0],q[1],E.cor,a);px(q[0]+nx,q[1]+ny,E.cor,a*.45);px(q[0]-nx,q[1]-ny,E.cor,a*.45);if(fort)px(q[0],q[1],'#f8e8ff',a*.6)});
+    const n=fort?6:2;for(let i=0;i<n;i++){const k=((s*.8+i/n)%1),q=at(2+i*(L-2)/n),y=q[1]-1-k*(fort?11:6);px(q[0]+Math.sin(s*3+i)*1.6,y,i%2?E.cor:'#5a2a9a',1-k)}
+    if(fort){const q=at(L);px(q[0],q[1],'#ffffff');px(q[0]+1,q[1],E.cor,.7);px(q[0]-1,q[1],E.cor,.7);px(q[0],q[1]-1,E.cor,.7)}}
+  if(E.fx==='brasas'){halo('#c03a1a',.35,1);for(let r=2;r<=L;r++){const q=at(r);if(Math.sin(r*2.7+s*9)>-.2)px(q[0]+nx*.8,q[1]+ny*.8,Math.sin(r+s*6)>.4?'#ffe27a':'#ff6a1a')}
+    for(let i=0;i<6;i++){const k=((s*.75+i/6)%1),q=at(2+i*2.2);px(q[0]+Math.sin(s*5+i*1.3)*2,q[1]-1-k*12,k<.4?'#ffe27a':k<.7?'#ff8a2a':'#c03a1a',1-k)}}
+  if(E.fx==='chamas'){for(let r=1;r<=L+1.5;r+=.9){const q=at(r),fl=Math.sin(s*12+r*1.7)+.5*Math.sin(s*7.3+r*3.1),meio=Math.sin(Math.min(1,r/L)*Math.PI),hh=2.5+meio*4.2+fl*1.4;
+      for(let k=0;k<hh;k++){const c=k>hh-1.5?'#fff2a8':k>hh*.55?'#ffd060':k>hh*.25?'#ff8a2a':'#c03a1a',w=Math.sin(s*8+r+k*.6)*(k/hh)*1.6;px(q[0]+w,q[1]-1-k,c,1-k/(hh+2)*.4);if(k<hh*.5)px(q[0]+w+1,q[1]-1-k,'#e0501a',.6)}}
+    for(let r=1;r<=L;r++){const q=at(r);px(q[0],q[1],'#0a080c')}for(let r=3;r<=L-1;r+=3){const q=at(r);px(q[0]+nx*.8,q[1]+ny*.8,'#ffb040')}
+    for(let i=0;i<8;i++){const k=((s*1.05+i/8)%1),q=at(2+i*1.6);px(q[0]+Math.sin(s*6+i*1.9)*3,q[1]-6-k*14,k<.5?'#ffe27a':'#ff6a1a',1-k)}}
+  if(E.fx==='vazio'){for(let r=0;r<=L+2;r++){const q=at(r);for(let d=1;d<=3;d++){const a=(.75-d*.18)*(.75+.25*Math.sin(s*5+r*.7));px(q[0]+nx*d,q[1]+ny*d,'#05020a',a);px(q[0]-nx*d,q[1]-ny*d,'#05020a',a)}
+      if((r+Math.floor(s*10))%3===0){px(q[0]+nx*4,q[1]+ny*4,'#7a4ae0',.8);px(q[0]-nx*4,q[1]-ny*4,'#7a4ae0',.6)}}
+    for(let r=1;r<=L;r++){const q=at(r);px(q[0],q[1],'#020104')}for(let r=2;r<=L;r+=2){const q=at(r);px(q[0]+nx*.8,q[1]+ny*.8,'#b080ff',.9)}
+    for(let i=0;i<9;i++){const k=((s*.6+i/9)%1),r=2+i*1.4,q=at(r),ang=i*2.3+s*.5,d=(1-k)*12;px(q[0]+Math.cos(ang)*d,q[1]+Math.sin(ang)*d,i%3?'#b080ff':'#e8d8ff',k*1.2)}
+    const q=at(L);px(q[0],q[1],'#ffffff');for(const [a,b] of [[1,0],[-1,0],[0,1],[0,-1]])px(q[0]+a,q[1]+b,'#c8a8ff',.8);for(const [a,b] of [[2,0],[-2,0],[0,2],[0,-2]])px(q[0]+a,q[1]+b,'#7a4ae0',.5)}
+  x.globalAlpha=1}
 function makeRig(W=40,H=64){const OY=16;
   const c=document.createElement('canvas');c.width=W;c.height=H;const x=c.getContext('2d');
   const px=(a,b,col)=>{a=Math.round(a);b=Math.round(b);if(a<0||b<0||a>=W||b>=H)return;x.fillStyle=col;x.fillRect(a,b,1,1)};
@@ -77,10 +107,11 @@ function makeRig(W=40,H=64){const OY=16;
     const pl=p.plume||0;if((p.wear||0)>=3){line(hx-1,hy-4,hx-3-pl*.3,hy-6,PAL.pluma[1],2);px(hx-4,hy-4,PAL.pluma[0]);px(hx-5,hy-3,PAL.pluma[0])}else{line(hx-1,hy-4,hx-4-pl*.5,hy-6,PAL.pluma[1],2);line(hx-4-pl*.5,hy-6,hx-8-pl,hy-4+pl*.3,PAL.pluma[0],2)}px(hx,hy-5,PAL.pluma[2]);px(hx-3,hy-6,PAL.pluma[2]);
     // ESPADA na mão DIREITA (o braço de perto): desenhada por cima de tudo, todo golpe passa na frente do corpo
     const [eF,hF]=limb(shN,p.aF1,4,p.aF2,4);
-    if(p.smear){const[a0,a1]=p.smear,st=Math.sign(a1-a0)*.06;for(let a=a0;Math.sign(a1-a)===Math.sign(st);a+=st)for(let r=7;r<=14;r++){const q=P(hF,a,r),t=(a-a0)/(a1-a0);px(q[0],q[1],t>.7?PAL.aco[4]:t>.35?'#c8d4e4':'#8a96aa')}}
+    const ES=ESPADAS[p.esp||0];
+    if(p.smear){const[a0,a1]=p.smear,st=Math.sign(a1-a0)*.06;for(let a=a0;Math.sign(a1-a)===Math.sign(st);a+=st)for(let r=7;r<=14;r++){const q=P(hF,a,r),t=(a-a0)/(a1-a0);px(q[0],q[1],t>.7?(p.esp?ES.lam[1]:PAL.aco[4]):t>.35?(p.esp?ES.risco:'#c8d4e4'):(p.esp?ES.lam[0]:'#8a96aa'))}}
     const sa=p.sw,tip=P(hF,sa,13),g1=P(hF,sa+Math.PI/2,2),g2=P(hF,sa-Math.PI/2,2),pm=P(hF,sa+Math.PI,2);
     info.hand=[hF[0],hF[1]];info.tip=[tip[0],tip[1]];info.hip=[hip[0],hip[1]];
-    line(hF[0],hF[1],tip[0],tip[1],PAL.aco[3]);line(g1[0],g1[1],g2[0],g2[1],PAL.ouro[1]);px(pm[0],pm[1],PAL.ouro[2]);const m1=P(hF,sa,7);px(m1[0],m1[1],PAL.aco[4]);px(tip[0],tip[1],PAL.aco[4]);
+    line(hF[0],hF[1],tip[0],tip[1],p.esp?ES.lam[0]:PAL.aco[3]);if(p.esp){const f1=P(hF,sa-Math.PI/2,.7);for(let r=4;r<=12;r+=2){const q=P(f1,sa,r);px(q[0],q[1],ES.lam[1])}}line(g1[0],g1[1],g2[0],g2[1],p.esp?ES.gu:PAL.ouro[1]);px(pm[0],pm[1],p.esp?ES.pm:PAL.ouro[2]);const m1=P(hF,sa,7);px(m1[0],m1[1],p.esp?ES.lam[1]:PAL.aco[4]);px(tip[0],tip[1],p.esp?ES.lam[1]:PAL.aco[4]);
     line(shN[0],shN[1],eF[0],eF[1],PAL.malha[2],2);line(eF[0],eF[1],hF[0],hF[1],PAL.malha[2],2);px(hF[0],hF[1],PAL.couro[1]);px(shN[0],shN[1],PAL.aco[3]);
     return c}
   return{canvas:c,draw,W,H,info}}
