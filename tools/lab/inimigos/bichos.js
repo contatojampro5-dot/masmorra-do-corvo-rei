@@ -374,7 +374,7 @@ function seq(id,nome){const k=id+'|'+nome;if(SEQ[k])return SEQ[k];const B=BICHOS
 function quadro(id,pose,luz){const B=BICHOS[id],QW=B.W||W,QH=B.H||H,c=tela(QW,QH),x=c.getContext('2d'),pen=pincel(x,QW,QH);B.draw(pen,pose);
   const gira=src=>{if(!pose.rot)return src;const r=tela(QW,QH),q=r.getContext('2d');q.imageSmoothingEnabled=false;q.translate(pose.px+(pose.tx||0),pose.py+(pose.ty||0));q.rotate(pose.rot);q.drawImage(src,-pose.px,-pose.py);return r};
   const camada=fns=>{const c2=tela(QW,QH),p2=pincel(c2.getContext('2d'),QW,QH);fns.forEach(fn=>fn(p2));return gira(c2)};
-  const espelha=(dst,src)=>{const lx=dst.getContext('2d');lx.save();lx.translate(QW,0);lx.scale(-1,1);lx.drawImage(src,0,0);lx.restore()};
+  const espelha=(dst,src)=>{const lx=dst.getContext('2d');lx.save();if(!B.semEspelho){lx.translate(QW,0);lx.scale(-1,1)}lx.drawImage(src,0,0);lx.restore()};
   const m=tela(QW,QH);espelha(m,gira(c));
   let L=luz&&typeof lightPass==='function'?lightPass(m,luz):m;
   /* transparência em pontilhado, aplicada depois da luz (fantasma sumindo, gárgula esfarelando) */
@@ -386,7 +386,7 @@ function quadro(id,pose,luz){const B=BICHOS[id],QW=B.W||W,QH=B.H||H,c=tela(QW,QH
   if(pen.info.pre){const F=tela(QW,QH),fx=F.getContext('2d');espelha(F,camada(pen.info.pre));fx.drawImage(L,0,0);L=F}
   if(pen.info.post)espelha(L,camada(pen.info.post));
   /* ponto de onde sai o tiro (arco, boca, mão), já espelhado */
-  const b=pen.info.boca;L.boca=b?[QW-b[0],b[1]]:null;L.flash=pose.flash||0;
+  const b=pen.info.boca;L.boca=b?[B.semEspelho?b[0]:QW-b[0],b[1]]:null;L.flash=pose.flash||0;
   return L}
 window.BICHOS=BICHOS;window.BICHO={seq,quadro,W,H,GY,util:{pincel,P,lerp,ik,kf,sw,olhoX,asaMorcego,asaPena,bipede,D,PI,EZ}};
 })();
