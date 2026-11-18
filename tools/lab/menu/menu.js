@@ -108,7 +108,7 @@ const IC={
  visual:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>',
  sobre:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5v.5"/></svg>'};
 const COROA='<svg class="tx-crown" viewBox="0 0 64 40"><defs><linearGradient id="txg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff3c0"/><stop offset=".5" stop-color="#e0a830"/><stop offset="1" stop-color="#7a5216"/></linearGradient></defs><path d="M6 34L2 8l15 12L32 2l15 18L62 8l-4 26z" fill="url(#txg)" stroke="#2a1a08" stroke-width="2"/><circle cx="32" cy="22" r="4" fill="#b03a3a"/><circle cx="17" cy="26" r="2.6" fill="#3a6ab0"/><circle cx="47" cy="26" r="2.6" fill="#3a9a5a"/><path d="M8 30h48" stroke="#2a1a08" stroke-width="2"/></svg>';
-const VER='v2.40';
+const VER='v2.41';
 const logo=()=>`<div class="tx-logo">${COROA}<p class="tx-kick">A Coroa de Cinco Juramentos</p><h1 class="tx-name" data-t="Masmorra&#10;do Corvo Rei">Masmorra<br><em>do</em> Corvo Rei</h1></div>`;
 
 /* ---------------- tela de início ---------------- */
@@ -119,9 +119,11 @@ function novoTitulo(){if(UI.choose||OPT.menuNovo===false)return _th.apply(this,a
   const items=[cont?it('cont','cont','Continuar',`${CHARS[sv.char]?CHARS[sv.char].n:'Jornada salva'} · Ato ${sv.act||1}`,'primary'):'',
     it('new','new','Nova jornada','Escolha um herói e desça à masmorra',cont?'':'primary'),
     it('herois','herois','Heróis','Os cinco que juraram tomar a coroa'),
+    it('compendio','howto','Compêndio','Cartas, relíquias, bestiário e trilha'),
     it('cenas','cenas','Cenas','Reveja a história do reino'),
     it('howto','howto','Como jogar','Cartas, energia e intenções'),
     it('opcoes','opcoes','Opções','Som, jogo e visual'),
+    it('creditos','sobre','Créditos','Quem fez a masmorra','dim'),
     ''].filter(Boolean);
   const press=!UI.txOk?`<button class="tx-press" data-act="txpress" aria-label="Começar">${logo()}<p>Toque para começar</p></button>`:'';
   return`<div class="page tx">${press}${UI.txOk?`<div class="tx-left">${logo()}<nav class="tx-menu" aria-label="Menu">${items.map((h,i)=>h.replace('class="tx-item',`style="--d:${(.35+i*.08).toFixed(2)}s" class="tx-item`)).join('')}</nav></div>`:''}
