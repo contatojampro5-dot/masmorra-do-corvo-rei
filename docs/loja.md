@@ -13,7 +13,7 @@ Decisão do Theo (10/11/2026): **grátis, com 3 personagens liberados**.
 - A tranca existe, mas **só liga no app da loja** (Capacitor). No site fica tudo liberado, porque no site não há como pagar.
 - No app, os dois heróis aparecem apagados com o cadeado "Pacote das Trevas"; tocando, abre a janela do pacote com o preço.
 - Para ver a tranca no site (teste): no console do navegador, `localStorage.setItem('trc-tranca','1')`, e recarregar. Para tirar: `localStorage.removeItem('trc-tranca')`.
-- O modo DEV (`#dev`) destranca tudo.
+- O modo DEV (senha 000 em Opções → Sobre) destranca tudo.
 - Comprado: o jogo guarda `trc-pack = 1`. Falta ligar o botão de compra de verdade (StoreKit) quando a Etapa 5 (app) for feita, incluindo o botão "Restaurar compras" que a Apple exige.
 
 ## O que muda nos papéis da loja

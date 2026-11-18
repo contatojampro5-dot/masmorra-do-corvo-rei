@@ -80,6 +80,11 @@ const CSS=`
 .oa-body input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:20px;height:20px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff3c0,#c88a20);border:2px solid #2a1a08;box-shadow:0 0 10px #e8c25a88;cursor:pointer}
 .oa-body input[type=range]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff3c0,#c88a20);border:2px solid #2a1a08}
 .oa-body .oa-hide{display:none!important}
+.oa-dev{align-self:flex-start;margin-top:18px;border:0;background:none;color:#5a5040;font:600 10px var(--f-num);letter-spacing:.28em;text-transform:uppercase;cursor:pointer;padding:6px 0}.oa-dev:hover{color:#a89878}
+#modal .mbox.ds{width:min(380px,100%);padding:22px 24px;gap:12px;background:linear-gradient(160deg,#1d1610f5,#0d0a08f8);border:1px solid #5a4528;border-radius:6px;box-shadow:0 30px 80px #000d;animation:oaIn .3s}
+.ds h2{margin:0;font:400 28px var(--f-disp);color:#f2d17e}.ds p{margin:0;color:#a89878;text-align:center}.ds .dserr{color:#ff8a7a}
+.ds input{width:150px;text-align:center;font:600 28px var(--f-num);letter-spacing:.5em;padding:8px 0 8px .5em;background:#0a0806;border:1px solid #5a4528;border-radius:4px;color:#f2d17e;outline:none}.ds input:focus{border-color:#e8c25a;box-shadow:0 0 12px #e8c25a44}
+.ds .dsb{display:flex;gap:10px}
 .oa-sec{margin:14px 0 2px;font:600 10px var(--f-num);letter-spacing:.32em;text-transform:uppercase;color:#7a6e5a}
 .oa-f{grid-column:1/3;display:flex;justify-content:space-between;align-items:center;padding:10px 20px;border-top:1px solid #3d3020;background:#0a0806cc;font:600 10px var(--f-num);letter-spacing:.24em;text-transform:uppercase;color:#6a5e4a}
 .oa-f .btn{margin:0}
@@ -103,7 +108,7 @@ const IC={
  visual:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>',
  sobre:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5v.5"/></svg>'};
 const COROA='<svg class="tx-crown" viewBox="0 0 64 40"><defs><linearGradient id="txg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff3c0"/><stop offset=".5" stop-color="#e0a830"/><stop offset="1" stop-color="#7a5216"/></linearGradient></defs><path d="M6 34L2 8l15 12L32 2l15 18L62 8l-4 26z" fill="url(#txg)" stroke="#2a1a08" stroke-width="2"/><circle cx="32" cy="22" r="4" fill="#b03a3a"/><circle cx="17" cy="26" r="2.6" fill="#3a6ab0"/><circle cx="47" cy="26" r="2.6" fill="#3a9a5a"/><path d="M8 30h48" stroke="#2a1a08" stroke-width="2"/></svg>';
-const VER='v2.39';
+const VER='v2.40';
 const logo=()=>`<div class="tx-logo">${COROA}<p class="tx-kick">A Coroa de Cinco Juramentos</p><h1 class="tx-name" data-t="Masmorra&#10;do Corvo Rei">Masmorra<br><em>do</em> Corvo Rei</h1></div>`;
 
 /* ---------------- tela de início ---------------- */
@@ -117,7 +122,7 @@ function novoTitulo(){if(UI.choose||OPT.menuNovo===false)return _th.apply(this,a
     it('cenas','cenas','Cenas','Reveja a história do reino'),
     it('howto','howto','Como jogar','Cartas, energia e intenções'),
     it('opcoes','opcoes','Opções','Som, jogo e visual'),
-    DEVOK?it('dev','dev',UI.dev?'Modo DEV ligado':'Modo DEV','Ferramentas de teste','dim'):''].filter(Boolean);
+    ''].filter(Boolean);
   const press=!UI.txOk?`<button class="tx-press" data-act="txpress" aria-label="Começar">${logo()}<p>Toque para começar</p></button>`:'';
   return`<div class="page tx">${press}${UI.txOk?`<div class="tx-left">${logo()}<nav class="tx-menu" aria-label="Menu">${items.map((h,i)=>h.replace('class="tx-item',`style="--d:${(.35+i*.08).toFixed(2)}s" class="tx-item`)).join('')}</nav></div>`:''}
    <div class="tx-foot"><span><b>${VER}</b> · 5 heróis · 3 atos · 1 coroa</span><span>${UI.txOk?'Feito com cuidado no Olimpo':''}</span></div></div>`}
@@ -220,12 +225,20 @@ function opcoesAbas(){const m=$('#modal'),box=m.querySelector('.mbox'),pan=m.que
   const h=document.createElement('div');h.className='oa-h';h.innerHTML=`<h2>Opções</h2><small>${G?'Jornada em andamento':'Menu principal'}</small>`;
   const tabs=document.createElement('nav');tabs.className='oa-tabs';tabs.innerHTML=ABAS.map(([k,n])=>`<button class="oa-tab ${k===aba?'on':''}" data-aba="${k}">${IC[k]}${n}</button>`).join('');
   const body=document.createElement('div');body.className='oa-body';body.appendChild(pan);
-  const sobre=document.createElement('div');sobre.className='oa-sobre';sobre.dataset.aba='sobre';sobre.innerHTML=`<h3>Masmorra do Corvo Rei</h3><p>Um roguelike de cartas em pixel art. Cinco heróis, três atos e uma coroa para derrubar.</p><p style="color:#7a6e5a">Versão ${VER} · feito pelo Theo com o Olimpo.</p>`;pan.appendChild(sobre);
+  const sobre=document.createElement('div');sobre.className='oa-sobre';sobre.dataset.aba='sobre';sobre.innerHTML=`<h3>Masmorra do Corvo Rei</h3><p>Um roguelike de cartas em pixel art. Cinco heróis, três atos e uma coroa para derrubar.</p><p style="color:#7a6e5a">Versão ${VER} · feito pelo Theo com o Olimpo.</p>`+(DEVOK?`<div class="optrow" style="border:0!important"><b>Modo desenvolvedor</b><span>Ferramentas de teste (painel DEV, semente, atalhos). F2 abre e fecha o painel.</span><div><button class="optb ${UI.dev?'on':''}" data-act="dev">${UI.dev?'Ligado':'Desligado'}</button><button class="optb" data-act="devsair">Sair do DEV</button></div></div>`:`<button class="oa-dev" data-act="devsenha">Acesso de desenvolvedor</button>`);pan.appendChild(sobre);
   const f=document.createElement('div');f.className='oa-f';f.innerHTML=`<span>Esc para fechar</span>`;if(foot){foot.querySelectorAll('button').forEach(b=>f.appendChild(b));foot.remove()}
   box.innerHTML='';box.append(h,tabs,body,f);h.querySelector('h2');box.querySelector('.h2')?.remove();
   const mostra=a=>{UI.optAba=a;tabs.querySelectorAll('.oa-tab').forEach(b=>b.classList.toggle('on',b.dataset.aba===a));pan.querySelectorAll(':scope>[data-aba]').forEach(r=>r.classList.toggle('oa-hide',r.dataset.aba!==a));body.scrollTop=0};
   tabs.querySelectorAll('.oa-tab').forEach(b=>b.onclick=()=>{try{sfx('botao',{vol:.5})}catch(e){}mostra(b.dataset.aba)});mostra(aba)}
 addEventListener('keydown',e=>{if(e.key==='Escape'&&document.querySelector('#modal .mbox.oa')&&!$('#modal').hidden){try{closeModal()}catch(_){} }});
+/* ---------------- DEV só com senha ---------------- */
+ACT.devsenha=()=>{const m=$('#modal');m.innerHTML=`<div class="mbox ds"><h2>Acesso de desenvolvedor</h2><p>Digite a senha para abrir as ferramentas de teste.</p>
+  <input id="dsin" type="password" inputmode="numeric" maxlength="6" autocomplete="off" aria-label="Senha"><p class="dserr" hidden>Senha errada.</p>
+  <div class="dsb"><button class="btn small" data-act="mclose">Cancelar</button><button class="btn primary" id="dsok">Entrar</button></div></div>`;m.hidden=false;
+  const i=m.querySelector('#dsin'),ok=()=>{if(i.value==='000'){DEVOK=true;try{sessionStorage.setItem('trc-devok','1')}catch(e){}UI.optAba='sobre';try{sfx('moedas')}catch(e){}closeModal();toast('Modo DEV liberado. Ligue em Opções → Sobre ou com F2.');render()}else{m.querySelector('.dserr').hidden=false;i.value='';i.focus();m.querySelector('.mbox').animate([{transform:'translateX(-6px)'},{transform:'translateX(6px)'},{transform:'none'}],{duration:240})}};
+  m.querySelector('#dsok').onclick=ok;i.onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();ok()}};setTimeout(()=>i.focus(),50)};
+ACT.devsair=()=>{DEVOK=false;UI.dev=false;UI.devOpen=false;try{sessionStorage.removeItem('trc-devok');localStorage.setItem('trc-dev','0')}catch(e){}ACT.opcoes();render()};
+const _dev=ACT.dev;ACT.dev=function(){if(!DEVOK)return ACT.devsenha();const r=_dev.apply(this,arguments);if(document.querySelector('#modal .mbox.oa'))ACT.opcoes();return r};
 /* ---------------- ligar tudo depois que o jogo inteiro carregou ---------------- */
 function instalar(){titleHTML=novoTitulo;
   const _op=ACT.opcoes;ACT.opcoes=function(){const r=_op.apply(this,arguments);if(OPT.menuNovo!==false)try{opcoesAbas()}catch(e){console.error(e)}return r};
