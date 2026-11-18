@@ -26,9 +26,9 @@ function montar(){const f=document.getElementById('field');if(!ligado()||!f||!f.
   if(S.nome!==nome||S.px!==px){S.nome=nome;S.px=px;S.gl=gl;preparar(L,nome)}
   posicionar(f);ligar()}
 function posicionar(f){if(!S.px)return;const fw=f.clientWidth,fh=f.clientHeight,s=Math.max(fw/W,fh/H),by=parseFloat(f.style.getPropertyValue('--by'))||0,bw=W*s;
-  for(const c of [S.px,S.gl])Object.assign(c.style,{left:((fw-bw)/2)+'px',top:by+'px',width:bw+'px',height:H*s+'px'})}
+  for(const c of [S.px,S.gl])Object.assign(c.style,{left:((fw-bw)/2)+'px',top:by+'px',width:bw+'px',height:H*s+'px'});S.y0=Math.max(0,Math.min(100,-by/s));S.y1=Math.min(H,(fh-by)/s)}
 function tirar(){document.querySelectorAll('canvas.cv-px,canvas.cv-gl').forEach(c=>c.remove());S.px=S.gl=null;S.nome=''}
-function preparar(L,nome){S.pts=L.pts.map(p=>({...p,ph:R()*7,q:p.k==='l'?quente(p.c):0}));S.fl=L.fl;S.sp=[];S.ff=[];S.gotas=[];S.ond=[];S.bol=[];S.aranha=null;S.voo=null;S.amb=AMB[nome]||['poeira'];
+function preparar(L,nome){S.pts=L.pts.map(p=>({...p,ph:R()*7,q:p.k==='l'?quente(p.c):0}));S.fl=L.fl;S.sp=[];S.ff=[];S.gotas=[];S.ond=[];S.bol=[];S.aranha=null;S.voo=null;S.amb=AMB[nome]||['poeira'];S.est={};S.quente=['goblins','forja','forjaHef','dragao','orc','salao','taverna','carrasco','mina','labirinto','entrada'].includes(nome);
   for(const p of S.pts)if(p.k==='ff')for(let i=0;i<Math.max(3,Math.round(p.n*.45));i++)S.ff.push({x:R()*W,y:p.y0+R()*(p.y1-p.y0),vx:0,vy:0,c:p.c,ph:R()*7,y0:p.y0,y1:p.y1});
   S.poe=Array.from({length:22},()=>({x:R()*W,y:R()*S.fl,ph:R()*7,v:.05+R()*.1}));
   S.nev=Array.from({length:5},(_,i)=>({x:R()*GW,y:GH*(.7+R()*.22),r:18+R()*22,v:(R()<.5?-1:1)*(.03+R()*.04)}))}
@@ -61,7 +61,15 @@ function desenha(t,k){const x=S.px.getContext('2d'),g=S.gl.getContext('2d'),FL=S
   for(let i=S.sp.length-1;i>=0;i--){const e=S.sp[i];e.x+=(e.vx+Math.sin((t+i*70)*.004)*.12)*k;e.y+=e.vy*k;e.l-=(e.fum?.006:.02)*k;if(e.l<=0||e.y<0){S.sp.splice(i,1);continue}
     if(e.fum){e.r+=.06*k;bola(g,e.x*sx,e.y*sx,e.r*sx*2.2,'rgb(70,60,60)',e.l*.25)}else if(R()<e.l+.2)P(x,e.c,e.x,e.y)}
   if(S.sp.length>260)S.sp.splice(0,S.sp.length-260);
-  for(const a of S.amb)(AMBF[a]||(()=>0))(x,g,t,k,FL,sx);
+  const cena=window.CV_CENAS&&CV_CENAS[S.nome];
+  if(cena){if(!S.U)S.U={sh:(c,f)=>{const m=/^#(..)(..)(..)$/.exec(c);if(!m)return c;return'rgb('+[m[1],m[2],m[3]].map(h=>Math.round(parseInt(h,16)*f)).join(',')+')'},rgb:c=>{const m=/^#(..)(..)(..)$/.exec(c);return m?'rgb('+[m[1],m[2],m[3]].map(h=>parseInt(h,16)).join(',')+')':COR(c)},
+      st:(n,f)=>S.est[n]??(S.est[n]=f())};
+    const U=S.U;U.y0=S.y0||0;U.t=t;U.k=k;U.g=g;U.sx=sx;U.P=(c,X,Y,w=1,h=1)=>P(x,c,X,Y,w,h);U.B=(X,Y,r,c,a)=>bola(g,X*sx,Y*sx,r*sx,c,a);U.fl=ph=>flick(t,ph);
+    U.linha=(c,x0,y0,x1,y1)=>{const n=Math.max(1,Math.ceil(Math.max(Math.abs(x1-x0),Math.abs(y1-y0))));for(let i=0;i<=n;i++)P(x,c,x0+(x1-x0)*i/n,y0+(y1-y0)*i/n)};
+    try{cena(U)}catch(e){console.error('cena',S.nome,e)}}
+  else for(const a of S.amb)(AMBF[a]||(()=>0))(x,g,t,k,FL,sx);
+  // a sala inteira respira com o fogo
+  if(S.quente){const f=flick(t,9);g.fillStyle=`rgba(255,140,60,${Math.max(0,.05+f*.04)})`;g.fillRect(0,0,GW,GH);x.fillStyle=`rgba(0,0,0,${Math.max(0,-f*.07)})`;x.fillRect(0,0,W,H)}
   g.globalCompositeOperation='source-over'}
 /* ---------- clima de cada lugar ---------- */
 const AMBF={
