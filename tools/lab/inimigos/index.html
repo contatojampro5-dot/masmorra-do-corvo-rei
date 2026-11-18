@@ -11,13 +11,13 @@ header{padding:14px 16px 4px}h1{margin:0;color:var(--ouro);font-size:22px}header
 .acao{height:18px;font-size:13px;opacity:.85;margin:4px 0}.bts{display:flex;flex-wrap:wrap;gap:4px}
 </style></head><body>
 <header><h1>Inimigos</h1><p>Bonecos articulados no estilo do Cavaleiro novo. Toque nos botões para ver cada movimento.</p></header>
-<div class="bar"><button data-ato="1" class="on">Ato 1 · tochas</button><button data-ato="2">Ato 2 · catacumbas</button><button data-ato="3">Ato 3 · torre</button><button id="demo">▶ Mostrar tudo</button></div><div class="bar" id="niveis"><button data-nv="1">Nível 1 · Fracos</button><button data-nv="2">Nível 2 · Médios</button><button data-nv="3">Nível 3 · Fortes</button><button data-nv="4">Nível 4 · Elites</button><button data-nv="5">Nível 5 · Elites do topo</button></div>
+<div class="bar"><button data-ato="1" class="on">Ato 1 · tochas</button><button data-ato="2">Ato 2 · catacumbas</button><button data-ato="3">Ato 3 · torre</button><button id="demo">▶ Mostrar tudo</button></div><div class="bar" id="niveis"><button data-nv="1">Nível 1 · Fracos</button><button data-nv="2">Nível 2 · Médios</button><button data-nv="3">Nível 3 · Fortes</button><button data-nv="4">Nível 4 · Elites</button><button data-nv="5">Nível 5 · Elites do topo</button><button data-nv="6">Nível 6 · Chefes</button></div>
 <div class="grid" id="g"></div>
-<script src="../cavaleiro-novo/rig.js"></script><script src="bichos.js"></script><script src="bichos2.js"></script><script src="bichos3.js"></script><script src="bichos4.js"></script><script src="bichos5.js"></script><script>
+<script src="../cavaleiro-novo/rig.js"></script><script src="bichos.js"></script><script src="bichos2.js"></script><script src="bichos3.js"></script><script src="bichos4.js"></script><script src="bichos5.js"></script><script src="bichos6.js"></script><script>
 const LUZ={1:{dir:-1,col:[255,160,70],amb:[60,40,40]},2:{dir:1,col:[140,210,255],amb:[40,60,60]},3:{dir:-1,col:[255,90,50],amb:[90,40,120]}};
 const FUNDO={1:['#2a1a10','#3a2618'],2:['#101a1e','#1a2a2e'],3:['#24101a','#3a1a24']};
-const NOMES={parado:'Parado',ataque:'Ataque',especial:'Especial',buff:'Apoio',defesa:'Defesa',remontar:'Remontar',entrada:'Entrada',especial2:'Especial 2',ferido:'Apanha',morte:'Cai'};
-let nivel=+(new URLSearchParams(location.search).get('nivel')||5);
+const NOMES={parado:'Parado',ataque:'Ataque',especial:'Especial',buff:'Apoio',defesa:'Defesa',remontar:'Remontar',entrada:'Entrada',especial2:'Especial 2',fase2:'Fase 2',ferido:'Apanha',morte:'Cai'};
+let nivel=+(new URLSearchParams(location.search).get('nivel')||6);
 let ato=1;const K=4,cards=[];
 for(const [id,B] of Object.entries(BICHOS)){const d=document.createElement('div');d.className='card';d.dataset.nv=B.nivel;
   d.innerHTML=`<h2>${B.nome}</h2><canvas width="${64*K}" height="${48*K}"></canvas><div class="acao"></div><div class="bts"></div>`;
@@ -34,9 +34,9 @@ function loop(t){const dt=t-last;last=t;
   for(const st of cards){if(+st.B.nivel!==nivel)continue;const A=st.B.A[st.anim],sq=BICHO.seq(st.id,st.anim);st.t+=dt;const step=1000/A.fps;
     while(st.t>=step){st.t-=step;st.f++;
       if(A.hits&&A.hits.includes(st.f)){if(A.tiro)st.tiroPend=A.tiro;else faisca(st,12,30,'#ffe9a8');st.flash=0}
-      if(st.f>=sq.length){if(A.loop)st.f=0;else if(st.anim==='morte'){st.f=sq.length-1;if(st.fim){const r=st.fim;st.fim=null;r()}}else{const r=st.fim;st.fim=null;st.anim='parado';st.f=0;st.acao.textContent='';if(r)r()}}}
+      if(st.f>=sq.length){if(A.loop)st.f=0;else if(st.anim==='morte'){st.f=sq.length-1;if(st.fim){const r=st.fim;st.fim=null;r()}}else{if(st.anim==='fase2')st.f2=1;const r=st.fim;st.fim=null;st.anim='parado';st.f=0;st.acao.textContent='';if(r)r()}}}
     if(st.anim==='ferido'&&st.f===1)st.flash=3;
-    const key=st.anim+'|'+st.f;let q=st.cache[key];if(!q)q=st.cache[key]=BICHO.quadro(st.id,BICHO.seq(st.id,st.anim)[st.f],LUZ[ato]);
+    const f2=st.f2&&st.anim!=='fase2'?1:0,key=st.anim+'|'+st.f+'|'+f2;let q=st.cache[key];if(!q){let ps=BICHO.seq(st.id,st.anim)[st.f];if(f2)ps={...ps,f2:1};q=st.cache[key]=BICHO.quadro(st.id,ps,LUZ[ato])}
     if(st.tiroPend){const b=q.boca||[24,st.B.voa?26:33];st.tiros.push({x:b[0],y:b[1],k:st.tiroPend});st.tiroPend=null}
     const x=st.cv.getContext('2d');x.imageSmoothingEnabled=false;const F=FUNDO[ato];x.fillStyle=F[0];x.fillRect(0,0,64*K,48*K);x.fillStyle=F[1];x.fillRect(0,(BICHO.GY+1)*K,64*K,48*K);
     x.fillStyle='rgba(0,0,0,.35)';x.fillRect(30*K,(BICHO.GY+.4)*K,16*K,K);
@@ -44,12 +44,12 @@ function loop(t){const dt=t-last;last=t;
     if(st.flash>0){x.globalCompositeOperation='source-atop';x.globalCompositeOperation='source-over';st.flash--;x.fillStyle='rgba(255,90,70,.25)';x.fillRect(0,0,64*K,48*K)}
     st.tiros=st.tiros.filter(t=>{t.x-=2.2;if(t.x<2){faisca(st,3,t.y,t.k.includes('verde')||t.k==='gosma'?'#8ad04a':t.k==='sombra'?'#c08aff':t.k==='sangue'?'#e04a6a':t.k==='fogo'?'#ffb060':'#ffe9a8');return false}const X=v=>Math.round(v)*K;
       if(t.k.startsWith('flecha')){x.fillStyle='#9a7a50';x.fillRect(X(t.x),X(t.y),8*K,K);x.fillStyle=t.k.includes('verde')?'#8ad04a':'#d8dce4';x.fillRect(X(t.x)-K,X(t.y),K,K);x.fillStyle='#b03a2a';x.fillRect(X(t.x+8),X(t.y-1),K,K);x.fillRect(X(t.x+8),X(t.y+1),K,K)}
-      else{const cor={gosma:['#4a8a2a','#b0f07a'],sombra:['#4a1a6a','#c08aff'],fogo:['#c03a1a','#ffe27a'],sangue:['#4a0a2a','#e04a6a']}[t.k]||['#4a8a2a','#b0f07a'];const r=t.k==='fogo'||t.k==='sombra'||t.k==='sangue'?2:1;x.fillStyle=cor[0];x.fillRect(X(t.x-r),X(t.y-r),(2*r+1)*K,(2*r+1)*K);x.fillStyle=cor[1];x.fillRect(X(t.x-r+1),X(t.y-r+1),(2*r-1||1)*K,(2*r-1||1)*K);if(t.k==='fogo'||t.k==='sombra'||t.k==='sangue'){x.fillStyle=cor[0];x.fillRect(X(t.x+r+1),X(t.y),2*K,K)}}return true});
+      else{const cor={gosma:['#4a8a2a','#b0f07a'],sombra:['#4a1a6a','#c08aff'],fogo:['#c03a1a','#ffe27a'],sangue:['#4a0a2a','#e04a6a'],teia:['#a8a8b8','#ffffff']}[t.k]||['#4a8a2a','#b0f07a'];const r=t.k==='fogo'||t.k==='sombra'||t.k==='sangue'?2:1;x.fillStyle=cor[0];x.fillRect(X(t.x-r),X(t.y-r),(2*r+1)*K,(2*r+1)*K);x.fillStyle=cor[1];x.fillRect(X(t.x-r+1),X(t.y-r+1),(2*r-1||1)*K,(2*r-1||1)*K);if(t.k==='fogo'||t.k==='sombra'||t.k==='sangue'){x.fillStyle=cor[0];x.fillRect(X(t.x+r+1),X(t.y),2*K,K)}}return true});
     st.fx=st.fx.filter(p=>p.life-->0);for(const p of st.fx){p.x+=p.vx;p.y+=p.vy;p.vy+=.08;x.globalAlpha=Math.min(1,p.life/8);x.fillStyle=p.col;x.fillRect(Math.round(p.x)*K,Math.round(p.y)*K,K,K)}x.globalAlpha=1}
   requestAnimationFrame(loop)}
 requestAnimationFrame(loop);
 const espera=ms=>new Promise(r=>setTimeout(r,ms));
-async function demo(st){for(;;){for(const n of Object.keys(st.B.A)){if(n==='parado'||n==='morte'||n==='remontar')continue;await espera(900);await toca(st,n)}await espera(700);await toca(st,'morte');await espera(1300);if(st.B.A.remontar)await toca(st,'remontar');st.anim='parado';st.f=0;st.acao.textContent=''}}
+async function demo(st){for(;;){for(const n of Object.keys(st.B.A)){if(n==='parado'||n==='morte'||n==='remontar')continue;await espera(900);await toca(st,n)}await espera(700);await toca(st,'morte');await espera(1300);st.f2=0;if(st.B.A.remontar)await toca(st,'remontar');st.anim='parado';st.f=0;st.acao.textContent=''}}
 let rodando=false;document.getElementById('demo').onclick=()=>{if(rodando)return;rodando=true;cards.forEach((c,i)=>setTimeout(()=>demo(c),(i%8)*180))};
 if(location.hash==='#demo')document.getElementById('demo').click();
 </script></body></html>
