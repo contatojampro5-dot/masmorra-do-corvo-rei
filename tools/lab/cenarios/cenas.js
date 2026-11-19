@@ -73,7 +73,7 @@ C.goblins=U=>{const{P,t,B}=U;fogueira(U,160,138,1.25);
   const cs=['#ffcf5a','#ff8a5a','#7aff8a','#ff5a5a','#5ad0ff'];
   for(const px of [70,114,206,230]){const top=Math.max(34,U.y0+8)-4;P('#2a1a10',px-1,top,3,142-top);P('#4a3018',px-1,top,1,142-top);P('#3a2414',px-3,top-2,7,3)}
   const bY=Math.max(34,U.y0+8);for(let i=0;i<9;i++){const x0=70+i*20,y0=bY+sin(i*.7)*6,o=sin(t*.002+i*.8)*2;if(i<8){const x1=x0+20,y1=bY+sin((i+1)*.7)*6;for(let s2=0;s2<=10;s2++){const u=s2/10;P('#2a2018',x0+(x1-x0)*u,y0+(y1-y0)*u+sin(u*PI)*5+o*sin(u*PI))}}
-    P(cs[i%5],x0-1,y0+o,3,4);B(x0,y0+2+o,8,U.rgb(cs[i%5]),.35+sin(t*.006+i)*.15)}
+    {const ly=Math.round(y0+o),c=cs[i%5],br=.55+.45*(sin(t*.006+i*1.7)*.5+.5);U.linha('#2a2018',x0,y0+(i<8?0:0),x0,ly);P('#1a1410',x0-2,ly,5,1);P('#3a2a1a',x0-1,ly-1,3,1);P('#2a2018',x0-2,ly+1,1,5);P('#2a2018',x0+2,ly+1,1,5);P(c,x0-1,ly+1,3,5);P('#fff6d8',x0,ly+2+(br>.8?0:1),1,2);P('#1a1410',x0-2,ly+6,5,1);P('#2a2018',x0,ly+7);B(x0,ly+3,10,U.rgb(c),.3+br*.25)}}
   for(const[x,f]of[[40,0],[250,3]])B(x,FL_(U)-8,16,'rgb(255,150,60)',.25+U.fl(f)*.15);
   for(let i=0;i<6;i++){if(sin(t*.004+i*2.1)>.85)P('#ffffff',204+i*5,FL_(U)-22-(i%3)*2)}};
 const FL_=U=>142;
