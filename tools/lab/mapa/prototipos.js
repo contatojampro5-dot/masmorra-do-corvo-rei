@@ -225,11 +225,21 @@ async function bonito(){const W=300,H=Math.round(300*innerHeight/innerWidth),d=a
     for(let k=6;k<pts.length-4;k+=9){const[X,Y]=pts[k];P2('#4a3018',X-5,Y-11,1,10);P2('#4a3018',X+4,Y-11,1,10);P2('#5a3a1e',X-5,Y-11,10,1)}
     pts.forEach(([X,Y],k)=>{if(k%2===0)P2('#3a2a1a',X-1,Y-1,3,1)});if(rr()<.45){const[X,Y]=pts[12];P2('#3a2410',X,Y-12,1,3);LUZES.push([X,Y-14,'rgb(255,150,60)',22,.55,1])}};
   for(const row of M)for(const n of row){if(!n)continue;const[a,b]=pos(n);for(const c of n.next){const o=M[n.r+1]&&M[n.r+1][c];if(o){const[e,f]=pos(o);tunel(a+10,b,e-10,f)}}}
-  const P=caminho(),[ex,ey]=pos(P[0]);for(const n of M[0])if(n){const[a,b]=pos(n);tunel(18,SKY+6,a-10,b)}
-  m.fillStyle='#0a0705';m.beginPath();m.ellipse(18,SKY+2,12,10,0,PI,0);m.fill();texto(m,'ENTRADA',22,SKY-14,'#c8b088',7);
+  // poço de mina: estrutura de madeira com roldana na superfície, escada descendo e saídas laterais para o Andar 1
+  const P=caminho(),SHX=LEFT-30,prim=M[0].filter(Boolean),fundo=Math.max(...prim.map(n=>pos(n)[1]))+4;
+  m.fillStyle='#0c0806';m.fillRect(SHX-7,SKY,14,fundo-SKY+4);m.fillStyle='#160f0a';m.fillRect(SHX-5,SKY,10,fundo-SKY+4);
+  for(let Y=SKY;Y<fundo;Y+=4){P2('#6a4a28',SHX-4,Y,8,1)}P2('#5a3a1e',SHX-5,SKY,1,fundo-SKY);P2('#5a3a1e',SHX+4,SKY,1,fundo-SKY);
+  for(let Y=SKY+10;Y<fundo;Y+=22){P2('#4a3018',SHX-8,Y,16,2)}
+  for(const n of prim){const[a,b]=pos(n);m.fillStyle='#140d09';m.fillRect(SHX,b-11,a-10-SHX,12);m.fillStyle='#1e140d';m.fillRect(SHX,b-9,a-10-SHX,8);P2('#3a2a1a',SHX,b,a-10-SHX,1);P2('#5a3a1e',SHX+6,b-12,1,12);P2('#5a3a1e',SHX+6,b-12,a-20-SHX,1);
+    P2('#3a2410',SHX+9,b-10,1,3);LUZES.push([SHX+9,b-11,'rgb(255,150,60)',18,.5,1])}
+  // cabeça do poço na superfície
+  m.fillStyle='#4a3018';m.beginPath();m.moveTo(SHX-14,SKY);m.lineTo(SHX-2,SKY-26);m.lineTo(SHX-1,SKY-26);m.lineTo(SHX-11,SKY);m.fill();m.beginPath();m.moveTo(SHX+14,SKY);m.lineTo(SHX+2,SKY-26);m.lineTo(SHX+1,SKY-26);m.lineTo(SHX+11,SKY);m.fill();
+  P2('#5a3a1e',SHX-9,SKY-27,18,3);m.fillStyle='#2a2018';m.beginPath();m.arc(SHX,SKY-24,3.5,0,7);m.fill();P2('#8a7a60',SHX-1,SKY-21,1,SKY-SKY+21);
+  P2('#3a2a1a',SHX+10,SKY-14,1,6);P2('#ffd27a',SHX+9,SKY-9,3,3);LUZES.push([SHX+10,SKY-8,'rgb(255,190,90)',26,.55]);
+  P2('#3a2a1a',SHX-24,SKY-8,10,8);P2('#5a3a1e',SHX-24,SKY-8,10,1);texto(m,'A MASMORRA',SHX+6,SKY-34,'#c8b088',7);
   // patamares de pedra das salas
   for(const row of M)for(const n of row){if(!n)continue;const[a,b]=pos(n);P2('#2a2018',a-15,b+1,30,3);P2('#5a4a3a',a-15,b+1,30,1);P2('rgba(0,0,0,.4)',a-14,b+4,28,2)}
-  let camX=0,cam=0,camx=0,hx=18,hy=SKY+6,i=-1,andando=false,vis=new Set(),opc=[],tudo=0,camT=null;
+  let camX=0,cam=0,camx=0,hx=SHX,hy=SKY-2,i=-1,andando=false,vis=new Set(),opc=[],tudo=0,camT=null;
   loop((d,t,k)=>{const{x,g}=d;const alvo=camT!=null?camT:Math.max(0,Math.min(WHt-H,hy-H*.5));cam+=(alvo-cam)*(camT!=null?.2:.08)*k;const ax=camT!=null?camX:Math.max(0,Math.min(WW-W,hx-W*.4));camx+=(ax-camx)*(camT!=null?.2:.08)*k;
     x.save();x.translate(-Math.round(camx),-Math.round(cam));g.save();g.translate(-Math.round(camx)/2,-Math.round(cam)/2);x.drawImage(mundo,0,0);
     // água e lava mexendo
@@ -248,8 +258,9 @@ async function bonito(){const W=300,H=Math.round(300*innerHeight/innerWidth),d=a
     // vinheta e nome do andar
     const vg=x.createRadialGradient(W/2,H/2,H*.3,W/2,H/2,W*.65);vg.addColorStop(0,'rgba(0,0,0,0)');vg.addColorStop(1,'rgba(0,0,0,.6)');x.fillStyle=vg;x.fillRect(0,0,W,H);
     texto(x,tudo?'Ver mapa inteiro':i<0?'A Masmorra · Entrada':'A Masmorra · Andar '+(i+1),W/2,14,'#f2d17e',9)});
+  const mov=(a,b,dur)=>{const x0=hx,y0=hy,t0=performance.now();andando=true;return new Promise(ok=>{const f=()=>{const p=Math.min(1,(performance.now()-t0)/dur);hx=x0+(a-x0)*p;hy=y0+(b-y0)*p;if(p<1)requestAnimationFrame(f);else ok()};f()})};
   const anda=async(n)=>{const[a,b]=pos(n),x0=hx,y0=hy,dur=1500,t0=performance.now();andando=true;await new Promise(ok=>{const f=()=>{const p=Math.min(1,(performance.now()-t0)/dur),u=p*p*(3-2*p);hx=x0+(a-x0)*p;hy=y0+(b-y0)*u;if(p<1)requestAnimationFrame(f);else ok()};f()});andando=false;vis.add(n)};
-  await espera(1000);for(let s2=0;s2<5;s2++){const n=P[s2];opc=s2===0?M[0].filter(Boolean):P[s2-1].next.map(c=>M[s2][c]).filter(Boolean);await espera(1000);opc=[];await anda(n);i=s2;await espera(600)}
+  await espera(1000);for(let s2=0;s2<5;s2++){const n=P[s2];opc=s2===0?M[0].filter(Boolean):P[s2-1].next.map(c=>M[s2][c]).filter(Boolean);await espera(1000);opc=[];if(s2===0){const[a,b]=pos(n);await mov(SHX,b,Math.max(600,(b-hy)*22));await mov(a-12,b,900);andando=false}await anda(n);i=s2;await espera(600)}
   tudo=1;const ini=performance.now(),c0=cam,c1=Math.max(0,Math.min(WHt-H,byy-H*.6)),x0=camx,x1=WW-W;await new Promise(ok=>{const f=()=>{const p=Math.min(1,(performance.now()-ini)/7500),u=p*p*(3-2*p);camT=c0+(c1-c0)*u;camX=x0+(x1-x0)*u;if(p<1)requestAnimationFrame(f);else ok()};f()});await espera(1000)}
 const P2c=(x,c,X,Y,w=1,h=1)=>{x.fillStyle=c;x.fillRect(Math.round(X),Math.round(Y),w,h)};
 window.PROTO={run:async m=>{if(!G||!G.map)return;if(m==='corte')await corte();else if(m==='portas')await portas();else if(m==='lado')await lado();else if(m==='deitado')await deitado();else if(m==='bonito')await bonito();else await atos();fecha()}};
