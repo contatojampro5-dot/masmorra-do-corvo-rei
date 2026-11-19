@@ -84,6 +84,32 @@ async function corte(){const W=200,H=Math.round(200*innerHeight/innerWidth),d=ab
   const anda=async(n)=>{const[a,b]=pos(n),x0=hx,y0=hy,dur=1300,t0=performance.now();andando=true;await new Promise(ok=>{const f=()=>{const p=Math.min(1,(performance.now()-t0)/dur);hx=x0+(a-x0)*p;hy=y0+(b-y0)*p;if(p<1)requestAnimationFrame(f);else ok()};f()});andando=false;vis.add(n)};
   await espera(900);for(let s=0;s<5;s++){const n=P[s];opc=s===0?M[0].filter(Boolean):M[s-1+0]?P[s-1].next.map(c=>M[s][c]).filter(Boolean):[];await espera(900);opc=[];await anda(n);i=s;await espera(600)}
   d.cap.textContent='"Ver mapa inteiro"';tudo=1;const ini=performance.now(),c0=cam,c1=mundo.height-H;await new Promise(ok=>{const f=()=>{const p=Math.min(1,(performance.now()-ini)/7000);camT=c0+(c1-c0)*p;if(p<1)requestAnimationFrame(f);else ok()};f()});await espera(900)}
+async function deitado(){const W=300,H=Math.round(300*innerHeight/innerWidth),d=abre(W,H),M=G.map.rows,rows=M.length,cols=7,RW=62,DROP=26,CS=30,TOP=40,LEFT=46;d.cap.textContent='Corte deitado · para a direita e descendo';
+  const pos=n=>[LEFT+n.r*RW+(n.jx||0)*.3,TOP+n.r*DROP+n.c*CS+(n.jy||0)*.25];const WW=LEFT+rows*RW+90,WHt=TOP+rows*DROP+cols*CS+60;
+  // terra
+  const mundo=cv(WW,WHt),m=mundo.getContext('2d');for(let y=0;y<mundo.height;y+=2)for(let xx=0;xx<WW;xx+=8){const p=Math.min(1,(y/mundo.height)*.5+(xx/WW)*.6);m.fillStyle=`rgb(${(58-p*34)|0},${(42-p*26)|0},${(30-p*16)|0})`;m.fillRect(xx,y,8,2)}
+  for(let i=0;i<700;i++){const y=R()*mundo.height,p=y/mundo.height;m.fillStyle=R()<.5?`rgba(0,0,0,${.2+p*.2})`:`rgba(255,220,180,${.05})`;m.fillRect(R()*WW,y,1+R()*3,1)}
+  for(let i=0;i<40;i++){const y=R()*mundo.height*.5;m.strokeStyle='rgba(20,14,8,.7)';m.beginPath();let x0=R()*WW;m.moveTo(x0,y);for(let k=0;k<6;k++){x0+=R()*6-3;m.lineTo(x0,y+k*3)}m.stroke()}
+  for(let i=0;i<14;i++){const y=mundo.height*(.3+R()*.7),X=WW*(.3+R()*.7);m.fillStyle=['#5ad0ff','#ff6ad8','#7aff8a'][i%3];m.fillRect(X,y,2,3)}
+  // túneis
+  m.lineCap='round';for(const row of M)for(const n of row){if(!n)continue;const[a,b]=pos(n);for(const c of n.next){const o=M[n.r+1]&&M[n.r+1][c];if(!o)continue;const[e,f]=pos(o);m.strokeStyle='#120c08';m.lineWidth=7;m.beginPath();m.moveTo(a+8,b-3);m.bezierCurveTo((a+e)/2,b-3,(a+e)/2,f-3,e-8,f-3);m.stroke();m.strokeStyle='#1e150e';m.lineWidth=4;m.stroke()}}
+  m.fillStyle='#120c08';m.fillRect(0,TOP-12,LEFT-6,20);texto(m,'ENTRADA',22,TOP-16,'#a89878',7);
+  // portão do chefe
+  const bxx=LEFT+rows*RW+30,byy=TOP+rows*DROP+3*CS+20;m.fillStyle='#08060a';m.beginPath();m.ellipse(bxx,byy,30,26,0,PI,0);m.lineTo(bxx+30,byy+4);m.lineTo(bxx-30,byy+4);m.fill();
+  const P=caminho();let camX=0,cam=0,camx=0,hx=12,hy=TOP+6,i=-1,andando=false,vis=new Set(),opc=[],tudo=0,camT=null;
+  loop((d,t,k)=>{const{x,g}=d;const alvo=camT!=null?camT:Math.max(0,Math.min(mundo.height-H,hy-H*.5));cam+=(alvo-cam)*(camT!=null?.2:.08)*k;const ax=camT!=null?camX:Math.max(0,Math.min(WW-W,hx-W*.4));camx+=(ax-camx)*(camT!=null?.2:.08)*k;x.save();x.translate(-Math.round(camx),0);g.save();g.translate(-Math.round(camx)/2,0);x.drawImage(mundo,0,-Math.round(cam));
+    for(const row of M)for(const n of row){if(!n)continue;const[a,b]=pos(n);const v=tudo||vis.has(n)||n.r<=i+2;sala(x,g,n,a,b-cam,t,v)}
+    for(const o of opc){const[a,b]=pos(o);x.strokeStyle=`rgba(242,209,126,${.5+.5*Math.sin(t*.008)})`;x.lineWidth=1;x.beginPath();x.ellipse(a,b-cam-9,17,14,0,0,PI*2);x.stroke()}
+    heroi(x,hx,hy-cam+2,andando,false,.65);x.restore();g.restore();
+    // escuridão com a luz da lanterna
+    const dk=d.dk||(d.dk=cv(W,H)),q=dk.getContext('2d');q.globalCompositeOperation='source-over';q.clearRect(0,0,W,H);q.fillStyle='rgba(3,2,5,.7)';q.fillRect(0,0,W,H);q.globalCompositeOperation='destination-out';
+    const fl=1+Math.sin(t*.013)*.04,gr=q.createRadialGradient(hx-camx,hy-cam-8,0,hx-camx,hy-cam-8,90*fl);gr.addColorStop(0,'rgba(0,0,0,1)');gr.addColorStop(.55,'rgba(0,0,0,.85)');gr.addColorStop(1,'rgba(0,0,0,0)');q.fillStyle=gr;q.fillRect(0,0,W,H);
+    for(const n of vis){const[a,b]=pos(n);const g2=q.createRadialGradient(a-camx,b-cam,0,a-camx,b-cam,22);g2.addColorStop(0,'rgba(0,0,0,.6)');g2.addColorStop(1,'rgba(0,0,0,0)');q.fillStyle=g2;q.fillRect(a-camx-22,b-cam-22,44,44)}
+    if(!tudo)x.drawImage(dk,0,0);else{x.fillStyle='rgba(3,2,5,.25)';x.fillRect(0,0,W,H)}bola(g,(hx-camx)/2,(hy-cam-14)/2,34,'rgb(255,170,80)',.25);
+    x.fillStyle='rgba(10,8,6,.8)';x.fillRect(0,H-16,W,16);texto(x,i<0?'Entrada':'Andar '+(i+1),W/2,H-5,'#f2d17e',9)});
+  const anda=async(n)=>{const[a,b]=pos(n),x0=hx,y0=hy,dur=1300,t0=performance.now();andando=true;await new Promise(ok=>{const f=()=>{const p=Math.min(1,(performance.now()-t0)/dur);hx=x0+(a-x0)*p;hy=y0+(b-y0)*p;if(p<1)requestAnimationFrame(f);else ok()};f()});andando=false;vis.add(n)};
+  await espera(900);for(let s=0;s<5;s++){const n=P[s];opc=s===0?M[0].filter(Boolean):M[s-1+0]?P[s-1].next.map(c=>M[s][c]).filter(Boolean):[];await espera(900);opc=[];await anda(n);i=s;await espera(600)}
+  d.cap.textContent='"Ver mapa inteiro"';tudo=1;const ini=performance.now(),c0=cam,c1=Math.max(0,Math.min(mundo.height-H,TOP+rows*DROP+3*CS-H*.55)),x0=camx,x1=WW-W;await new Promise(ok=>{const f=()=>{const p=Math.min(1,(performance.now()-ini)/7000);camT=c0+(c1-c0)*p;camX=x0+(x1-x0)*p;if(p<1)requestAnimationFrame(f);else ok()};f()});await espera(900)}
 /* ===================== 2. PORTAS, UMA DE CADA VEZ ===================== */
 async function portas(){const W=180,H=Math.round(180*innerHeight/innerWidth),d=abre(W,H),M=G.map.rows;d.cap.textContent='2 · Portas, uma de cada vez';
   const P=caminho();let s=0,esc=0,hx=W/2,andando=false,porta=-1,fade=0;
@@ -163,5 +189,5 @@ async function lado(){const VW=150,VH=Math.round(150*innerHeight/innerWidth),d=a
     const de=s===0?[ex,TOP]:pos(P[s-1]),para=pos(P[s]);await segue(s===0?[de,[para[0],para[1]]]:rota(de,para));vis.add(P[s]);i=s;await espera(500)}
   d.cap.textContent='"Ver mapa inteiro"';tudo=1;const z0=performance.now();await new Promise(ok=>{const f=()=>{const p=Math.min(1,(performance.now()-z0)/2500);zoom=1+p*(Math.max(WW/VW,1)*1.02-1);if(p<1)requestAnimationFrame(f);else ok()};f()});
   const y0=hy,t1=performance.now();await new Promise(ok=>{const f=()=>{const p=Math.min(1,(performance.now()-t1)/6000);hy=y0+(WH-VH*zoom*.45-y0)*p;hx=WW/2;if(p<1)requestAnimationFrame(f);else ok()};f()});await espera(600)}
-window.PROTO={run:async m=>{if(!G||!G.map)return;if(m==='corte')await corte();else if(m==='portas')await portas();else if(m==='lado')await lado();else await atos();fecha()}};
+window.PROTO={run:async m=>{if(!G||!G.map)return;if(m==='corte')await corte();else if(m==='portas')await portas();else if(m==='lado')await lado();else if(m==='deitado')await deitado();else await atos();fecha()}};
 })();
