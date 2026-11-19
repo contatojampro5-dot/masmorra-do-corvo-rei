@@ -124,5 +124,44 @@ async function atos(){const W=180,H=Math.round(180*innerHeight/innerWidth),d=abr
       const a=sub/14*.5,hy=H*.72;heroi(x,cx+Math.cos(a)*30,hy,true,Math.sin(a)<0,.6);
       if(p>.7){bola(g,cx/2,10,40,'rgb(150,80,255)',(p-.7)*1.5);texto(x,'O Corvo Rei',cx,26,'#c8a8ff',9)}texto(x,'Ato 3 · A torre (sobe)',W/2,H-10,'#c8a8ff',8)}});
   for(fase=0;fase<3;fase++){d.cap.textContent='3 · Cada ato com o seu jeito';const t0=performance.now();await new Promise(ok=>{const f=()=>{p=Math.min(1,(performance.now()-t0)/5200);if(p<1)requestAnimationFrame(f);else ok()};f()})}}
-window.PROTO={run:async m=>{if(!G||!G.map)return;if(m==='corte')await corte();else if(m==='portas')await portas();else await atos();fecha()}};
+/* ===================== 4. DE LADO: DESCENDO DE VERDADE ===================== */
+async function lado(){const VW=150,VH=Math.round(150*innerHeight/innerWidth),d=abre(VW,VH),M=G.map.rows,rows=M.length,CX=78,RH=74,TOP=60;d.cap.textContent='De lado · descendo de verdade';
+  const pos=n=>[40+n.c*CX+(n.jx||0)*.6,TOP+n.r*RH];const WW=40+6*CX+60,WH=TOP+rows*RH+80;
+  const mundo=cv(WW,WH),m=mundo.getContext('2d'),r0=sr({r:3,c:5});
+  // rocha
+  for(let y=0;y<WH;y+=2){const p=y/WH;m.fillStyle=`rgb(${(64-p*36)|0},${(48-p*28)|0},${(36-p*18)|0})`;m.fillRect(0,y,WW,2)}
+  for(let i=0;i<2600;i++){const y=r0()*WH,p=y/WH;m.fillStyle=r0()<.55?`rgba(0,0,0,${.22+p*.2})`:'rgba(255,225,190,.05)';m.fillRect(r0()*WW,y,1+r0()*4,1+(r0()<.2?1:0))}
+  for(let i=0;i<60;i++){const y=WH*(.3+r0()*.7),X=r0()*WW;m.fillStyle=['#5ad0ff','#ff6ad8','#7aff8a','#ffd24a'][i%4];m.fillRect(X,y,2,3);m.fillStyle='rgba(255,255,255,.4)';m.fillRect(X,y,1,1)}
+  // céu/entrada lá em cima
+  m.fillStyle='#1a1430';m.fillRect(0,0,WW,TOP-30);for(let i=0;i<60;i++){m.fillStyle='rgba(230,235,255,.6)';m.fillRect(r0()*WW,r0()*(TOP-34),1,1)}m.fillStyle='#2a2018';m.fillRect(0,TOP-30,WW,3);
+  // túneis: rampa com degraus, ou poço com escada de corda quando quase reto
+  const cava=(x0,y0,x1,y1)=>{m.fillStyle='#120c08';m.strokeStyle='#120c08';m.lineCap='round';
+    if(Math.abs(x1-x0)<26){const xm=(x0+x1)/2;m.fillRect(xm-7,y0-14,14,y1-y0+14);m.fillStyle='#6a4a28';m.fillRect(xm-5,y0-12,1,y1-y0+12);m.fillRect(xm+4,y0-12,1,y1-y0+12);for(let y=y0-10;y<y1;y+=5)m.fillRect(xm-5,y,10,1)}
+    else{const dir=Math.sign(x1-x0),ax=x0+dir*14,bx=x1-dir*14;m.lineWidth=20;m.beginPath();m.moveTo(x0,y0-9);m.lineTo(ax,y0-9);m.lineTo(bx,y1-9);m.lineTo(x1,y1-9);m.stroke();
+      m.fillStyle='#3a2a1c';const n=Math.max(4,Math.round(Math.abs(bx-ax)/6));for(let k=0;k<=n;k++){const t=k/n,x=ax+(bx-ax)*t,y=y0+(y1-y0)*t;m.fillRect(x-3,Math.round(y),6,2)}m.fillRect(Math.min(x0,ax)-2,y0,Math.abs(ax-x0)+4,2);m.fillRect(Math.min(x1,bx)-2,y1,Math.abs(bx-x1)+4,2)}};
+  for(const row of M)for(const n of row){if(!n)continue;const[a,b]=pos(n);for(const c of n.next){const o=M[n.r+1]&&M[n.r+1][c];if(o){const[e,f]=pos(o);cava(a,b,e,f)}}}
+  // poço de entrada e salas (chão de pedra onde o herói pisa)
+  const P=caminho(),[ex]=pos(P[0]);cava(ex,TOP-30,ex,TOP);for(const n of M[0])if(n){const[a]=pos(n);if(a!==ex){m.lineWidth=18;m.strokeStyle='#120c08';m.beginPath();m.moveTo(ex,TOP-9);m.lineTo(a,TOP-9);m.stroke()}}
+  for(const row of M)for(const n of row){if(!n)continue;const[a,b]=pos(n);m.fillStyle='#0e0906';m.beginPath();m.ellipse(a,b-14,22,17,0,PI,0);m.lineTo(a+22,b+1);m.lineTo(a-22,b+1);m.fill();m.fillStyle='#4a3a2c';m.fillRect(a-24,b,48,3);m.fillStyle='#6a5640';m.fillRect(a-24,b,48,1)}
+  const by=TOP+rows*RH,bxx=WW/2;m.fillStyle='#08060a';m.beginPath();m.ellipse(bxx,by+30,46,38,0,PI,0);m.lineTo(bxx+46,by+40);m.lineTo(bxx-46,by+40);m.fill();
+  let hx=ex,hy=TOP-30,cx=hx,cy=hy,i=-1,andando=false,opc=[],flip=false,vis=new Set(),tudo=0,zoom=1;
+  loop((d,t,k)=>{const{x,g}=d;const VWz=VW*zoom,VHz=VH*zoom;const tx=Math.max(0,Math.min(WW-VWz,hx-VWz/2)),ty=VHz>WH?-(VHz-WH)/2:Math.max(0,Math.min(WH-VHz,hy-VHz*.55));cx+=(tx-cx)*.1*k;cy+=(ty-cy)*.1*k;
+    x.save();x.scale(1/zoom,1/zoom);x.drawImage(mundo,-Math.round(cx),-Math.round(cy));
+    for(const row of M)for(const n of row){if(!n)continue;const[a,b]=pos(n);if(Math.abs(a-hx)>VWz||Math.abs(b-hy)>VHz)continue;sala(x,g,n,a-cx,b-cy,t,tudo||vis.has(n)||n.r<=i+2)}
+    for(const o of opc){const[a,b]=pos(o);x.strokeStyle=`rgba(242,209,126,${.5+.5*Math.sin(t*.008)})`;x.lineWidth=1;x.beginPath();x.ellipse(a-cx,b-cy-12,24,19,0,0,PI*2);x.stroke()}
+    heroi(x,hx-cx,hy-cy+1,andando,flip,.8);x.restore();if(zoom>1.01){g.clearRect(0,0,d.W/2,d.H/2)}
+    if(!tudo){const dk=d.dk||(d.dk=cv(VW,VH)),q=dk.getContext('2d');q.globalCompositeOperation='source-over';q.clearRect(0,0,VW,VH);q.fillStyle='rgba(3,2,5,.82)';q.fillRect(0,0,VW,VH);q.globalCompositeOperation='destination-out';
+      const fl=1+Math.sin(t*.013)*.04,lx=(hx-cx)/zoom,ly=(hy-cy-20)/zoom,gr=q.createRadialGradient(lx,ly,0,lx,ly,70*fl/zoom);gr.addColorStop(0,'rgba(0,0,0,1)');gr.addColorStop(.5,'rgba(0,0,0,.85)');gr.addColorStop(1,'rgba(0,0,0,0)');q.fillStyle=gr;q.fillRect(0,0,VW,VH);
+      for(const o of opc){const[a,b]=pos(o),ox=(a-cx)/zoom,oy=(b-cy-12)/zoom,g2=q.createRadialGradient(ox,oy,0,ox,oy,26);g2.addColorStop(0,'rgba(0,0,0,.7)');g2.addColorStop(1,'rgba(0,0,0,0)');q.fillStyle=g2;q.fillRect(ox-26,oy-26,52,52)}
+      x.drawImage(dk,0,0);bola(g,lx/2,ly/2,30,'rgb(255,170,80)',.28)}
+    x.fillStyle='rgba(10,8,6,.8)';x.fillRect(0,VH-16,VW,16);texto(x,i<0?'Entrada':'Andar '+(i+1),VW/2,VH-5,'#f2d17e',9)});
+  const segue=async pts=>{andando=true;for(let j=1;j<pts.length;j++){const[x0,y0]=pts[j-1],[x1,y1]=pts[j],L=Math.hypot(x1-x0,y1-y0),dur=Math.max(250,L*26),t0=performance.now();if(x1!==x0)flip=x1<x0;
+      await new Promise(ok=>{const f=()=>{const p=Math.min(1,(performance.now()-t0)/dur);hx=x0+(x1-x0)*p;hy=y0+(y1-y0)*p;if(p<1)requestAnimationFrame(f);else ok()};f()})}andando=false};
+  const rota=(a,b)=>{const[x0,y0]=a,[x1,y1]=b;if(Math.abs(x1-x0)<26){const xm=(x0+x1)/2;return[[x0,y0],[xm,y0],[xm,y1],[x1,y1]]}const dir=Math.sign(x1-x0);return[[x0,y0],[x0+dir*14,y0],[x1-dir*14,y1],[x1,y1]]};
+  await espera(700);await segue([[ex,TOP-30],[ex,TOP]]);
+  for(let s=0;s<5;s++){opc=s===0?M[0].filter(Boolean):P[s-1].next.map(c=>M[s][c]).filter(Boolean);if(s===0)opc=opc.filter(o=>Math.abs(pos(o)[0]-ex)<CX*2.2);await espera(1100);opc=[];
+    const de=s===0?[ex,TOP]:pos(P[s-1]),para=pos(P[s]);await segue(s===0?[de,[para[0],para[1]]]:rota(de,para));vis.add(P[s]);i=s;await espera(500)}
+  d.cap.textContent='"Ver mapa inteiro"';tudo=1;const z0=performance.now();await new Promise(ok=>{const f=()=>{const p=Math.min(1,(performance.now()-z0)/2500);zoom=1+p*(Math.max(WW/VW,1)*1.02-1);if(p<1)requestAnimationFrame(f);else ok()};f()});
+  const y0=hy,t1=performance.now();await new Promise(ok=>{const f=()=>{const p=Math.min(1,(performance.now()-t1)/6000);hy=y0+(WH-VH*zoom*.45-y0)*p;hx=WW/2;if(p<1)requestAnimationFrame(f);else ok()};f()});await espera(600)}
+window.PROTO={run:async m=>{if(!G||!G.map)return;if(m==='corte')await corte();else if(m==='portas')await portas();else if(m==='lado')await lado();else await atos();fecha()}};
 })();
