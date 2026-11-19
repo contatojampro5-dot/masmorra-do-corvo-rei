@@ -8,16 +8,48 @@ let hf=0;function heroi(x,X,Y,andando,flip,sc=1){const nm=andando?'andar':'parad
 const ICO={luta:'#d8c8a8',elite:'#ff5a4a',evento:'#c8a8ff',fogueira:'#ff9a3a',loja:'#ffd24a',tesouro:'#ffd24a',forja:'#ff7a2a'};
 function caminho(){const M=G.map.rows,rows=M.length;let n=M[0].filter(Boolean).sort((a,b)=>b.next.length-a.next.length)[0];const p=[n];for(let r=0;r<rows-1;r++){const nx=n.next.map(c=>M[r+1][c]).filter(Boolean).sort((a,b)=>(b.next.length-a.next.length));n=nx[0];p.push(n)}return p}
 function texto(x,t,X,Y,cor='#f2d17e',tam=9){x.font=`${tam}px "IM Fell English SC",serif`;x.textAlign='center';x.fillStyle='#000';x.fillText(t,X+1,Y+1);x.fillStyle=cor;x.fillText(t,X,Y)}
-/* ---------- desenho de cada lugar (pequena cena) ---------- */
-function sala(x,g,n,X,Y,t,vis){const tp=n.type;x.fillStyle='#0c0907';x.beginPath();x.ellipse(X,Y-6,13,10,0,PI,0);x.lineTo(X+13,Y+2);x.lineTo(X-13,Y+2);x.fill();x.fillStyle='#2a2018';x.fillRect(X-14,Y+1,28,2);
-  if(!vis)return;const f=Math.sin(t*.01+X)*.5+.5;
-  if(tp==='fogueira'){for(let d=-2;d<=2;d++){const h=2+Math.round((4-Math.abs(d))*(0.6+f*.4));x.fillStyle='#ff7a26';x.fillRect(X+d,Y-h,1,h)}x.fillStyle='#ffe07a';x.fillRect(X,Y-3,1,2);bola(g,X/2,(Y-4)/2,14,'rgb(255,140,50)',.5)}
-  else if(tp==='loja'){x.fillStyle='#3a2a1a';x.fillRect(X-1,Y-14,1,8);x.fillStyle='#ffd27a';x.fillRect(X-2,Y-7,3,4);bola(g,X/2,(Y-5)/2,10,'rgb(255,200,90)',.45);x.fillStyle='#ffd24a';x.fillRect(X+4,Y-2,2,2)}
-  else if(tp==='elite'){if(Math.sin(t*.003+X)>-.7){x.fillStyle='#ff3a2a';x.fillRect(X-3,Y-8,1,1);x.fillRect(X+2,Y-8,1,1);bola(g,X/2,(Y-8)/2,5,'rgb(255,60,40)',.6)}}
-  else if(tp==='evento'){bola(g,X/2,(Y-6)/2,10,'rgb(170,130,255)',.3+f*.2);texto(x,'?',X,Y-2,'#d8c8ff',10)}
-  else if(tp==='tesouro'){x.fillStyle='#6a4a1e';x.fillRect(X-4,Y-5,8,5);x.fillStyle='#ffd24a';x.fillRect(X-4,Y-5,8,1);x.fillRect(X-1,Y-4,2,2);bola(g,X/2,(Y-3)/2,8,'rgb(255,210,80)',.35)}
-  else if(tp==='forja'){x.fillStyle='#5a5250';x.fillRect(X-4,Y-4,8,2);x.fillRect(X-2,Y-2,4,2);if(Math.sin(t*.02)>.7){x.fillStyle='#fff0a0';x.fillRect(X+R()*6-3,Y-6-R()*3,1,1)}bola(g,X/2,(Y-3)/2,9,'rgb(255,110,40)',.35)}
-  else{x.fillStyle='#8a7a60';x.fillRect(X-4,Y-8,1,6);x.fillRect(X+3,Y-8,1,6);x.fillRect(X-5,Y-4,3,1);x.fillRect(X+2,Y-4,3,1)}}
+/* ---------- desenho de cada lugar: formato da entrada + cena do tipo, com variação por lugar ---------- */
+const sr=n=>{let v=(n.r*977+n.c*131+7)>>>0;return()=>(v=(Math.imul(v,1664525)+1013904223)>>>0)/4294967296};
+const PX=(x,c,X,Y,w=1,h=1)=>{x.fillStyle=c;x.fillRect(Math.round(X),Math.round(Y),w,h)};
+function boca(x,forma,X,Y,w,h){x.fillStyle='#090605';
+  if(forma===0){x.beginPath();x.ellipse(X,Y-h*.45,w*.55,h*.55,0,PI,0);x.lineTo(X+w*.55,Y);x.lineTo(X-w*.55,Y);x.fill()}// boca redonda
+  else if(forma===1){x.fillRect(X-w/2,Y-h,w,h);PX(x,'#5a3a1e',X-w/2-2,Y-h-2,w+4,3);PX(x,'#4a2e16',X-w/2-2,Y-h,3,h);PX(x,'#4a2e16',X+w/2-1,Y-h,3,h);PX(x,'#6a4828',X-w/2-2,Y-h-2,w+4,1)}// moldura de mina
+  else if(forma===2){x.beginPath();x.moveTo(X-w/2,Y);x.lineTo(X-w/2,Y-h*.55);x.arc(X,Y-h*.55,w/2,PI,0);x.lineTo(X+w/2,Y);x.fill();for(let k=0;k<9;k++){const a=PI+k*PI/8;PX(x,k===4?'#8a8070':'#5a5248',X+Math.cos(a)*(w/2+1)-1,Y-h*.55+Math.sin(a)*(w/2+1)-1,3,3)}}// arco de pedra
+  else if(forma===3){x.beginPath();x.moveTo(X-w*.4,Y);x.lineTo(X-w*.3,Y-h*.5);x.lineTo(X-w*.1,Y-h*.6);x.lineTo(X-w*.05,Y-h);x.lineTo(X+w*.15,Y-h*.7);x.lineTo(X+w*.35,Y-h*.4);x.lineTo(X+w*.45,Y);x.fill()}// fenda
+  else{x.beginPath();x.moveTo(X-w/2,Y);x.lineTo(X-w/2,Y-h*.6);x.arc(X,Y-h*.6,w/2,PI,0);x.lineTo(X+w/2,Y);x.fill();for(let k=-w/2+2;k<w/2;k+=3)PX(x,'#4a4650',X+k,Y-h*.9,1,h*.9);PX(x,'#4a4650',X-w/2,Y-h*.45,w,1)}}// grade de ferro
+function sala(x,g,n,X,Y,t,vis){const r=sr(n),tp=n.type,w=18+Math.round(r()*4),h=16+Math.round(r()*4);let forma=Math.floor(r()*5);if(tp==='elite')forma=4;if(tp==='loja')forma=1;if(tp==='evento'&&forma===4)forma=0;
+  boca(x,forma,X,Y,w,h);PX(x,'#2a2018',X-w/2-3,Y,w+6,2);if(!vis)return;
+  const f=Math.sin(t*.01+X)*.5+.5,v=Math.floor(r()*4),rgb=c=>`rgb(${c})`;
+  if(tp==='fogueira'){// acampamento: barraca, fogo, saco de dormir
+    x.fillStyle='#6a3a2a';x.beginPath();x.moveTo(X-w/2+2,Y);x.lineTo(X-w/2+8,Y-11);x.lineTo(X-w/2+14,Y);x.fill();PX(x,'#3a1e14',X-w/2+7,Y-6,2,6);
+    for(let d=-2;d<=2;d++){const hh=3+Math.round((4-Math.abs(d))*(0.6+f*.5));PX(x,'#ff7a26',X+4+d,Y-hh,1,hh)}PX(x,'#ffe07a',X+4,Y-3,1,2);PX(x,'#5a3a1e',X+1,Y-1,7,1);
+    if(v%2)PX(x,'#7a2a22',X+8,Y-2,7,2);bola(g,(X+4)/2,(Y-5)/2,16,'rgb(255,140,50)',.55)}
+  else if(tp==='loja'){// carroça do mercador com toldo listrado
+    for(let k=0;k<5;k++)PX(x,k%2?'#e8d8b0':'#a83a2a',X-9+k*4,Y-14,4,3);PX(x,'#5a3a1e',X-9,Y-11,20,7);PX(x,'#7a5228',X-9,Y-11,20,1);PX(x,'#1a120a',X-6,Y-3,3,3);PX(x,'#1a120a',X+6,Y-3,3,3);
+    PX(x,'#3a2a1a',X+12,Y-18,1,10);PX(x,'#ffd27a',X+11,Y-9,3,3);bola(g,(X+12)/2,(Y-8)/2,10,'rgb(255,200,90)',.5);PX(x,'#ffd24a',X-4,Y-9,2,2);PX(x,'#ffd24a',X+1,Y-8,2,2)}
+  else if(tp==='elite'){// porta de ferro com chifres/caveira, tochas e olhos grandes
+    PX(x,'#d8d0b8',X-3,Y-h-5,7,4);PX(x,'#000',X-2,Y-h-4,1,1);PX(x,'#000',X+2,Y-h-4,1,1);PX(x,'#c8c0a8',X-6,Y-h-7,2,3);PX(x,'#c8c0a8',X+5,Y-h-7,2,3);
+    for(const sx of [-w/2-4,w/2+3]){PX(x,'#3a2410',X+sx,Y-12,2,6);PX(x,'#ff7a26',X+sx,Y-15+(f>.5?0:1),2,3);bola(g,(X+sx)/2,(Y-14)/2,8,'rgb(255,130,50)',.4)}
+    if(Math.sin(t*.003+X)>-.6){PX(x,'#ff3a2a',X-4,Y-h*.55,2,1);PX(x,'#ff3a2a',X+3,Y-h*.55,2,1);bola(g,X/2,(Y-h*.55)/2,8,'rgb(255,60,40)',.6)}}
+  else if(tp==='evento'){const opc=[// poço brilhando, estátua com velas, cogumelos, círculo de runas
+     ()=>{PX(x,'#5a5250',X-6,Y-6,12,6);PX(x,'#7a706a',X-6,Y-6,12,1);PX(x,'#5aa8ff',X-4,Y-5,8,1);bola(g,X/2,(Y-6)/2,12,'rgb(110,170,255)',.4+f*.2);PX(x,'#3a2a1a',X-5,Y-14,1,8);PX(x,'#3a2a1a',X+4,Y-14,1,8);PX(x,'#3a2a1a',X-5,Y-14,10,1)},
+     ()=>{PX(x,'#6a6a72',X-2,Y-14,5,14);PX(x,'#8a8a92',X-3,Y-17,7,4);for(const sx of [-6,6]){PX(x,'#e8e0c8',X+sx,Y-3,1,3);PX(x,'#ffb050',X+sx,Y-4-(f>.5?1:0),1,1);bola(g,(X+sx)/2,(Y-4)/2,5,'rgb(255,180,90)',.5)}},
+     ()=>{for(const[dx,hh,c]of [[-6,5,'#ff7ad0'],[-1,8,'#7affe0'],[5,6,'#ff7ad0']]){PX(x,'#c8c0b0',X+dx,Y-hh,1,hh);PX(x,c,X+dx-2,Y-hh-1,5,2);bola(g,(X+dx)/2,(Y-hh)/2,7,c==='#7affe0'?'rgb(120,255,220)':'rgb(255,120,210)',.4+f*.15)}},
+     ()=>{x.strokeStyle=`rgba(200,150,255,${.5+f*.4})`;x.lineWidth=1;x.beginPath();x.ellipse(X,Y-2,9,3,0,0,PI*2);x.stroke();for(let k=0;k<5;k++){const a=t*.002+k*PI*2/5;PX(x,'#e0c8ff',X+Math.cos(a)*9,Y-2+Math.sin(a)*3)}bola(g,X/2,(Y-3)/2,12,'rgb(170,120,255)',.35)}];
+    opc[v](); if(f>.6)texto(x,'?',X,Y-h*.65,'#d8c8ff',8)}
+  else if(tp==='tesouro'){// baú com moedas, às vezes num pedestal
+    if(v%2){PX(x,'#5a5250',X-6,Y-3,12,3);PX(x,'#7a706a',X-6,Y-3,12,1)}const by=Y-(v%2?3:0);PX(x,'#6a4a1e',X-5,by-6,10,6);PX(x,'#8a6428',X-5,by-7,10,2);PX(x,'#ffd24a',X-5,by-5,10,1);PX(x,'#ffd24a',X-1,by-4,2,2);
+    for(let k=0;k<6;k++)PX(x,'#ffd24a',X-8+r()*16,Y-1-r()*2);if(Math.sin(t*.005+X)>.7)PX(x,'#ffffff',X+3,by-6);bola(g,X/2,(by-4)/2,11,'rgb(255,210,80)',.4)}
+  else if(tp==='forja'){// fornalha com chaminé, bigorna, faíscas
+    PX(x,'#3a3230',X+3,Y-18,7,18);PX(x,'#5a4a40',X+3,Y-18,7,1);PX(x,'#ff6a1a',X+4,Y-7,5,4);PX(x,'#ffd24a',X+5,Y-6,3,2);bola(g,(X+6)/2,(Y-6)/2,10,'rgb(255,110,40)',.5);
+    PX(x,'#5a5250',X-8,Y-5,9,2);PX(x,'#5a5250',X-6,Y-3,5,3);PX(x,'#7a706a',X-8,Y-5,9,1);if(Math.sin(t*.02+X)>.6)for(let k=0;k<3;k++)PX(x,'#fff0a0',X-4+r()*6,Y-8-r()*4);
+    const fy=((t*.02)%10);PX(x,`rgba(120,110,110,${.5-fy/20})`,X+5,Y-20-fy,3,2)}
+  else{// luta: goblin com lança / pilha de ossos / caixas e barris / teia com aranha
+    if(v===0){PX(x,'#1a2a14',X-2,Y-8,4,8);PX(x,'#1a2a14',X-3,Y-11,5,3);PX(x,'#ffd24a',X-1,Y-10,1,1);PX(x,'#5a4a3a',X+3,Y-14,1,12);PX(x,'#a8a8a8',X+3,Y-15,1,2)}
+    else if(v===1){for(let k=0;k<5;k++){PX(x,'#d8d0b8',X-6+k*3,Y-1-(k%2),3,1)}PX(x,'#e8e0c8',X-1,Y-6,4,3);PX(x,'#000',X,Y-5,1,1);PX(x,'#000',X+2,Y-5,1,1)}
+    else if(v===2){PX(x,'#5a3a1e',X-8,Y-6,6,6);PX(x,'#7a5228',X-8,Y-6,6,1);PX(x,'#4a3018',X,Y-8,5,8);PX(x,'#6a4424',X,Y-6,5,1);PX(x,'#6a4424',X,Y-3,5,1)}
+    else{x.strokeStyle='rgba(220,220,235,.45)';x.lineWidth=1;for(let k=1;k<4;k++){x.beginPath();x.arc(X-w/2+2,Y-h,k*3,0,PI/2);x.stroke()}PX(x,'#1a1420',X-3,Y-7,3,2);PX(x,'#ff3a2a',X-2,Y-7,1,1)}
+    if(Math.sin(t*.002+X*3)>.8){PX(x,'#ffd24a',X-w/2+3,Y-h*.4);PX(x,'#ffd24a',X-w/2+5,Y-h*.4)}}}
 /* ---------- infra comum ---------- */
 let D=null;
 function abre(W,H){fecha();const box=document.createElement('div');box.id='proto';box.style.cssText='position:fixed;inset:0;z-index:900;background:#000';const a=cv(W,H),b=cv(W/2,H/2);for(const c of [a,b]){c.style.cssText='position:absolute;inset:0;width:100%;height:100%;image-rendering:pixelated'}b.style.mixBlendMode='screen';
@@ -26,8 +58,8 @@ function fecha(){const e=document.getElementById('proto');if(e)e.remove();if(D)D
 const espera=ms=>new Promise(r=>setTimeout(r,ms));
 function loop(fn){const d=D;let last=performance.now();const f=t=>{if(!d.on)return;requestAnimationFrame(f);const k=Math.min(3,(t-last)/33);last=t;hf++;d.x.clearRect(0,0,d.W,d.H);d.g.clearRect(0,0,d.W/2,d.H/2);d.g.globalCompositeOperation='lighter';fn(d,t,k);d.g.globalCompositeOperation='source-over'};requestAnimationFrame(f)}
 /* ===================== 1. CORTE DA MASMORRA COM LANTERNA ===================== */
-async function corte(){const W=180,H=Math.round(180*innerHeight/innerWidth),d=abre(W,H),M=G.map.rows,rows=M.length,cols=7,RH=46,TOP=40;d.cap.textContent='1 · Corte da masmorra';
-  const pos=n=>[18+n.c*(W-36)/(cols-1)+(n.jx||0)*.3,TOP+n.r*RH+(n.jy||0)*.2];
+async function corte(){const W=200,H=Math.round(200*innerHeight/innerWidth),d=abre(W,H),M=G.map.rows,rows=M.length,cols=7,RH=54,TOP=46;d.cap.textContent='1 · Corte da masmorra';
+  const pos=n=>[22+n.c*(W-44)/(cols-1)+(n.jx||0)*.25,TOP+n.r*RH+(n.jy||0)*.2];
   // terra
   const mundo=cv(W,TOP+rows*RH+60),m=mundo.getContext('2d');for(let y=0;y<mundo.height;y+=2){const p=y/mundo.height;m.fillStyle=`rgb(${(58-p*34)|0},${(42-p*26)|0},${(30-p*16)|0})`;m.fillRect(0,y,W,2)}
   for(let i=0;i<700;i++){const y=R()*mundo.height,p=y/mundo.height;m.fillStyle=R()<.5?`rgba(0,0,0,${.2+p*.2})`:`rgba(255,220,180,${.05})`;m.fillRect(R()*W,y,1+R()*3,1)}
@@ -38,20 +70,20 @@ async function corte(){const W=180,H=Math.round(180*innerHeight/innerWidth),d=ab
   m.fillStyle='#0c0907';m.fillRect(W/2-30,0,60,TOP-10);texto(m,'ENTRADA',W/2,TOP-16,'#a89878',7);
   // portão do chefe
   const by=TOP+rows*RH+10;m.fillStyle='#08060a';m.beginPath();m.ellipse(W/2,by+20,34,26,0,PI,0);m.fill();
-  const P=caminho();let cam=0,hx=pos(P[0])[0],hy=TOP-12,i=-1,andando=false,vis=new Set(),opc=[];
-  loop((d,t,k)=>{const{x,g}=d;const alvo=Math.max(0,Math.min(mundo.height-H,hy-H*.45));cam+=(alvo-cam)*.08*k;x.drawImage(mundo,0,-Math.round(cam));
-    for(const row of M)for(const n of row){if(!n)continue;const[a,b]=pos(n);const v=vis.has(n)||n.r<=i+1;sala(x,g,n,a,b-cam,t,v)}
-    for(const o of opc){const[a,b]=pos(o);x.strokeStyle=`rgba(242,209,126,${.5+.5*Math.sin(t*.008)})`;x.lineWidth=1;x.beginPath();x.ellipse(a,b-cam-6,15,12,0,0,PI*2);x.stroke()}
-    heroi(x,hx,hy-cam+2,andando,false,.5);
+  const P=caminho();let cam=0,hx=pos(P[0])[0],hy=TOP-12,i=-1,andando=false,vis=new Set(),opc=[],tudo=0,camT=null;
+  loop((d,t,k)=>{const{x,g}=d;const alvo=camT!=null?camT:Math.max(0,Math.min(mundo.height-H,hy-H*.45));cam+=(alvo-cam)*(camT!=null?.2:.08)*k;x.drawImage(mundo,0,-Math.round(cam));
+    for(const row of M)for(const n of row){if(!n)continue;const[a,b]=pos(n);const v=tudo||vis.has(n)||n.r<=i+2;sala(x,g,n,a,b-cam,t,v)}
+    for(const o of opc){const[a,b]=pos(o);x.strokeStyle=`rgba(242,209,126,${.5+.5*Math.sin(t*.008)})`;x.lineWidth=1;x.beginPath();x.ellipse(a,b-cam-9,17,14,0,0,PI*2);x.stroke()}
+    heroi(x,hx,hy-cam+2,andando,false,.65);
     // escuridão com a luz da lanterna
-    const dk=d.dk||(d.dk=cv(W,H)),q=dk.getContext('2d');q.globalCompositeOperation='source-over';q.clearRect(0,0,W,H);q.fillStyle='rgba(3,2,5,.8)';q.fillRect(0,0,W,H);q.globalCompositeOperation='destination-out';
-    const fl=1+Math.sin(t*.013)*.04,gr=q.createRadialGradient(hx,hy-cam-8,0,hx,hy-cam-8,70*fl);gr.addColorStop(0,'rgba(0,0,0,1)');gr.addColorStop(.55,'rgba(0,0,0,.85)');gr.addColorStop(1,'rgba(0,0,0,0)');q.fillStyle=gr;q.fillRect(0,0,W,H);
+    const dk=d.dk||(d.dk=cv(W,H)),q=dk.getContext('2d');q.globalCompositeOperation='source-over';q.clearRect(0,0,W,H);q.fillStyle='rgba(3,2,5,.7)';q.fillRect(0,0,W,H);q.globalCompositeOperation='destination-out';
+    const fl=1+Math.sin(t*.013)*.04,gr=q.createRadialGradient(hx,hy-cam-8,0,hx,hy-cam-8,80*fl);gr.addColorStop(0,'rgba(0,0,0,1)');gr.addColorStop(.55,'rgba(0,0,0,.85)');gr.addColorStop(1,'rgba(0,0,0,0)');q.fillStyle=gr;q.fillRect(0,0,W,H);
     for(const n of vis){const[a,b]=pos(n);const g2=q.createRadialGradient(a,b-cam,0,a,b-cam,22);g2.addColorStop(0,'rgba(0,0,0,.6)');g2.addColorStop(1,'rgba(0,0,0,0)');q.fillStyle=g2;q.fillRect(a-22,b-cam-22,44,44)}
-    x.drawImage(dk,0,0);bola(g,hx/2,(hy-cam-14)/2,30,'rgb(255,170,80)',.25);
+    if(!tudo)x.drawImage(dk,0,0);else{x.fillStyle='rgba(3,2,5,.25)';x.fillRect(0,0,W,H)}bola(g,hx/2,(hy-cam-14)/2,30,'rgb(255,170,80)',.25);
     x.fillStyle='rgba(10,8,6,.8)';x.fillRect(0,H-16,W,16);texto(x,i<0?'Entrada':'Andar '+(i+1),W/2,H-5,'#f2d17e',9)});
   const anda=async(n)=>{const[a,b]=pos(n),x0=hx,y0=hy,dur=1300,t0=performance.now();andando=true;await new Promise(ok=>{const f=()=>{const p=Math.min(1,(performance.now()-t0)/dur);hx=x0+(a-x0)*p;hy=y0+(b-y0)*p;if(p<1)requestAnimationFrame(f);else ok()};f()});andando=false;vis.add(n)};
   await espera(900);for(let s=0;s<5;s++){const n=P[s];opc=s===0?M[0].filter(Boolean):M[s-1+0]?P[s-1].next.map(c=>M[s][c]).filter(Boolean):[];await espera(900);opc=[];await anda(n);i=s;await espera(600)}
-  d.cap.textContent='1 · Corte da masmorra · "Ver mapa inteiro"';const ini=performance.now();await new Promise(ok=>{const f=()=>{const p=Math.min(1,(performance.now()-ini)/1800);hy=hy;if(p<1)requestAnimationFrame(f);else ok()};f()});await espera(500)}
+  d.cap.textContent='"Ver mapa inteiro"';tudo=1;const ini=performance.now(),c0=cam,c1=mundo.height-H;await new Promise(ok=>{const f=()=>{const p=Math.min(1,(performance.now()-ini)/7000);camT=c0+(c1-c0)*p;if(p<1)requestAnimationFrame(f);else ok()};f()});await espera(900)}
 /* ===================== 2. PORTAS, UMA DE CADA VEZ ===================== */
 async function portas(){const W=180,H=Math.round(180*innerHeight/innerWidth),d=abre(W,H),M=G.map.rows;d.cap.textContent='2 · Portas, uma de cada vez';
   const P=caminho();let s=0,esc=0,hx=W/2,andando=false,porta=-1,fade=0;
