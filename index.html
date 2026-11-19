@@ -7872,10 +7872,10 @@ window.LUZCENA=function(uid){if(!ligado()||!S.px||!S.px.isConnected||!S.pts.leng
       const d=Math.hypot(x0-ux,(y0-uy)*1.3),w=ii*Math.max(0,1-d/(rr*1.25));if(w<=0)continue;tw+=w;sx+=w*Math.sign(x0-ux||1);cr+=col[0]*w;cg+=col[1]*w;cb+=col[2]*w;if(p.k==='f'||(p.k==='l'&&p.q))fogo+=w}
     if(tw<.08)base={t,dir:-1,col:[150,140,170],amb:[40,36,52],k:.3,fogo:0};
     else{const q=v=>Math.min(255,Math.round(v/tw/24)*24);const col=[q(cr),q(cg),q(cb)];
-      base={t,dir:sx<0?-1:1,col,amb:[Math.round(col[0]*.22+34),Math.round(col[1]*.2+30),Math.round(col[2]*.22+44)],k:Math.round(Math.min(.95,.4+tw*.45)*10)/10,fogo:fogo/tw}}
+      const quente=col[0]>=col[2];base={t,dir:sx<0?-1:1,col,amb:[Math.round(col[0]*.22+34),Math.round(col[1]*.2+30),Math.round(col[2]*.22+44)],k:Math.round(Math.min(quente?.75:.5,.35+tw*.3)*10)/10,fogo:fogo/tw,quente}}
     LC[uid]=base}
   const pisca=base.fogo>.35&&!reduz&&OPT.bateria!=='maxima'?(Math.sin(t*.011+uid.length)>.2?1:0):0,k=Math.min(1,base.k+(pisca?.1:0));
-  const tint=Math.round(Math.min(.22,(k-.3)*.3)*100)/100,back=base.fogo>.2||k>.6?Math.round(k*.5*10)/10:0;
+  const tint=Math.round(Math.max(0,Math.min(base.quente?.08:.03,(k-.35)*.2))*100)/100,back=base.fogo>.4&&base.quente?Math.round(k*.35*10)/10:0;
   return{dir:base.dir,col:base.col,amb:base.amb,k,tint,back,key:base.dir+','+base.col.join(',')+','+k+','+tint+','+back}};
 /* ---------- ligação com o jogo ---------- */
 const _ff=fitField;fitField=function(){const r=_ff.apply(this,arguments);try{montar()}catch(e){console.error(e)}return r};
@@ -8004,7 +8004,7 @@ const IC={
  visual:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>',
  sobre:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5v.5"/></svg>'};
 const COROA='<svg class="tx-crown" viewBox="0 0 64 40"><defs><linearGradient id="txg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff3c0"/><stop offset=".5" stop-color="#e0a830"/><stop offset="1" stop-color="#7a5216"/></linearGradient></defs><path d="M6 34L2 8l15 12L32 2l15 18L62 8l-4 26z" fill="url(#txg)" stroke="#2a1a08" stroke-width="2"/><circle cx="32" cy="22" r="4" fill="#b03a3a"/><circle cx="17" cy="26" r="2.6" fill="#3a6ab0"/><circle cx="47" cy="26" r="2.6" fill="#3a9a5a"/><path d="M8 30h48" stroke="#2a1a08" stroke-width="2"/></svg>';
-const VER='v2.51';
+const VER='v2.52';
 const logo=()=>`<div class="tx-logo">${COROA}<p class="tx-kick">A Coroa de Cinco Juramentos</p><h1 class="tx-name" data-t="Masmorra&#10;do Corvo Rei">Masmorra<br><em>do</em> Corvo Rei</h1></div>`;
 
 /* ---------------- tela de início ---------------- */
