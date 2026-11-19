@@ -12,7 +12,9 @@ const DEFB={hx:21,hy:40,lean:3*D,fF:[25,GY],fB:[18,GY],aF:60*D,aF2:-40*D,aB:70*D
 /* corpo comum: pernas com IK, tronco, cabeça */
 function corpo(pen,p,o){const hip=[p.hx+(p.sh||0),p.hy],lean=p.lean,neck=P(hip,-PI/2+lean,o.tronco||10),br=p.br||0;neck[1]-=br*.6;
   const shF=[neck[0]+1.5,neck[1]+1.5],shB=[neck[0]-1.5,neck[1]+1.5],head=[neck[0]+1.2+(p.ht||0)*.6,neck[1]-4.2+Math.abs(p.ht||0)*.3+(p.hd||0)];
-  const perna=(h,f,c,bota)=>{const[k,ft]=ik(h,f,o.perna||6,o.perna||6,1);pen.line(h[0],h[1],k[0],k[1],c[0],o.gross||2);pen.line(k[0],k[1],ft[0],ft[1],c[1],2);pen.px(k[0]+1,k[1],c[2]||c[1]);pen.line(ft[0]-1,ft[1]-.5,ft[0]+2.5,ft[1]-.5,bota,2);return k};
+  /* v2.54: pernas mais grossas (coxa 3, canela 3), joelho marcado e bota maior, como o Cavaleiro */
+  const perna=(h,f,c,bota)=>{const[k,ft]=ik(h,f,o.perna||6,o.perna||6,1),gt=Math.max(3,(o.gross||2)+1);pen.line(h[0],h[1],k[0],k[1],c[0],gt);pen.line(k[0],k[1],ft[0],ft[1]-1,c[1],3);
+    pen.px(k[0]+1,k[1],c[2]||c[1]);pen.px(k[0]+1,k[1]-1,c[2]||c[1]);pen.line(ft[0]-2,ft[1]-1,ft[0]+3,ft[1]-1,bota,1);pen.line(ft[0]-2,ft[1],ft[0]+3.5,ft[1],bota,1);pen.px(ft[0]+3.5,ft[1]-1,bota);return k};
   const braco=(sh,a1,a2,c,mao,L=4.5)=>{const e=P(sh,a1,L),h=P(e,a1+a2,L);pen.line(sh[0],sh[1],e[0],e[1],c[0],2);pen.line(e[0],e[1],h[0],h[1],c[1],2);if(mao)pen.px(h[0],h[1],mao);return{e,h}};
   return{hip,neck,shF,shB,head,perna,braco}}
 /* passos: com p.andar>0 os pés seguem p.passo (corrida/caminhada) */

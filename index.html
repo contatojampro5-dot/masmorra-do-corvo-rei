@@ -6801,7 +6801,9 @@ const DEFB={hx:21,hy:40,lean:3*D,fF:[25,GY],fB:[18,GY],aF:60*D,aF2:-40*D,aB:70*D
 /* corpo comum: pernas com IK, tronco, cabeça */
 function corpo(pen,p,o){const hip=[p.hx+(p.sh||0),p.hy],lean=p.lean,neck=P(hip,-PI/2+lean,o.tronco||10),br=p.br||0;neck[1]-=br*.6;
   const shF=[neck[0]+1.5,neck[1]+1.5],shB=[neck[0]-1.5,neck[1]+1.5],head=[neck[0]+1.2+(p.ht||0)*.6,neck[1]-4.2+Math.abs(p.ht||0)*.3+(p.hd||0)];
-  const perna=(h,f,c,bota)=>{const[k,ft]=ik(h,f,o.perna||6,o.perna||6,1);pen.line(h[0],h[1],k[0],k[1],c[0],o.gross||2);pen.line(k[0],k[1],ft[0],ft[1],c[1],2);pen.px(k[0]+1,k[1],c[2]||c[1]);pen.line(ft[0]-1,ft[1]-.5,ft[0]+2.5,ft[1]-.5,bota,2);return k};
+  /* v2.54: pernas mais grossas (coxa 3, canela 3), joelho marcado e bota maior, como o Cavaleiro */
+  const perna=(h,f,c,bota)=>{const[k,ft]=ik(h,f,o.perna||6,o.perna||6,1),gt=Math.max(3,(o.gross||2)+1);pen.line(h[0],h[1],k[0],k[1],c[0],gt);pen.line(k[0],k[1],ft[0],ft[1]-1,c[1],3);
+    pen.px(k[0]+1,k[1],c[2]||c[1]);pen.px(k[0]+1,k[1]-1,c[2]||c[1]);pen.line(ft[0]-2,ft[1]-1,ft[0]+3,ft[1]-1,bota,1);pen.line(ft[0]-2,ft[1],ft[0]+3.5,ft[1],bota,1);pen.px(ft[0]+3.5,ft[1]-1,bota);return k};
   const braco=(sh,a1,a2,c,mao,L=4.5)=>{const e=P(sh,a1,L),h=P(e,a1+a2,L);pen.line(sh[0],sh[1],e[0],e[1],c[0],2);pen.line(e[0],e[1],h[0],h[1],c[1],2);if(mao)pen.px(h[0],h[1],mao);return{e,h}};
   return{hip,neck,shF,shB,head,perna,braco}}
 /* passos: com p.andar>0 os pés seguem p.passo (corrida/caminhada) */
@@ -8014,7 +8016,7 @@ const IC={
  visual:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>',
  sobre:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5v.5"/></svg>'};
 const COROA='<svg class="tx-crown" viewBox="0 0 64 40"><defs><linearGradient id="txg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff3c0"/><stop offset=".5" stop-color="#e0a830"/><stop offset="1" stop-color="#7a5216"/></linearGradient></defs><path d="M6 34L2 8l15 12L32 2l15 18L62 8l-4 26z" fill="url(#txg)" stroke="#2a1a08" stroke-width="2"/><circle cx="32" cy="22" r="4" fill="#b03a3a"/><circle cx="17" cy="26" r="2.6" fill="#3a6ab0"/><circle cx="47" cy="26" r="2.6" fill="#3a9a5a"/><path d="M8 30h48" stroke="#2a1a08" stroke-width="2"/></svg>';
-const VER='v2.53';
+const VER='v2.54';
 const logo=()=>`<div class="tx-logo">${COROA}<p class="tx-kick">A Coroa de Cinco Juramentos</p><h1 class="tx-name" data-t="Masmorra&#10;do Corvo Rei">Masmorra<br><em>do</em> Corvo Rei</h1></div>`;
 
 /* ---------------- tela de início ---------------- */
