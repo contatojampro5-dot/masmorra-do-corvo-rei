@@ -189,5 +189,68 @@ async function lado(){const VW=150,VH=Math.round(150*innerHeight/innerWidth),d=a
     const de=s===0?[ex,TOP]:pos(P[s-1]),para=pos(P[s]);await segue(s===0?[de,[para[0],para[1]]]:rota(de,para));vis.add(P[s]);i=s;await espera(500)}
   d.cap.textContent='"Ver mapa inteiro"';tudo=1;const z0=performance.now();await new Promise(ok=>{const f=()=>{const p=Math.min(1,(performance.now()-z0)/2500);zoom=1+p*(Math.max(WW/VW,1)*1.02-1);if(p<1)requestAnimationFrame(f);else ok()};f()});
   const y0=hy,t1=performance.now();await new Promise(ok=>{const f=()=>{const p=Math.min(1,(performance.now()-t1)/6000);hy=y0+(WH-VH*zoom*.45-y0)*p;hx=WW/2;if(p<1)requestAnimationFrame(f);else ok()};f()});await espera(600)}
-window.PROTO={run:async m=>{if(!G||!G.map)return;if(m==='corte')await corte();else if(m==='portas')await portas();else if(m==='lado')await lado();else if(m==='deitado')await deitado();else await atos();fecha()}};
+/* ===================== 5. CORTE DEITADO BONITO ===================== */
+async function bonito(){const W=300,H=Math.round(300*innerHeight/innerWidth),d=abre(W,H),M=G.map.rows,rows=M.length,cols=7,RW=64,DROP=24,CS=30,TOP=78,LEFT=58;d.cap.textContent='';
+  const pos=n=>[LEFT+n.r*RW+(n.jx||0)*.3,TOP+n.r*DROP+n.c*CS+(n.jy||0)*.25];const WW=LEFT+rows*RW+130,WHt=TOP+rows*DROP+cols*CS+90,rr=sr({r:11,c:3});
+  const mundo=cv(WW,WHt),m=mundo.getContext('2d'),LUZES=[],CRIS=[],AGUA=[],P2=(c,X,Y,w=1,h=1)=>{m.fillStyle=c;m.fillRect(Math.round(X),Math.round(Y),w,h)};
+  const prof=(X,Y)=>Math.max(0,Math.min(1,((Y-TOP)/(WHt-TOP))*.6+(X/WW)*.5));
+  const cor=(X,Y,k=1)=>{const p=prof(X,Y);let c;if(p<.45){const t=p/.45;c=[96-t*40,70-t*22,48-t*6]}else if(p<.8){const t=(p-.45)/.35;c=[56-t*6,48-t*10,42+t*4]}else{const t=(p-.8)/.2;c=[50+t*30,38-t*8,46-t*14]}return`rgb(${c[0]*k|0},${c[1]*k|0},${c[2]*k|0})`};
+  // céu, lua, árvores e grama
+  const SKY=TOP-34,sg=m.createLinearGradient(0,0,0,SKY);sg.addColorStop(0,'#0a0a24');sg.addColorStop(1,'#2a2448');m.fillStyle=sg;m.fillRect(0,0,WW,SKY);
+  for(let i=0;i<160;i++)P2(`rgba(230,235,255,${.3+rr()*.6})`,rr()*WW,rr()*SKY*.9);m.fillStyle='#efe6cf';m.beginPath();m.arc(WW*.18,18,9,0,7);m.fill();m.fillStyle='rgba(150,140,120,.4)';m.beginPath();m.arc(WW*.18-3,16,2.5,0,7);m.fill();
+  m.fillStyle='#120f20';m.beginPath();m.moveTo(0,SKY);for(let X=0;X<=WW;X+=6)m.lineTo(X,SKY-8-Math.sin(X*.03)*5-rr()*3);m.lineTo(WW,SKY);m.fill();
+  for(let i=0;i<26;i++){const X=rr()*WW,h=10+rr()*14;m.fillStyle='#0c0a16';m.fillRect(X,SKY-h,2,h);m.beginPath();m.ellipse(X+1,SKY-h,5+rr()*3,6+rr()*4,0,0,7);m.fill()}
+  // rocha com camadas onduladas
+  for(let Y=SKY;Y<WHt;Y+=2)for(let X=0;X<WW;X+=4){const onda=Math.sin(X*.02+Y*.05)+Math.sin(X*.007-Y*.03)*1.4,k=.82+((Math.floor((Y+onda*6)/9))%3)*.09+(rr()-.5)*.06;m.fillStyle=cor(X,Y,k);m.fillRect(X,Y,4,2)}
+  m.fillStyle='#3a5a22';m.fillRect(0,SKY,WW,2);for(let X=0;X<WW;X+=2)if(rr()<.6)P2('#4a7a2a',X,SKY-1-(rr()*2|0),1,2);
+  // raízes perto da superfície
+  for(let i=0;i<40;i++){let X=rr()*WW,Y=SKY+2;m.strokeStyle='rgba(40,26,14,.8)';m.lineWidth=1;m.beginPath();m.moveTo(X,Y);for(let k=0;k<7;k++){X+=rr()*6-3;Y+=2+rr()*3;m.lineTo(X,Y)}m.stroke()}
+  // pedrinhas, rachaduras, fósseis
+  for(let i=0;i<900;i++){const X=rr()*WW,Y=SKY+4+rr()*(WHt-SKY);P2(rr()<.55?'rgba(0,0,0,.22)':'rgba(255,230,200,.06)',X,Y,1+(rr()*3|0),1)}
+  for(let i=0;i<10;i++){const X=WW*(.1+rr()*.8),Y=SKY+30+rr()*(WHt-SKY-60);for(let k=0;k<5;k++)P2('rgba(210,200,180,.45)',X+k*2,Y+(k%2),2,1);P2('rgba(210,200,180,.45)',X-2,Y-1,2,3)}
+  // grutas ao fundo com estalactites
+  for(let i=0;i<9;i++){const X=WW*(.1+rr()*.85),Y=SKY+40+rr()*(WHt-SKY-80),rw=18+rr()*26,rh=8+rr()*10;m.fillStyle='rgba(10,7,6,.55)';m.beginPath();m.ellipse(X,Y,rw,rh,0,0,7);m.fill();for(let k=-rw+3;k<rw-3;k+=4)if(rr()<.7){const h=2+rr()*5;m.beginPath();m.moveTo(X+k-1.5,Y-rh*.7);m.lineTo(X+k+1.5,Y-rh*.7);m.lineTo(X+k,Y-rh*.7+h);m.fill()}}
+  // cristais e cogumelos (brilham)
+  for(let i=0;i<22;i++){const X=WW*(.15+rr()*.85),Y=SKY+30+rr()*(WHt-SKY-50),c=['#5ad0ff','#ff6ad8','#7aff8a','#b07aff'][i%4];for(let k=0;k<3;k++){const h=3+rr()*5;m.fillStyle=c;m.beginPath();m.moveTo(X+k*2-1,Y);m.lineTo(X+k*2+1,Y);m.lineTo(X+k*2,Y-h);m.fill()}P2('#ffffff',X+2,Y-3);CRIS.push([X+2,Y-3,c])}
+  // rio subterrâneo e lava perto do chefe
+  const rioY=TOP+rows*DROP*.55+cols*CS+30;m.fillStyle='rgba(8,6,6,.7)';m.beginPath();m.ellipse(WW*.48,rioY+2,WW*.26,12,0,PI,0);m.fill();const rg=m.createLinearGradient(0,rioY,0,rioY+9);rg.addColorStop(0,'#1a4a6a');rg.addColorStop(1,'#08182a');m.fillStyle=rg;m.fillRect(WW*.24,rioY,WW*.48,9);m.fillStyle='#4a3a2c';m.fillRect(WW*.24,rioY+9,WW*.48,2);AGUA.push([WW*.24,WW*.72,rioY]);LUZES.push([WW*.48,rioY+3,'rgb(80,170,230)',50,.25])
+  const bxx=LEFT+rows*RW+60,byy=TOP+rows*DROP+3*CS+30;m.fillStyle='#3a0a06';m.fillRect(bxx-70,byy+4,140,14);for(let X=bxx-70;X<bxx+70;X+=3)P2(rr()<.5?'#ff6a1a':'#ffb03a',X,byy+4+rr()*3,2,1);LUZES.push([bxx,byy+8,'rgb(255,90,30)',40,.4]);
+  // portão do chefe com caveira
+  m.fillStyle='#08060a';m.beginPath();m.ellipse(bxx,byy,34,32,0,PI,0);m.lineTo(bxx+34,byy+4);m.lineTo(bxx-34,byy+4);m.fill();for(let k=0;k<11;k++){const a2=PI+k*PI/10;P2(k%2?'#3a3438':'#4a4448',bxx+Math.cos(a2)*36-2,byy+Math.sin(a2)*34-2,4,4)}
+  ['.###.','#####','#.#.#','#####','.#.#.'].forEach((ln,j)=>[...ln].forEach((ch,i)=>{if(ch==='#')P2('#d8d0b8',bxx-5+i*2,byy-44+j*2,2,2)}));LUZES.push([bxx,byy-12,'rgb(255,40,30)',16,.35]);
+  // túneis escorados com vigas e tochas
+  m.lineCap='round';const tunel=(a,b,e,f)=>{const pts=[];for(let k=0;k<=24;k++){const t=k/24,u=t*t*(3-2*t);pts.push([a+(e-a)*t,b+(f-b)*u])}
+    m.strokeStyle='rgba(0,0,0,.35)';m.lineWidth=12;m.beginPath();pts.forEach(([X,Y],k)=>k?m.lineTo(X,Y-5):m.moveTo(X,Y-5));m.stroke();
+    m.strokeStyle='#140d09';m.lineWidth=11;m.stroke();m.strokeStyle='#1e140d';m.lineWidth=7;m.stroke();
+    for(let k=6;k<pts.length-4;k+=9){const[X,Y]=pts[k];P2('#4a3018',X-5,Y-11,1,10);P2('#4a3018',X+4,Y-11,1,10);P2('#5a3a1e',X-5,Y-11,10,1)}
+    pts.forEach(([X,Y],k)=>{if(k%2===0)P2('#3a2a1a',X-1,Y-1,3,1)});if(rr()<.45){const[X,Y]=pts[12];P2('#3a2410',X,Y-12,1,3);LUZES.push([X,Y-14,'rgb(255,150,60)',22,.55,1])}};
+  for(const row of M)for(const n of row){if(!n)continue;const[a,b]=pos(n);for(const c of n.next){const o=M[n.r+1]&&M[n.r+1][c];if(o){const[e,f]=pos(o);tunel(a+10,b,e-10,f)}}}
+  const P=caminho(),[ex,ey]=pos(P[0]);for(const n of M[0])if(n){const[a,b]=pos(n);tunel(18,SKY+6,a-10,b)}
+  m.fillStyle='#0a0705';m.beginPath();m.ellipse(18,SKY+2,12,10,0,PI,0);m.fill();texto(m,'ENTRADA',22,SKY-14,'#c8b088',7);
+  // patamares de pedra das salas
+  for(const row of M)for(const n of row){if(!n)continue;const[a,b]=pos(n);P2('#2a2018',a-15,b+1,30,3);P2('#5a4a3a',a-15,b+1,30,1);P2('rgba(0,0,0,.4)',a-14,b+4,28,2)}
+  let camX=0,cam=0,camx=0,hx=18,hy=SKY+6,i=-1,andando=false,vis=new Set(),opc=[],tudo=0,camT=null;
+  loop((d,t,k)=>{const{x,g}=d;const alvo=camT!=null?camT:Math.max(0,Math.min(WHt-H,hy-H*.5));cam+=(alvo-cam)*(camT!=null?.2:.08)*k;const ax=camT!=null?camX:Math.max(0,Math.min(WW-W,hx-W*.4));camx+=(ax-camx)*(camT!=null?.2:.08)*k;
+    x.save();x.translate(-Math.round(camx),-Math.round(cam));g.save();g.translate(-Math.round(camx)/2,-Math.round(cam)/2);x.drawImage(mundo,0,0);
+    // água e lava mexendo
+    for(const[x0,x1,yy]of AGUA)for(let X=x0;X<x1;X+=2){const k2=((X+t*.03)%14+14)%14;if(k2<2)P2c(x,'rgba(150,200,230,.6)',X,yy+2+Math.sin(X*.1+t*.004))}
+    for(let X=bxx-70;X<bxx+70;X+=2){if(Math.sin(X*.3+t*.006)>.6)P2c(x,'#ffd24a',X,byy+5)}
+    for(const[X,Y,c]of CRIS)bola(g,X/2,Y/2,6,c==='#5ad0ff'?'rgb(90,200,255)':c==='#ff6ad8'?'rgb(255,110,210)':c==='#7aff8a'?'rgb(120,255,140)':'rgb(170,120,255)',.35+Math.sin(t*.002+X)*.15);
+    for(const[X,Y,c,r2,a2,toch]of LUZES){const f=Math.sin(t*.013+X)*.5+.5;if(toch){P2c(x,'#ff7a26',X,Y,1,2);if(f>.5)P2c(x,'#ffe07a',X,Y)}bola(g,X/2,Y/2,r2/2*(1+f*.08),c,a2*(.85+f*.15))}
+    for(const row of M)for(const n of row){if(!n)continue;const[a,b]=pos(n);sala(x,g,n,a,b,t,tudo||vis.has(n)||n.r<=i+2)}
+    for(const o of opc){const[a,b]=pos(o);x.strokeStyle=`rgba(242,209,126,${.5+.5*Math.sin(t*.008)})`;x.lineWidth=1;x.beginPath();x.ellipse(a,b-9,17,14,0,0,PI*2);x.stroke()}
+    heroi(x,hx,hy+1,andando,false,.62);x.restore();g.restore();
+    if(!tudo){const dk=d.dk||(d.dk=cv(W,H)),q=dk.getContext('2d');q.globalCompositeOperation='source-over';q.clearRect(0,0,W,H);q.fillStyle='rgba(4,3,8,.62)';q.fillRect(0,0,W,H);q.globalCompositeOperation='destination-out';
+      const fl=1+Math.sin(t*.013)*.04,lx=hx-camx,ly=hy-cam-10,gr=q.createRadialGradient(lx,ly,0,lx,ly,95*fl);gr.addColorStop(0,'rgba(0,0,0,1)');gr.addColorStop(.5,'rgba(0,0,0,.8)');gr.addColorStop(1,'rgba(0,0,0,0)');q.fillStyle=gr;q.fillRect(0,0,W,H);
+      for(const[X,Y,c,r2]of LUZES.concat(CRIS.map(([X,Y])=>[X,Y,0,14]))){const X2=X-camx,Y2=Y-cam;if(X2<-40||X2>W+40||Y2<-40||Y2>H+40)continue;const g2=q.createRadialGradient(X2,Y2,0,X2,Y2,r2);g2.addColorStop(0,'rgba(0,0,0,.75)');g2.addColorStop(1,'rgba(0,0,0,0)');q.fillStyle=g2;q.fillRect(X2-r2,Y2-r2,r2*2,r2*2)}
+      if(cam<SKY){q.fillStyle='rgba(0,0,0,1)';q.fillRect(0,0,W,SKY-cam)}
+      x.drawImage(dk,0,0);bola(g,lx/2,ly/2,40,'rgb(255,170,80)',.25)}
+    // vinheta e nome do andar
+    const vg=x.createRadialGradient(W/2,H/2,H*.3,W/2,H/2,W*.65);vg.addColorStop(0,'rgba(0,0,0,0)');vg.addColorStop(1,'rgba(0,0,0,.6)');x.fillStyle=vg;x.fillRect(0,0,W,H);
+    texto(x,tudo?'Ver mapa inteiro':i<0?'A Masmorra · Entrada':'A Masmorra · Andar '+(i+1),W/2,14,'#f2d17e',9)});
+  const anda=async(n)=>{const[a,b]=pos(n),x0=hx,y0=hy,dur=1500,t0=performance.now();andando=true;await new Promise(ok=>{const f=()=>{const p=Math.min(1,(performance.now()-t0)/dur),u=p*p*(3-2*p);hx=x0+(a-x0)*p;hy=y0+(b-y0)*u;if(p<1)requestAnimationFrame(f);else ok()};f()});andando=false;vis.add(n)};
+  await espera(1000);for(let s2=0;s2<5;s2++){const n=P[s2];opc=s2===0?M[0].filter(Boolean):P[s2-1].next.map(c=>M[s2][c]).filter(Boolean);await espera(1000);opc=[];await anda(n);i=s2;await espera(600)}
+  tudo=1;const ini=performance.now(),c0=cam,c1=Math.max(0,Math.min(WHt-H,byy-H*.6)),x0=camx,x1=WW-W;await new Promise(ok=>{const f=()=>{const p=Math.min(1,(performance.now()-ini)/7500),u=p*p*(3-2*p);camT=c0+(c1-c0)*u;camX=x0+(x1-x0)*u;if(p<1)requestAnimationFrame(f);else ok()};f()});await espera(1000)}
+const P2c=(x,c,X,Y,w=1,h=1)=>{x.fillStyle=c;x.fillRect(Math.round(X),Math.round(Y),w,h)};
+window.PROTO={run:async m=>{if(!G||!G.map)return;if(m==='corte')await corte();else if(m==='portas')await portas();else if(m==='lado')await lado();else if(m==='deitado')await deitado();else if(m==='bonito')await bonito();else await atos();fecha()}};
 })();
