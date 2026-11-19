@@ -109,7 +109,7 @@ const IC={
  visual:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>',
  sobre:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5v.5"/></svg>'};
 const COROA='<svg class="tx-crown" viewBox="0 0 64 40"><defs><linearGradient id="txg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff3c0"/><stop offset=".5" stop-color="#e0a830"/><stop offset="1" stop-color="#7a5216"/></linearGradient></defs><path d="M6 34L2 8l15 12L32 2l15 18L62 8l-4 26z" fill="url(#txg)" stroke="#2a1a08" stroke-width="2"/><circle cx="32" cy="22" r="4" fill="#b03a3a"/><circle cx="17" cy="26" r="2.6" fill="#3a6ab0"/><circle cx="47" cy="26" r="2.6" fill="#3a9a5a"/><path d="M8 30h48" stroke="#2a1a08" stroke-width="2"/></svg>';
-const VER='v2.49';
+const VER='v2.50';
 const logo=()=>`<div class="tx-logo">${COROA}<p class="tx-kick">A Coroa de Cinco Juramentos</p><h1 class="tx-name" data-t="Masmorra&#10;do Corvo Rei">Masmorra<br><em>do</em> Corvo Rei</h1></div>`;
 
 /* ---------------- tela de início ---------------- */

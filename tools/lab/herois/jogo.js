@@ -70,7 +70,7 @@ function clarao(a){const d=document.createElement('div');d.style.cssText='positi
 /* ---------- relógio (só na luta) ---------- */
 let rodando=false,last=0;
 function ligar(){if(rodando)return;rodando=true;last=performance.now();requestAnimationFrame(tick)}
-function tick(t){if(!ativo()||!S.cv||!S.cv.isConnected){rodando=false;if(S.fx)S.fx.style.display='none';return}requestAnimationFrame(tick);const dt=Math.min(100,t-last);last=t;if(document.hidden)return;
+function tick(t){if(!ativo()||!S.cv||!S.cv.isConnected){rodando=false;if(S.fx)S.fx.style.display='none';return}requestAnimationFrame(tick);if(performance.now()<(window.HITSTOP||0))return;const dt=Math.min(100,t-last);last=t;if(document.hidden)return;
   const B=BICHOS[hid()],A=B.A[S.anim],n=BICHO.seq(hid(),S.anim).length,step=1000/A.fps;S.t+=dt;
   if(S.anim==='parado'&&!UI.lock){S.mania-=dt;if(S.mania<=0){S.mania=8000+Math.random()*6000;toca('mania'+(1+Math.floor(Math.random()*3)))}}
   while(S.t>=step){S.t-=step;S.f++;if(S.f>=n){if(A.loop)S.f=0;else if(S.hold){S.f=n-1;break}else{const er=S.ergue;S.alvo=null;S.ergue=null;toca('parado');if(er)montarServos();break}}}

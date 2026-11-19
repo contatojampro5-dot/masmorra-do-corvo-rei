@@ -42,7 +42,7 @@ function morrer(st){if(st.morto)return;st.morto=1;st.fila=[];toca(st,'morte')}
 /* ---------- relógio (só na luta) ---------- */
 let rodando=false,last=0;
 function ligar(){if(rodando)return;rodando=true;last=performance.now();requestAnimationFrame(tick)}
-function tick(t){const vivos=Object.values(ST).filter(s=>s.cv&&s.cv.isConnected);if(!ativo()||!vivos.length){rodando=false;return}requestAnimationFrame(tick);
+function tick(t){const vivos=Object.values(ST).filter(s=>s.cv&&s.cv.isConnected);if(!ativo()||!vivos.length){rodando=false;return}requestAnimationFrame(tick);if(performance.now()<(window.HITSTOP||0))return;
   const dt=Math.min(100,t-last);last=t;if(document.hidden)return;
   for(const st of vivos){const B=BICHOS[st.id],e=inimigo(st.uid);
     if(e&&e.hp<=0&&!st.morto&&st.morteEm&&t>=st.morteEm)morrer(st);

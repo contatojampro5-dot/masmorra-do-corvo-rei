@@ -56,7 +56,7 @@ function part(e,col,vy){const r=KN.cv.getBoundingClientRect(),k=KN.k;FX.push({k:
 let rodando=false;
 function ligar(){if(rodando)return;rodando=true;requestAnimationFrame(tick)}
 let lastTr='',lastD=0;
-function tick(t){if(!KN.cv||!KN.cv.isConnected||!on()){rodando=false;return}requestAnimationFrame(tick);if(document.hidden)return;
+function tick(t){if(!KN.cv||!KN.cv.isConnected||!on()){rodando=false;return}requestAnimationFrame(tick);if(performance.now()<(window.HITSTOP||0))return;if(document.hidden)return;
   const tr=`translate(${KN.rx}px,${KN.ry}px)`;if(tr!==lastTr){KN.cv.style.transform=tr;lastTr=tr}
   let passo=false;if(!KN.busy&&!KN.hold&&t-KN.last>1000/12){KN.last=t;KN.f++;maniaTalvez(t);passo=true}
   /* parado: só redesenha no passo do quadro (12/s) ou a cada 90 ms; em golpe, todo quadro */

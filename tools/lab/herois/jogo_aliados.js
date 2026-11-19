@@ -42,7 +42,7 @@ function montar(){if(!ligado()){desmontar();return}try{if(G.screen==='combat'&&G
 /* ---------- relógio (só enquanto há aliado na tela) ---------- */
 let rodando=false,last=0;
 function ligar(){if(rodando)return;rodando=true;last=performance.now();requestAnimationFrame(tick)}
-function tick(t){const cvs=document.querySelectorAll('canvas.na');if(!cvs.length||!ligado()){rodando=false;return}requestAnimationFrame(tick);const dt=Math.min(100,t-last);last=t;if(document.hidden)return;cvs.forEach(cv=>passo(cv,dt))}
+function tick(t){const cvs=document.querySelectorAll('canvas.na');if(!cvs.length||!ligado()){rodando=false;return}requestAnimationFrame(tick);if(performance.now()<(window.HITSTOP||0))return;const dt=Math.min(100,t-last);last=t;if(document.hidden)return;cvs.forEach(cv=>passo(cv,dt))}
 /* ---------- ataque do fim do turno: o jogo chama anim('ally',...) e depois slash/proj ---------- */
 function hitMs(b,n){const A=BICHOS[b].A[n];return A&&A.hits?Math.round(A.hits[0]*1000/A.fps):200}
 const _anim=anim;anim=function(uid,cls,d=0){if(uid!=='ally'||!ligado()||!G.combat||!G.combat.ally||!BICHOS[bid(G.combat.ally)])return _anim(uid,cls,d);
