@@ -15,8 +15,8 @@ const ST=NV.ST,CACHE=NV.CACHE,MED={};
 function medir(id){if(MED[id])return MED[id];const q=BICHO.quadro(id,BICHO.seq(id,'parado')[0],null),w=q.width,h=q.height,d=q.getContext('2d').getImageData(0,0,w,h).data;
   let x0=w,x1=0,y0=h,y1=0;for(let y=0;y<h;y++)for(let x=0;x<w;x++)if(d[(y*w+x)*4+3]>0){if(x<x0)x0=x;if(x>x1)x1=x;if(y<y0)y0=y;if(y>y1)y1=y}
   return MED[id]={w,h,x0,x1,y0,y1,cx:(x0+x1+1)/2,cy:(y0+y1+1)/2,bw:x1-x0+1,bh:y1-y0+1}}
-function quadro(st){const f2=st.f2&&st.anim!=='fase2'?1:0,act=G.act||1,key=st.id+'|'+st.anim+'|'+st.f+'|'+f2+'|'+act;let q=CACHE.get(key);
-  if(!q){let ps=BICHO.seq(st.id,st.anim)[st.f];if(f2)ps={...ps,f2:1};q=BICHO.quadro(st.id,ps,LUZ[act]||LUZ[1]);if(CACHE.size>2500)CACHE.clear();CACHE.set(key,q)}return{q,key}}
+function quadro(st){const f2=st.f2&&st.anim!=='fase2'?1:0,act=G.act||1,Lz=(window.LUZCENA&&LUZCENA(st.uid))||LUZ[act]||LUZ[1],key=st.id+'|'+st.anim+'|'+st.f+'|'+f2+'|'+act+'|'+(Lz.key||'');let q=CACHE.get(key);
+  if(!q){let ps=BICHO.seq(st.id,st.anim)[st.f];if(f2)ps={...ps,f2:1};q=BICHO.quadro(st.id,ps,Lz);if(CACHE.size>2500)CACHE.clear();CACHE.set(key,q)}return{q,key}}
 function inimigo(uid){return G.combat&&G.combat.enemies.find(x=>x.uid===uid)}
 function estado(uid,id){let st=ST[uid];if(!st||st.id!==id)st=ST[uid]={uid,id,anim:'parado',f:0,t:0,f2:0,fila:[],cv:null,ultimo:'',morto:0,morteEm:0};return st}
 function toca(st,nome){const A=BICHOS[st.id].A[nome];if(!A)return false;st.anim=nome;st.f=0;st.t=0;return true}

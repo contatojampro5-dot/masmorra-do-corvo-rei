@@ -116,12 +116,13 @@ function makeRig(W=40,H=64){const OY=16;
     return c}
   return{canvas:c,draw,W,H,info}}
 /* luz do ambiente: borda virada para a luz ganha a cor dela, o lado oposto escurece */
-function lightPass(src,{dir=-1,col=[255,160,70],amb=[70,60,90],k=.75}={}){
+function lightPass(src,{dir=-1,col=[255,160,70],amb=[70,60,90],k=.75,tint=0,back=0}={}){
   const W=src.width,H=src.height,s=src.getContext('2d').getImageData(0,0,W,H),o=new ImageData(W,H);
   const A=(i,j)=>i<0||j<0||i>=W||j>=H?0:s.data[(j*W+i)*4+3];
   for(let j=0;j<H;j++)for(let i=0;i<W;i++){const q=(j*W+i)*4;if(!s.data[q+3])continue;let r=s.data[q],g=s.data[q+1],b=s.data[q+2];
     const edge=!A(i+dir,j)?1:!A(i+dir*2,j)?.45:0,top=!A(i,j-1)?.5:0,far=!A(i-dir,j)?1:0;
     const L=Math.min(1,edge+top*.6)*k;r=r+(col[0]-r)*L*.7;g=g+(col[1]-g)*L*.7;b=b+(col[2]-b)*L*.7;
-    if(far&&!edge){r=r*.75+amb[0]*.25;g=g*.75+amb[1]*.25;b=b*.75+amb[2]*.25}
+    if(far&&!edge){if(back){const bw=back;r+=(col[0]-r)*bw*.5;g+=(col[1]-g)*bw*.5;b+=(col[2]-b)*bw*.5}else{r=r*.75+amb[0]*.25;g=g*.75+amb[1]*.25;b=b*.75+amb[2]*.25}}
+    if(tint){r+=(col[0]-r)*tint;g+=(col[1]-g)*tint;b+=(col[2]-b)*tint}
     o.data[q]=r;o.data[q+1]=g;o.data[q+2]=b;o.data[q+3]=255}
   const c=document.createElement('canvas');c.width=W;c.height=H;c.getContext('2d').putImageData(o,0,0);return c}

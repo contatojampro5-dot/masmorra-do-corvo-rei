@@ -30,8 +30,8 @@ const arma=()=>{try{return typeof wIdx==='function'?wIdx():0}catch(_){return 0}}
 const MED={};function medir(id){const k=id+'|'+arma();if(MED[k])return MED[k];const q=BICHO.quadro(id,{...BICHO.seq(id,'parado')[0],arma:arma()},null),w=q.width,h=q.height,d=q.getContext('2d').getImageData(0,0,CORTE,h).data;
   let x0=w,x1=0,y0=h,y1=0;for(let y=0;y<h;y++)for(let x=0;x<CORTE;x++)if(d[(y*CORTE+x)*4+3]>0){if(x<x0)x0=x;if(x>x1)x1=x;if(y<y0)y0=y;if(y>y1)y1=y}
   return MED[k]={w,h,cx:(x0+x1+1)/2,bh:y1-y0+1,y1}}
-function quadro(){const id=hid(),act=G.act||1,a=arma(),key=S.anim+'|'+S.f+'|'+a+'|'+act;let q=S.cache.get(key);
-  if(!q){const ps={...BICHO.seq(id,S.anim)[S.f],arma:a};q=BICHO.quadro(id,ps,LUZ[act]||LUZ[1]);q.pose=ps;if(S.cache.size>1500)S.cache.clear();S.cache.set(key,q)}return{q,key}}
+function quadro(){const id=hid(),act=G.act||1,a=arma(),Lz=(window.LUZCENA&&LUZCENA('p'))||LUZ[act]||LUZ[1],key=S.anim+'|'+S.f+'|'+a+'|'+act+'|'+(Lz.key||'');let q=S.cache.get(key);
+  if(!q){const ps={...BICHO.seq(id,S.anim)[S.f],arma:a};q=BICHO.quadro(id,ps,Lz);q.pose=ps;if(S.cache.size>1500)S.cache.clear();S.cache.set(key,q)}return{q,key}}
 function toca(nome,hold){const A=BICHOS[hid()].A[nome];if(!A)return false;S.anim=nome;S.f=0;S.t=0;S.hold=hold?1:0;return true}
 /* ---------- montagem ---------- */
 function desmontar(){document.querySelectorAll('canvas.nh').forEach(c=>{const s=c.parentNode&&c.parentNode.querySelector('.spr');if(s)s.style.visibility='';c.remove()});if(S.fx)S.fx.style.display='none';

@@ -11,7 +11,7 @@ const bid=id=>'a_'+id;
 const MED={};function medir(b){if(MED[b])return MED[b];const q=BICHO.quadro(b,BICHO.seq(b,'parado')[0],null),w=q.width,h=q.height,d=q.getContext('2d').getImageData(0,0,w,h).data;
   let x0=w,x1=0,y0=h,y1=0;for(let y=0;y<h;y++)for(let x=0;x<w;x++)if(d[(y*w+x)*4+3]>0){if(x<x0)x0=x;if(x>x1)x1=x;if(y<y0)y0=y;if(y>y1)y1=y}
   return MED[b]={w,h,cx:(x0+x1+1)/2,bh:y1-y0+1,y1}}
-const CACHE=new Map();function quadro(b,an,f){const act=(G&&G.act)||1,k=b+'|'+an+'|'+f+'|'+act;let q=CACHE.get(k);if(!q){q=BICHO.quadro(b,BICHO.seq(b,an)[f],LUZ[act]||LUZ[1]);if(CACHE.size>1200)CACHE.clear();CACHE.set(k,q)}return q}
+const CACHE=new Map();function quadro(b,an,f,uid){const act=(G&&G.act)||1,Lz=(uid&&window.LUZCENA&&LUZCENA(uid))||LUZ[act]||LUZ[1],k=b+'|'+an+'|'+f+'|'+act+'|'+(Lz.key||'');let q=CACHE.get(k);if(!q){q=BICHO.quadro(b,BICHO.seq(b,an)[f],Lz);if(CACHE.size>1200)CACHE.clear();CACHE.set(k,q)}return q}
 /* um "ator": canvas + animação atual */
 function ator(cont,b,escala){let cv=cont.querySelector('canvas.na');const m=medir(b);
   if(!cv){cv=document.createElement('canvas');cv.className='na';cv.width=m.w;cv.height=m.h;cont.appendChild(cv)}
@@ -23,7 +23,7 @@ const NAL={toca:(n,h)=>{const cv=document.querySelector('[data-uid="ally"] canva
 function passo(cv,dt){const s=cv._s,B=BICHOS[s.b],A=B.A[s.anim],n=BICHO.seq(s.b,s.anim).length,step=1000/A.fps;s.t+=dt;
   if(s.anim==='parado'){s.mania-=dt;if(s.mania<=0){s.mania=7000+Math.random()*6000;toca(cv,'mania'+(1+Math.floor(Math.random()*2)))}}
   while(s.t>=step){s.t-=step;s.f++;if(s.f>=n){if(A.loop)s.f=0;else if(s.hold){s.f=n-1;break}else{toca(cv,'parado');break}}}
-  const key=s.anim+'|'+s.f+'|'+((G&&G.act)||1);if(key===s.ult)return;s.ult=key;const x=cv.getContext('2d');x.clearRect(0,0,cv.width,cv.height);x.drawImage(quadro(s.b,s.anim,s.f),0,0)}
+  const uid=cv.closest('[data-uid]')?.dataset.uid,Lz=uid&&window.LUZCENA&&LUZCENA(uid),key=s.anim+'|'+s.f+'|'+((G&&G.act)||1)+'|'+(Lz?Lz.key:'');if(key===s.ult)return;s.ult=key;const x=cv.getContext('2d');x.clearRect(0,0,cv.width,cv.height);x.drawImage(quadro(s.b,s.anim,s.f,uid),0,0)}
 /* ---------- montagem: luta ---------- */
 function montarLuta(){const c=G.combat,fig=document.querySelector('[data-uid="ally"] .fig');if(!fig||!c||!c.ally||!BICHOS[bid(c.ally)])return;
   const spr=fig.querySelector('.spr');if(spr)spr.style.visibility='hidden';fig.style.position=fig.style.position||'relative';

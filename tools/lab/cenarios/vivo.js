@@ -93,6 +93,23 @@ const AMBF={
  morcegos(x,g,t,k){voo(x,k,'#0a0810',2)},corvos(x,g,t,k){voo(x,k,'#06050a',3)}};
 function voo(x,k,c,n){if(!S.voo&&k&&R()<.003*k)S.voo=Array.from({length:n},(_,i)=>({x:-10-i*14,y:20+R()*40,ph:R()*6,v:1+R()*.5}));if(!S.voo)return;let vivo=0;
   for(const b of S.voo){b.x+=b.v*k;b.ph+=.5*k;b.y+=Math.sin(b.ph*.3)*.3*k;if(b.x<W+10)vivo=1;const asa=Math.sin(b.ph)>0?-1:1;P(x,c,b.x,b.y,2,1);P(x,c,b.x-2,b.y+asa);P(x,c,b.x+3,b.y+asa);P(x,c,b.x-3,b.y+asa*2);P(x,c,b.x+4,b.y+asa*2)}if(!vivo)S.voo=null}
+/* ---------- luz do cenário nos personagens (v2.49) ----------
+   Para cada personagem, soma as luzes do cenário perto dele (fogo, tochas, cristais...) e devolve a luz para o motor:
+   lado de onde vem (dir), cor (col), sombra (amb) e força (k). Quem está perto do fogo pisca junto com ele. */
+const LC={};const NUM=c=>{const m=/(\d+)\s*,\s*(\d+)\s*,\s*(\d+)/.exec(c||'');if(m)return[+m[1],+m[2],+m[3]];const h=/^#(..)(..)(..)/.exec(c||'');return h?[parseInt(h[1],16),parseInt(h[2],16),parseInt(h[3],16)]:[255,170,90]};
+window.LUZCENA=function(uid){if(!ligado()||!S.px||!S.px.isConnected||!S.pts.length)return null;const t=performance.now(),c=LC[uid];
+  let base=c&&t-c.t<500?c:null;
+  if(!base){const el=document.querySelector(`[data-uid="${uid}"] .fig`);if(!el)return null;const r=el.getBoundingClientRect(),pr=S.px.getBoundingClientRect(),sc=pr.width/W;if(!sc)return null;
+    const ux=(r.left+r.width/2-pr.left)/sc,uy=(r.top+r.height*.55-pr.top)/sc;let tw=0,sx=0,cr=0,cg=0,cb=0,fogo=0;
+    for(const p of S.pts){let x0=p.x,y0=p.y,rr,ii,col;if(p.k==='l'){rr=p.r;ii=Math.min(1.3,p.i);col=NUM(p.c)}else if(p.k==='f'){rr=55*(p.s||1)*(p.big?1.6:1);ii=1;col=[255,150,60]}else if(p.k==='cr'){rr=p.h*2.2;ii=.8;col=NUM(p.c);y0=p.y+p.h*.5}else continue;
+      const d=Math.hypot(x0-ux,(y0-uy)*1.3),w=ii*Math.max(0,1-d/(rr*1.25));if(w<=0)continue;tw+=w;sx+=w*Math.sign(x0-ux||1);cr+=col[0]*w;cg+=col[1]*w;cb+=col[2]*w;if(p.k==='f'||(p.k==='l'&&p.q))fogo+=w}
+    if(tw<.08)base={t,dir:-1,col:[150,140,170],amb:[40,36,52],k:.3,fogo:0};
+    else{const q=v=>Math.min(255,Math.round(v/tw/24)*24);const col=[q(cr),q(cg),q(cb)];
+      base={t,dir:sx<0?-1:1,col,amb:[Math.round(col[0]*.22+34),Math.round(col[1]*.2+30),Math.round(col[2]*.22+44)],k:Math.round(Math.min(.95,.4+tw*.45)*10)/10,fogo:fogo/tw}}
+    LC[uid]=base}
+  const pisca=base.fogo>.35&&!reduz&&OPT.bateria!=='maxima'?(Math.sin(t*.011+uid.length)>.2?1:0):0,k=Math.min(1,base.k+(pisca?.1:0));
+  const tint=Math.round(Math.min(.22,(k-.3)*.3)*100)/100,back=base.fogo>.2||k>.6?Math.round(k*.5*10)/10:0;
+  return{dir:base.dir,col:base.col,amb:base.amb,k,tint,back,key:base.dir+','+base.col.join(',')+','+k+','+tint+','+back}};
 /* ---------- ligação com o jogo ---------- */
 const _ff=fitField;fitField=function(){const r=_ff.apply(this,arguments);try{montar()}catch(e){console.error(e)}return r};
 const _render=render;render=function(){const r=_render.apply(this,arguments);try{if(!ligado())tirar();else montar()}catch(e){console.error(e)}return r};

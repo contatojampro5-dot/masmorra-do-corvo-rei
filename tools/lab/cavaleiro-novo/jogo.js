@@ -16,9 +16,9 @@ function estados(){const c=G.combat,p=c&&c.p,st=(p&&p.st)||{},r=G.hp/Math.max(1,
     pouca:r<=.3,wear:r>.75?0:r>.5?1:r>.25?2:3}}
 /* ---------- quadros guardados (desenha e ilumina uma vez só) ---------- */
 const CACHE=new Map();
-function quadro(pose,key){let e=key&&CACHE.get(key);if(e)return e;
+function quadro(pose,key){const Lz=(window.LUZCENA&&LUZCENA('p'))||LUZ[G.act]||LUZ[1];if(key)key+='|'+(Lz.key||'');let e=key&&CACHE.get(key);if(e)return e;
   const cv=document.createElement('canvas');cv.width=40;cv.height=64;
-  const lit=lightPass(R.draw(pose),LUZ[G.act]||LUZ[1]);cv.getContext('2d').drawImage(lit,0,0);
+  const lit=lightPass(R.draw(pose),Lz);cv.getContext('2d').drawImage(lit,0,0);
   e={cv,tip:R.info.tip.slice(),hand:R.info.hand.slice(),shield:R.info.shield?R.info.shield.slice():null,red:null};
   if(key){if(CACHE.size>900)CACHE.clear();CACHE.set(key,e)}return e}
 function vermelho(e){if(e.red)return e.red;const c=document.createElement('canvas');c.width=40;c.height=64;const q=c.getContext('2d');q.drawImage(e.cv,0,0);q.globalCompositeOperation='source-in';q.fillStyle='#ff3a24';q.fillRect(0,0,40,64);return e.red=c}
@@ -160,6 +160,10 @@ const _patch=typeof patchCombat==='function'?patchCombat:null;if(_patch)patchCom
 const _sc=startCombat;startCombat=function(){KN.tok++;KN.busy=false;KN.hold=false;KN.rx=0;KN.ry=0;KN.anim='parado';KN.f=0;KN.maniaT=0;CACHE.clear();return _sc.apply(this,arguments)};
 addEventListener('resize',()=>{if(on())setTimeout(montar,60)});
 /* opção nas Opções */
+/* vitrine (v2.49): quadros do Cavaleiro para outras telas (escolha do herói, fogueira) */
+const VIT=new Map();KN.MANIAS=MANIAS;
+KN.vitrine=function(nome,f,luz){const sq=seq(nome),i=((f%sq.length)+sq.length)%sq.length,k=nome+'|'+i+'|'+JSON.stringify(luz||0);let c=VIT.get(k);if(c)return{cv:c,n:sq.length};
+  const p={...sq[i],wear:0,spikes:0,esp:0};c=document.createElement('canvas');c.width=40;c.height=64;c.getContext('2d').drawImage(luz===null?R.draw(p):lightPass(R.draw(p),luz||LUZ[1]),0,0);if(VIT.size>400)VIT.clear();VIT.set(k,c);return{cv:c,n:sq.length}};
 if(OPT.cavNovo===undefined)OPT.cavNovo=true;
 const _op=ACT.opcoes;ACT.opcoes=function(){const r=_op.apply(this,arguments);const pan=document.querySelector('#modal .optpanel');
   if(pan&&!pan.querySelector('[data-k="cavNovo"]')){const d=document.createElement('div');d.className='optrow';const b=(v,t)=>`<button class="optb ${String(OPT.cavNovo)===v?'on':''}" data-act="optset" data-k="cavNovo" data-v="${v}">${t}</button>`;
